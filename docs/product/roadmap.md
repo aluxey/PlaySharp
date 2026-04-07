@@ -1,42 +1,134 @@
 # Roadmap
 
-## A. Product framing
+## Status
 
-Define the exact scope of V1, the target users, the learning loop, and the success metrics.
+- Phase 0 is documented
+- Phase 1 scaffolding is underway
+- The next step is to connect the route shells to real data and content
 
-## B. UX and UI system
+## Current focus
 
-Create the visual identity, screen wireframes, reusable components, responsive patterns,
-and empty/loading/error states.
+- Lock the V1 scope and success metrics
+- Scaffold the learning surfaces in the web app
+- Set the backend module boundaries early
+- Keep premium and social features out of the first delivery slice
 
-## C. Content model
+## Delivery phases
 
-Define the taxonomy for games, themes, lessons, questions, and explanations.
+### 0. Product framing
 
-## D. Data model
+Goal: define exactly what V1 is, who it serves, and how success is measured.
 
-Design the database schema, naming conventions, constraints, and indexes.
+Deliverables:
 
-## E. API foundation
+- `docs/product/v1-scope.md`
+- `docs/product/metrics.md`
+- release criteria for the first beta
 
-Expose a clean backend structure for auth, quiz flows, lessons, progress, and admin content.
+Exit criteria:
 
-## F. Frontend foundation
+- core journeys are documented
+- in-scope and out-of-scope items are explicit
+- there is a written definition of success for the first release
 
-Implement the web app shell, routing, quiz flow, lesson browsing, and progress views.
+### 1. UX and UI system
 
-## G. Premium and payments
+Goal: create the visual and interaction foundation before feature work expands.
 
-Add premium access, Stripe checkout, and entitlement handling once the core product is stable.
+Deliverables:
 
-## H. Admin workspace
+- visual tokens and page templates
+- reusable card, button, and layout patterns
+- empty, loading, and error states
+- route scaffolding for the main screens
 
-Build the internal tools needed to manage themes, lessons, and questions without friction.
+Exit criteria:
 
-## I. Quality and tests
+- the landing page and app shell feel consistent
+- mobile and desktop layouts are both covered
+- the main navigation paths are represented in the app router
 
-Add unit, API, and workflow tests to protect the quiz engine, auth, and subscription logic.
+### 2. Content and data model
 
-## J. Deployment and operations
+Goal: define the teaching structure and persistence model once, then reuse it everywhere.
 
-Prepare environments, environment variables, backups, monitoring, analytics, and legal pages.
+Deliverables:
+
+- game, theme, lesson, and question taxonomy
+- content folder structure
+- database schema and Prisma model
+- seed strategy for versioned content
+
+Exit criteria:
+
+- content has one clear source of truth
+- the schema supports both learning content and progress tracking
+- identifiers and naming conventions are consistent
+
+### 3. API foundation
+
+Goal: expose clean backend boundaries for auth, quiz, lessons, progress, and admin.
+
+Deliverables:
+
+- NestJS module structure
+- health endpoint
+- route contracts for the main product areas
+- validation and error-handling conventions
+
+Exit criteria:
+
+- each domain has a clear module boundary
+- the API can evolve without coupling product areas together
+- the web app can rely on a stable contract shape
+
+### 4. Frontend foundation
+
+Goal: implement the user-facing experience for the main learning loop.
+
+Deliverables:
+
+- landing page
+- dashboard
+- quiz flow
+- lesson browser
+- progress views
+- profile and admin entry points
+
+Exit criteria:
+
+- a user can navigate the main learning loop end to end
+- the UI is responsive and readable
+- the quiz flow is fast and obvious
+
+### 5. Quality and operations
+
+Goal: protect the product before it grows.
+
+Deliverables:
+
+- lint and formatting rules
+- type checking
+- CI workflow
+- environment file template
+- basic build verification
+
+Exit criteria:
+
+- the repo builds from a clean checkout
+- regressions are caught automatically
+- the development setup is reproducible
+
+## Deferred phases
+
+### Premium and payments
+
+Hold until the core product is stable. Add Stripe, entitlement checks, and premium UX only once the base loop is reliable.
+
+### Admin workspace expansion
+
+Grow the content management workflow after the first content pipeline is in place.
+
+### Deployment and operations hardening
+
+Add monitoring, backups, analytics, and legal pages after the product shape settles.
