@@ -1,0 +1,6 @@
+{
+  "name": "@playsharp/ui",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Shared UI helpers for PlaySharp"
+}

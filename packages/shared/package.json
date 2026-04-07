@@ -1,0 +1,6 @@
+{
+  "name": "@playsharp/shared",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Shared types and constants for PlaySharp"
+}
