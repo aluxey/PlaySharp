@@ -19,6 +19,7 @@
 ### themes
 
 - `id`
+- `slug`
 - `game_id` (FK)
 - `name`
 - `level` (`beginner` / `intermediate` / `advanced`)
@@ -26,6 +27,7 @@
 ### lessons
 
 - `id`
+- `slug`
 - `theme_id` (FK)
 - `title`
 - `content`
@@ -35,6 +37,7 @@
 ### questions
 
 - `id`
+- `slug`
 - `theme_id` (FK)
 - `title`
 - `scenario`
@@ -46,6 +49,7 @@
 ### answer_choices
 
 - `id`
+- `position`
 - `question_id` (FK)
 - `label`
 - `is_correct`
@@ -101,3 +105,5 @@
 - Keep learning content separate from progression data.
 - Keep premium data optional until the payment layer is activated.
 - Use UUIDs for primary keys and explicit foreign keys for all relations.
+- Use `slug` and `position` fields as stable sync keys for versioned content.
+- Theme slugs are unique per game, lesson slugs are unique per theme, and question slugs are unique per theme.

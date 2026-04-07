@@ -4,11 +4,21 @@ This folder is the versioned source of truth for educational content.
 
 ## Structure
 
-- `poker`: poker themes, lessons, and questions
-- `blackjack`: blackjack themes, lessons, and questions
+- `poker/content.json`: poker catalog manifest
+- `blackjack/content.json`: blackjack catalog manifest
 
 ## Rules
 
 - Keep content files small and explicit
-- Prefer one theme per file or folder group
+- Use stable slugs for themes, lessons, and questions
 - Mirror the database seed structure when content is synced
+
+## Manifest shape
+
+Each game manifest contains:
+
+- `game`
+- `name`
+- `themes[]`
+
+Each theme contains lessons and questions with stable slugs, level labels, and answer choices.

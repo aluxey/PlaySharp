@@ -1,0 +1,77 @@
+{
+  "game": "blackjack",
+  "name": "Blackjack",
+  "themes": [
+    {
+      "slug": "basic-strategy-basics",
+      "name": "Basic Strategy Basics",
+      "level": "beginner",
+      "lessons": [
+        {
+          "slug": "dealer-upcard-priority",
+          "title": "Dealer Upcard Priority",
+          "content": "In blackjack, the dealer upcard tells you how aggressive you should be. Weak dealer cards favor patience; strong dealer cards demand tighter choices.",
+          "level": "beginner"
+        },
+        {
+          "slug": "soft-hand-aggression",
+          "title": "Soft Hand Aggression",
+          "content": "Soft hands can absorb a hit without busting, which gives them more flexibility than hard totals in similar spots.",
+          "level": "beginner"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "hard-12-vs-dealer-4",
+          "title": "Hard 12 versus dealer 4",
+          "scenario": "You have a hard 12 against a dealer 4.",
+          "difficulty": "beginner",
+          "explanation": "A dealer 4 is a weak upcard, so standing on hard 12 is the disciplined default because the dealer is more likely to bust.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "The dealer is in a poor position to build a strong hand."
+            },
+            {
+              "label": "Hit immediately",
+              "isCorrect": false,
+              "explanation": "You improve too slowly compared with the dealer bust risk."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": false,
+              "explanation": "This spot does not give enough upside for a double."
+            }
+          ]
+        },
+        {
+          "slug": "soft-18-vs-dealer-9",
+          "title": "Soft 18 versus dealer 9",
+          "scenario": "You have a soft 18 against a dealer 9.",
+          "difficulty": "beginner",
+          "explanation": "Soft 18 looks strong, but against a 9 it often needs more improvement because the dealer's upcard is not weak enough to stand comfortably.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": true,
+              "explanation": "Soft totals can take another card without busting, which increases your equity here."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing gives away too much equity against the dealer 9."
+            },
+            {
+              "label": "Surrender",
+              "isCorrect": false,
+              "explanation": "Surrender is not the best default in this simplified training spot."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

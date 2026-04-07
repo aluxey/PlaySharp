@@ -41,6 +41,7 @@ cp .env.example apps/web/.env.local
 
 - `DATABASE_URL`: points to your PostgreSQL database
 - `WEB_APP_URL`: used by the API CORS setup
+- `API_BASE_URL`: used by the web app to read content and quiz data from the API
 - `API_PORT`: defaults to `3001`
 - `JWT_SECRET`: replace the placeholder before real auth work
 

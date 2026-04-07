@@ -61,60 +61,68 @@ model Game {
 }
 
 model Theme {
-  id                   String            @id @default(uuid()) @db.Uuid
-  gameId               String            @map("game_id") @db.Uuid
-  name                 String
-  level                Difficulty
-  game                 Game              @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  lessons              Lesson[]
-  questions            Question[]
-  stats                UserStat[]
+  id                    String            @id @default(uuid()) @db.Uuid
+  slug                  String
+  gameId                String            @map("game_id") @db.Uuid
+  name                  String
+  level                 Difficulty
+  game                  Game              @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  lessons               Lesson[]
+  questions             Question[]
+  stats                 UserStat[]
   errorQuestionAttempts QuestionAttempt[]
 
   @@index([gameId])
+  @@unique([gameId, slug])
   @@map("themes")
 }
 
 model Lesson {
-  id        String      @id @default(uuid()) @db.Uuid
-  themeId   String      @map("theme_id") @db.Uuid
+  id        String    @id @default(uuid()) @db.Uuid
+  slug      String
+  themeId   String    @map("theme_id") @db.Uuid
   title     String
   content   String
   level     Difficulty
-  createdAt DateTime    @default(now()) @map("created_at")
-  theme     Theme       @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now()) @map("created_at")
+  theme     Theme     @relation(fields: [themeId], references: [id], onDelete: Cascade)
 
   @@index([themeId])
+  @@unique([themeId, slug])
   @@map("lessons")
 }
 
 model Question {
-  id          String          @id @default(uuid()) @db.Uuid
-  themeId     String          @map("theme_id") @db.Uuid
+  id          String           @id @default(uuid()) @db.Uuid
+  slug        String
+  themeId     String           @map("theme_id") @db.Uuid
   title       String
   scenario    String?
   difficulty  Difficulty
   explanation String
-  isPremium   Boolean         @default(false) @map("is_premium")
-  createdAt   DateTime        @default(now()) @map("created_at")
-  theme       Theme           @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  isPremium   Boolean          @default(false) @map("is_premium")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  theme       Theme            @relation(fields: [themeId], references: [id], onDelete: Cascade)
   choices     QuestionChoice[]
   attempts    QuestionAttempt[]
 
   @@index([themeId])
+  @@unique([themeId, slug])
   @@map("questions")
 }
 
 model QuestionChoice {
-  id            String           @id @default(uuid()) @db.Uuid
-  questionId    String           @map("question_id") @db.Uuid
-  label         String
-  isCorrect     Boolean          @default(false) @map("is_correct")
-  explanation   String?
-  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  attempts      QuestionAttempt[]
+  id          String           @id @default(uuid()) @db.Uuid
+  questionId  String           @map("question_id") @db.Uuid
+  position    Int
+  label       String
+  isCorrect   Boolean          @default(false) @map("is_correct")
+  explanation String?
+  question    Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempts    QuestionAttempt[]
 
   @@index([questionId])
+  @@unique([questionId, position])
   @@map("answer_choices")
 }
 

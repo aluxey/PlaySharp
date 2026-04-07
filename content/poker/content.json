@@ -1,0 +1,77 @@
+{
+  "game": "poker",
+  "name": "Poker",
+  "themes": [
+    {
+      "slug": "preflop-position",
+      "name": "Preflop Position",
+      "level": "beginner",
+      "lessons": [
+        {
+          "slug": "open-raising-late-position",
+          "title": "Open Raising From Late Position",
+          "content": "Late position gives you more information, so you can enter the pot with a wider range and stronger pressure on the blinds.",
+          "level": "beginner"
+        },
+        {
+          "slug": "defending-the-blinds",
+          "title": "Defending the Blinds",
+          "content": "When facing a steal, defend with hands that keep playability and avoid overcalling dominated spots.",
+          "level": "beginner"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "button-open-raise",
+          "title": "Button open raise",
+          "scenario": "You are on the button in a soft cash game. The players in the blinds are passive.",
+          "difficulty": "beginner",
+          "explanation": "The button should open wider because you act last postflop and steal more uncontested pots.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Raise a wider range",
+              "isCorrect": true,
+              "explanation": "This uses position to win pots before the flop and keeps pressure on the blinds."
+            },
+            {
+              "label": "Limp most hands",
+              "isCorrect": false,
+              "explanation": "Limping gives up initiative and misses profitable steals."
+            },
+            {
+              "label": "Fold everything except premiums",
+              "isCorrect": false,
+              "explanation": "That range is far too tight for the button."
+            }
+          ]
+        },
+        {
+          "slug": "small-blind-defense",
+          "title": "Small blind defense",
+          "scenario": "The button opens and the action folds to you in the small blind.",
+          "difficulty": "beginner",
+          "explanation": "Defend selectively. Keep hands that can realize equity well and avoid calling with weak dominated hands.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Call with a balanced defend range",
+              "isCorrect": true,
+              "explanation": "A disciplined defend keeps enough playability without overdefending."
+            },
+            {
+              "label": "Call every suited hand",
+              "isCorrect": false,
+              "explanation": "Too many marginal hands make postflop decisions harder and leak value."
+            },
+            {
+              "label": "Fold all but aces and kings",
+              "isCorrect": false,
+              "explanation": "That is far too tight against a button steal."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

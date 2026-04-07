@@ -1,6 +1,6 @@
 # Blackjack Content
 
-Blackjack content will be organized by theme, lesson, and question sets.
+Blackjack content is stored in `content.json` and grouped by theme, lesson, and question sets.
 
 Expected next layers:
 
@@ -8,3 +8,4 @@ Expected next layers:
 - lessons
 - questions
 - explanations
+- stable slugs for sync

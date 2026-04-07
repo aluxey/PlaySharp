@@ -9,9 +9,17 @@
 - `POST /auth/register` - create a user
 - `POST /auth/login` - authenticate a user
 
+## Content
+
+- `GET /content/games` - list game summaries
+- `GET /content/games/:game` - fetch one game manifest
+- `GET /content/games/:game/themes` - list themes for a game
+- `GET /content/games/:game/themes/:themeSlug/lessons` - list lessons for a theme
+- `GET /content/games/:game/themes/:themeSlug/questions` - list questions for a theme
+
 ## Quiz
 
-- `GET /quiz/daily` - fetch the daily quiz
+- `GET /quiz/daily?game=poker` - fetch the daily quiz
 - `POST /quiz/start` - create a quiz attempt
 - `POST /quiz/answer` - submit one answer
 - `POST /quiz/end` - close the attempt
