@@ -6,7 +6,9 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm run --workspaces --if-present dev",
+    "dev": "concurrently -n api,web -c cyan,magenta \"npm run dev --workspace @playsharp/api\" \"npm run dev --workspace @playsharp/web\"",
+    "dev:api": "npm run dev --workspace @playsharp/api",
+    "dev:web": "npm run dev --workspace @playsharp/web",
     "build": "npm run --workspaces --if-present build",
     "lint": "eslint .",
     "typecheck": "npm run --workspaces --if-present typecheck",
@@ -16,6 +18,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "concurrently": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "prettier": "^3.0.0",
