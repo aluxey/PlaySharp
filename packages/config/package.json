@@ -2,5 +2,7 @@
   "name": "@playsharp/config",
   "private": true,
   "version": "0.0.0",
-  "description": "Shared configuration presets for PlaySharp"
+  "description": "Shared configuration presets for PlaySharp",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
 }

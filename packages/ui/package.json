@@ -2,5 +2,7 @@
   "name": "@playsharp/ui",
   "private": true,
   "version": "0.0.0",
-  "description": "Shared UI helpers for PlaySharp"
+  "description": "Shared UI helpers for PlaySharp",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
 }

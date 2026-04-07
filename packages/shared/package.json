@@ -2,5 +2,7 @@
   "name": "@playsharp/shared",
   "private": true,
   "version": "0.0.0",
-  "description": "Shared types and constants for PlaySharp"
+  "description": "Shared types and constants for PlaySharp",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts"
 }
