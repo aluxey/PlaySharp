@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum Plan {
+  FREE
+  PREMIUM
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum GameName {
+  POKER
+  BLACKJACK
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+}
+
+model User {
+  id           String          @id @default(uuid()) @db.Uuid
+  email        String          @unique
+  passwordHash String          @map("password_hash")
+  role         UserRole        @default(USER)
+  plan         Plan            @default(FREE)
+  createdAt    DateTime        @default(now()) @map("created_at")
+  quizAttempts QuizAttempt[]
+  dailyUsage   DailyUsage[]
+  stats        UserStat[]
+  subscription Subscription?
+
+  @@map("users")
+}
+
+model Game {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         GameName      @unique
+  themes       Theme[]
+  quizAttempts QuizAttempt[]
+
+  @@map("games")
+}
+
+model Theme {
+  id                   String            @id @default(uuid()) @db.Uuid
+  gameId               String            @map("game_id") @db.Uuid
+  name                 String
+  level                Difficulty
+  game                 Game              @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  lessons              Lesson[]
+  questions            Question[]
+  stats                UserStat[]
+  errorQuestionAttempts QuestionAttempt[]
+
+  @@index([gameId])
+  @@map("themes")
+}
+
+model Lesson {
+  id        String      @id @default(uuid()) @db.Uuid
+  themeId   String      @map("theme_id") @db.Uuid
+  title     String
+  content   String
+  level     Difficulty
+  createdAt DateTime    @default(now()) @map("created_at")
+  theme     Theme       @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@index([themeId])
+  @@map("lessons")
+}
+
+model Question {
+  id          String          @id @default(uuid()) @db.Uuid
+  themeId     String          @map("theme_id") @db.Uuid
+  title       String
+  scenario    String?
+  difficulty  Difficulty
+  explanation String
+  isPremium   Boolean         @default(false) @map("is_premium")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  theme       Theme           @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  choices     QuestionChoice[]
+  attempts    QuestionAttempt[]
+
+  @@index([themeId])
+  @@map("questions")
+}
+
+model QuestionChoice {
+  id            String           @id @default(uuid()) @db.Uuid
+  questionId    String           @map("question_id") @db.Uuid
+  label         String
+  isCorrect     Boolean          @default(false) @map("is_correct")
+  explanation   String?
+  question      Question         @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attempts      QuestionAttempt[]
+
+  @@index([questionId])
+  @@map("answer_choices")
+}
+
+model QuizAttempt {
+  id             String            @id @default(uuid()) @db.Uuid
+  userId         String            @map("user_id") @db.Uuid
+  gameId         String            @map("game_id") @db.Uuid
+  startedAt      DateTime          @default(now()) @map("started_at")
+  finishedAt     DateTime?         @map("finished_at")
+  score          Int               @default(0)
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game           Game              @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  questionAttempts QuestionAttempt[]
+
+  @@index([userId])
+  @@index([gameId])
+  @@map("quiz_attempts")
+}
+
+model QuestionAttempt {
+  id              String         @id @default(uuid()) @db.Uuid
+  quizAttemptId   String         @map("quiz_attempt_id") @db.Uuid
+  questionId      String         @map("question_id") @db.Uuid
+  selectedChoiceId String?       @map("selected_choice_id") @db.Uuid
+  isCorrect       Boolean        @map("is_correct")
+  responseTime    Int?           @map("response_time")
+  errorThemeId    String?        @map("error_theme_id") @db.Uuid
+  quizAttempt     QuizAttempt    @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  question        Question       @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  selectedChoice  QuestionChoice? @relation(fields: [selectedChoiceId], references: [id])
+  errorTheme      Theme?         @relation(fields: [errorThemeId], references: [id])
+
+  @@index([quizAttemptId])
+  @@index([questionId])
+  @@map("question_attempts")
+}
+
+model UserStat {
+  id            String     @id @default(uuid()) @db.Uuid
+  userId        String     @map("user_id") @db.Uuid
+  themeId       String     @map("theme_id") @db.Uuid
+  successRate   Float      @map("success_rate")
+  totalAttempts Int        @map("total_attempts")
+  lastUpdated   DateTime   @updatedAt @map("last_updated")
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme         Theme      @relation(fields: [themeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, themeId])
+  @@index([themeId])
+  @@map("user_stats")
+}
+
+model DailyUsage {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  date             DateTime @db.Date
+  questionsAnswered Int      @map("questions_answered")
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@map("daily_usage")
+}
+
+model Subscription {
+  id                String               @id @default(uuid()) @db.Uuid
+  userId            String               @unique @map("user_id") @db.Uuid
+  stripeCustomerId  String?              @map("stripe_customer_id")
+  status            SubscriptionStatus
+  currentPeriodEnd  DateTime?            @map("current_period_end")
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
