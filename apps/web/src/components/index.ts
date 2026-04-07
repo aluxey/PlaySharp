@@ -1,1 +1,1 @@
-export const componentLayers = ['ui', 'layout', 'feedback'] as const;
+export * from './feature-page';

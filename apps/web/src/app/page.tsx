@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { heroHighlights, siteConfig } from '../lib/site';
 
 const featureCards = [
@@ -25,12 +26,12 @@ export default function HomePage() {
           <p className="lead">{siteConfig.description}</p>
 
           <div className="button-row">
-            <a className="button button--primary" href="/quiz">
+            <Link className="button button--primary" href="/quiz">
               Start daily quiz
-            </a>
-            <a className="button button--secondary" href="/lessons">
+            </Link>
+            <Link className="button button--secondary" href="/lessons">
               Explore lessons
-            </a>
+            </Link>
           </div>
 
           <ul className="bullet-list">

@@ -1,13 +1,9 @@
+import { appNavItems } from './routes';
+
 export const siteConfig = {
   name: 'PlaySharp',
   description: 'Daily training for poker and blackjack with fast feedback and measurable progress.',
-  navItems: [
-    { label: 'Dashboard', href: '/' },
-    { label: 'Quiz', href: '/quiz' },
-    { label: 'Lessons', href: '/lessons' },
-    { label: 'Progress', href: '/progress' },
-    { label: 'Profile', href: '/profile' },
-  ],
+  navItems: appNavItems,
 } as const;
 
 export const heroHighlights = [
