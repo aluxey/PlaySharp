@@ -4,13 +4,16 @@
 
 - Phase 0 is documented
 - Phase 1 scaffolding is underway
-- The next step is to connect the route shells to real data and content
+- Phase 2 content and data scaffolding is underway
+- Phase 4 frontend polish is underway
+- The next step is to connect the remaining interactive states directly to the API contracts
 
 ## Current focus
 
-- Lock the V1 scope and success metrics
-- Scaffold the learning surfaces in the web app
-- Set the backend module boundaries early
+- Keep the V1 scope and success metrics visible
+- Sync versioned content with Prisma seed data
+- Expose stable content and quiz contracts in the API
+- Make the website feel premium, visual, and coach-like
 - Keep premium and social features out of the first delivery slice
 
 ## Delivery phases
