@@ -72,6 +72,537 @@
           ]
         }
       ]
+    },
+    {
+      "slug": "hard-totals-foundations",
+      "name": "Hard Totals Foundations",
+      "level": "beginner",
+      "lessons": [
+        {
+          "slug": "stiff-hands-and-patience",
+          "title": "Stiff Hands and Patience",
+          "content": "Hard 12 through 16 are fragile hands. Against weak dealer cards, you often protect them by standing rather than forcing improvement.",
+          "level": "beginner"
+        },
+        {
+          "slug": "strong-totals-and-pressure",
+          "title": "Strong Totals and Pressure",
+          "content": "Hard 17 and above are usually made hands. Hard 9 to 11 are often aggressive hands because they can gain value by doubling.",
+          "level": "beginner"
+        },
+        {
+          "slug": "when-hitting-is-still-correct",
+          "title": "When Hitting Is Still Correct",
+          "content": "Do not confuse an uncomfortable hand with a finished hand. Against strong dealer cards, many stiff totals still need to improve.",
+          "level": "beginner"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "hard-16-vs-dealer-6",
+          "title": "Hard 16 versus dealer 6",
+          "scenario": "You hold a hard 16 and the dealer shows a 6.",
+          "difficulty": "beginner",
+          "explanation": "Hard 16 is awkward, but a dealer 6 is weak enough that standing is better than risking an immediate bust. Do not overplay a bad hand when the dealer is under pressure.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "The instinct is tempting because 16 feels weak, but hitting busts too often and wastes the dealer's bust potential."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "This keeps the dealer under pressure and avoids turning a weak but live hand into a dead one."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": false,
+              "explanation": "Doubling a fragile total is a common beginner overreach. You would be adding risk in a spot where patience is stronger."
+            }
+          ]
+        },
+        {
+          "slug": "hard-13-vs-dealer-2",
+          "title": "Hard 13 versus dealer 2",
+          "scenario": "You have a hard 13 against a dealer 2.",
+          "difficulty": "beginner",
+          "explanation": "A dealer 2 is not powerful enough to force aggression from you. Basic strategy prefers standing because your hand is already ahead of many dealer bust paths.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "The dealer can easily struggle from 2, so your job is often to avoid busting first."
+            },
+            {
+              "label": "Hit once",
+              "isCorrect": false,
+              "explanation": "Hitting feels proactive, but the mistake is ignoring how often a dealer 2 still fails to complete a strong hand."
+            },
+            {
+              "label": "Surrender",
+              "isCorrect": false,
+              "explanation": "This hand is not weak enough to give up. Surrender is for much tougher situations."
+            }
+          ]
+        },
+        {
+          "slug": "hard-11-vs-dealer-6",
+          "title": "Hard 11 versus dealer 6",
+          "scenario": "You are dealt a hard 11 and the dealer shows a 6.",
+          "difficulty": "beginner",
+          "explanation": "Hard 11 is one of the best doubling hands because you are likely to improve and the dealer is already under pressure with a weak upcard.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "This misunderstands the value of a strong drawing hand. Eleven is not a made hand yet; it is a hand that wants more value."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "You maximize a favorable spot by committing more money when both your draw potential and the dealer's weakness work in your favor."
+            },
+            {
+              "label": "Hit normally",
+              "isCorrect": false,
+              "explanation": "Hitting is safer than doubling, which is why beginners like it, but it leaves value on the table in a premium spot."
+            }
+          ]
+        },
+        {
+          "slug": "hard-9-vs-dealer-3",
+          "title": "Hard 9 versus dealer 3",
+          "scenario": "You have a hard 9 and the dealer shows a 3.",
+          "difficulty": "beginner",
+          "explanation": "Hard 9 can often be doubled against weak dealer cards because many one-card improvements create strong totals while the dealer still starts from a weak position.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting is playable, which makes it tempting, but the mistake is missing an efficient chance to press a favorable spot."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "This uses the growth potential of 9 while the dealer is exposed with a weak upcard."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing on 9 treats a drawing hand like a finished one. You need improvement here, not passivity."
+            }
+          ]
+        },
+        {
+          "slug": "hard-15-vs-dealer-10",
+          "title": "Hard 15 versus dealer 10",
+          "scenario": "You hold a hard 15 and the dealer shows a 10. No surrender is available.",
+          "difficulty": "intermediate",
+          "explanation": "Without surrender, hard 15 against a dealer 10 is still a hit. The hand is weak, but standing usually loses too often against the dealer's strong starting position.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand and hope the dealer misses",
+              "isCorrect": false,
+              "explanation": "The instinct is understandable because 15 is uncomfortable, but the dealer 10 creates too much pressure for passive play to be best."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": true,
+              "explanation": "You are not happy to hit, but basic strategy prefers trying to improve over surrendering equity by freezing a weak total."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": false,
+              "explanation": "Doubling compounds a bad position. You have neither the total nor the dealer matchup for that play."
+            }
+          ]
+        },
+        {
+          "slug": "hard-17-vs-dealer-ace",
+          "title": "Hard 17 versus dealer ace",
+          "scenario": "You have a hard 17 and the dealer shows an ace.",
+          "difficulty": "beginner",
+          "explanation": "Even against a powerful upcard, hard 17 is still a made hand. Hitting would turn a strong non-busting total into an unnecessary bust risk.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "Seventeen is usually strong enough to keep, even when the dealer starts from a better position."
+            },
+            {
+              "label": "Hit to try for 20 or 21",
+              "isCorrect": false,
+              "explanation": "This is a classic greedy mistake. The upside exists, but the bust risk is far too high."
+            },
+            {
+              "label": "Surrender",
+              "isCorrect": false,
+              "explanation": "Your hand is already too strong to give up half your bet. The problem is the dealer's ace, not your total."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "soft-hands-and-flexibility",
+      "name": "Soft Hands and Flexibility",
+      "level": "intermediate",
+      "lessons": [
+        {
+          "slug": "soft-hands-are-drawing-hands",
+          "title": "Soft Hands Are Drawing Hands",
+          "content": "Soft totals are not just safe hands; they are flexible drawing hands. Many of them gain value by hitting or doubling instead of standing too early.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "when-soft-18-is-not-finished",
+          "title": "When Soft 18 Is Not Finished",
+          "content": "Soft 18 changes value sharply with the dealer upcard. Sometimes it stands comfortably; other times it still needs action.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "doubling-soft-hands-correctly",
+          "title": "Doubling Soft Hands Correctly",
+          "content": "Soft doubles work because you can improve aggressively without the usual bust danger. They are strongest against dealer weakness.",
+          "level": "intermediate"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "soft-17-vs-dealer-3",
+          "title": "Soft 17 versus dealer 3",
+          "scenario": "You hold A-6 for a soft 17 against a dealer 3.",
+          "difficulty": "intermediate",
+          "explanation": "Soft 17 is not a finished hand. Against a weak dealer 3, doubling is best because many one-card improvements create useful totals and your ace keeps the bust risk low.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing treats soft 17 like a made hand, but it still needs growth and misses value against dealer weakness."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "This presses a spot where your hand can improve efficiently and safely."
+            },
+            {
+              "label": "Hit only",
+              "isCorrect": false,
+              "explanation": "Hitting is understandable because it preserves flexibility, but the mistake is not maximizing a favorable doubling opportunity."
+            }
+          ]
+        },
+        {
+          "slug": "soft-18-vs-dealer-2",
+          "title": "Soft 18 versus dealer 2",
+          "scenario": "You have a soft 18 against a dealer 2.",
+          "difficulty": "intermediate",
+          "explanation": "Against a dealer 2, soft 18 is usually strong enough to stand in standard basic strategy. The dealer is weak enough that you do not need to push a hand that already plays reasonably well.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting feels safe because the hand is soft, but the mistake is over-improving a hand that is already good enough against a weak start."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "This keeps a solid total and lets the weak dealer position create pressure."
+            },
+            {
+              "label": "Split",
+              "isCorrect": false,
+              "explanation": "There is no pair to split here. This answer confuses soft-hand play with pair play."
+            }
+          ]
+        },
+        {
+          "slug": "soft-18-vs-dealer-6-double",
+          "title": "Best use of soft 18 versus dealer 6",
+          "scenario": "You hold A-7 against a dealer 6. Which action extracts the most value?",
+          "difficulty": "intermediate",
+          "explanation": "Soft 18 becomes an aggressive hand against dealer 6. Standard basic strategy favors doubling because the dealer is weak and your hand can still improve without normal bust risk.",
+          "isPremium": true,
+          "choices": [
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing is safe and acceptable in some simplified charts, which makes it tempting, but doubling gains more value in standard basic strategy."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "You combine dealer weakness with a hand that still has efficient upside."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting keeps the hand alive, but it misses the chance to invest more in a premium situation."
+            }
+          ]
+        },
+        {
+          "slug": "soft-15-vs-dealer-4",
+          "title": "Soft 15 versus dealer 4",
+          "scenario": "You have A-4 for a soft 15 against a dealer 4.",
+          "difficulty": "intermediate",
+          "explanation": "Soft 15 is too weak to stand, but it is an efficient soft double against dealer 4 because your hand has room to grow and the dealer starts in a fragile position.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "This uses both the safety of the soft hand and the dealer's weakness."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing is a passive mistake. Soft 15 is not remotely strong enough to freeze here."
+            },
+            {
+              "label": "Surrender",
+              "isCorrect": false,
+              "explanation": "You are not in trouble here. This hand is actually a good candidate for controlled aggression."
+            }
+          ]
+        },
+        {
+          "slug": "soft-19-vs-dealer-6",
+          "title": "Soft 19 versus dealer 6",
+          "scenario": "You hold A-8 for a soft 19 against a dealer 6.",
+          "difficulty": "advanced",
+          "explanation": "In standard basic strategy, soft 19 is usually a stand, but against dealer 6 it becomes a profitable double in some common rule sets. This assumes standard multi-deck basic strategy where doubling soft 19 versus 6 is allowed.",
+          "isPremium": true,
+          "choices": [
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "This is a nuanced value play. Your hand is already strong, and dealer weakness plus one-card finality can justify pressing the edge."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing is very reasonable and is why many players choose it, but it leaves some value behind under the stated assumption."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting misunderstands the hand completely. Soft 19 is already strong and does not need extra variance."
+            }
+          ]
+        },
+        {
+          "slug": "soft-13-vs-dealer-5",
+          "title": "Soft 13 versus dealer 5",
+          "scenario": "You have A-2 against a dealer 5.",
+          "difficulty": "intermediate",
+          "explanation": "Soft 13 is weak by total, but flexible by structure. Against a dealer 5, doubling is preferred because many outcomes improve your hand while the dealer is already vulnerable.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting is not terrible, which makes it believable, but the mistake is failing to press a favorable matchup."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "This is a classic soft-hand value spot against dealer weakness."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing on soft 13 massively overvalues the current total. This hand still needs development."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pairs-doubles-and-surrender",
+      "name": "Pairs, Doubles, and Surrender",
+      "level": "intermediate",
+      "lessons": [
+        {
+          "slug": "why-pairs-are-special",
+          "title": "Why Pairs Are Special",
+          "content": "A pair is not just a total. Splitting can create two better starting hands, which often matters more than the raw number you currently hold.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "protecting-value-with-doubles",
+          "title": "Protecting Value With Doubles",
+          "content": "Doubling is strongest when your hand has efficient upside and the dealer starts weak. It is not just about having a decent total.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "late-surrender-as-damage-control",
+          "title": "Late Surrender as Damage Control",
+          "content": "Surrender is not fear; it is disciplined damage control. Use it only when the hand is so poor that saving half the bet beats playing it out.",
+          "level": "intermediate"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "pair-of-8s-vs-dealer-10",
+          "title": "Pair of 8s versus dealer 10",
+          "scenario": "You are dealt 8-8 against a dealer 10.",
+          "difficulty": "intermediate",
+          "explanation": "A pair of 8s is one of the classic splits. Sixteen is a weak total, but splitting gives you two independent chances to build better hands instead of freezing on a bad one.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Stand on 16",
+              "isCorrect": false,
+              "explanation": "Standing is tempting because you want to avoid extra risk, but the mistake is accepting one weak hand instead of creating two playable ones."
+            },
+            {
+              "label": "Split",
+              "isCorrect": true,
+              "explanation": "This turns a bad total into two new opportunities, which is the core value of splitting 8s."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting 16 is sometimes necessary on non-pair hands, but with 8-8 you have a stronger structural option available."
+            }
+          ]
+        },
+        {
+          "slug": "pair-of-10s-vs-dealer-6",
+          "title": "Pair of 10s versus dealer 6",
+          "scenario": "You have 10-10 against a dealer 6.",
+          "difficulty": "beginner",
+          "explanation": "Twenty is already a premium made hand. Splitting is flashy but unnecessary because it breaks a highly profitable total into two weaker starting hands.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Split for more upside",
+              "isCorrect": false,
+              "explanation": "The temptation comes from seeing dealer weakness and wanting two wins, but the mistake is destroying one of your best hands in blackjack."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": true,
+              "explanation": "You protect a dominant total and let the dealer try to catch up from a weak start."
+            },
+            {
+              "label": "Double down",
+              "isCorrect": false,
+              "explanation": "You cannot improve a 20 meaningfully enough to justify added risk. The hand is already where you want it."
+            }
+          ]
+        },
+        {
+          "slug": "pair-of-9s-vs-dealer-7",
+          "title": "Pair of 9s versus dealer 7",
+          "scenario": "You are dealt 9-9 against a dealer 7.",
+          "difficulty": "intermediate",
+          "explanation": "Eighteen is strong, but pair logic still matters. Against dealer 7, splitting 9s is preferred because each 9 can grow into a stronger hand and the dealer's card is not weak enough to make 18 an automatic hold.",
+          "isPremium": true,
+          "choices": [
+            {
+              "label": "Stand on 18",
+              "isCorrect": false,
+              "explanation": "Standing feels natural because 18 is good, but the mistake is ignoring the extra value the pair structure creates in this matchup."
+            },
+            {
+              "label": "Split",
+              "isCorrect": true,
+              "explanation": "This is one of the important exceptions where the pair is more valuable separated than kept together."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting misunderstands both the strength of 18 and the strategic purpose of pair decisions."
+            }
+          ]
+        },
+        {
+          "slug": "pair-of-4s-vs-dealer-5",
+          "title": "Pair of 4s versus dealer 5",
+          "scenario": "You have 4-4 against a dealer 5. Doubling after split is allowed.",
+          "difficulty": "advanced",
+          "explanation": "Under standard basic strategy with doubling after split allowed, 4-4 versus dealer 5 is a split. The goal is not that 8 is strong now; it is that split 4s can become profitable doubled hands.",
+          "isPremium": true,
+          "choices": [
+            {
+              "label": "Hit the hard 8",
+              "isCorrect": false,
+              "explanation": "Hitting is the fallback when split conditions are weaker, so it looks reasonable, but it misses the structural upside created by the stated rule."
+            },
+            {
+              "label": "Stand on 8",
+              "isCorrect": false,
+              "explanation": "Standing on 8 badly overvalues the current total. This hand still needs development."
+            },
+            {
+              "label": "Split",
+              "isCorrect": true,
+              "explanation": "This uses the rule environment to create better future doubles and stronger hand growth."
+            }
+          ]
+        },
+        {
+          "slug": "hard-16-vs-dealer-9-late-surrender",
+          "title": "Hard 16 versus dealer 9 with late surrender",
+          "scenario": "You hold a hard 16 against a dealer 9, and late surrender is available.",
+          "difficulty": "advanced",
+          "explanation": "With late surrender available, hard 16 versus dealer 9 is a surrender in standard basic strategy. The hand loses often enough that saving half the bet is better than playing it out.",
+          "isPremium": true,
+          "choices": [
+            {
+              "label": "Surrender",
+              "isCorrect": true,
+              "explanation": "This is disciplined damage control in a structurally poor spot."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing is tempting because 16 busts easily, but against dealer 9 the matchup is still bad enough that surrender outperforms it."
+            },
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "Hitting is the usual fallback without surrender, but once surrender exists, it becomes the cleaner lower-loss option."
+            }
+          ]
+        },
+        {
+          "slug": "hard-15-vs-dealer-10-late-surrender",
+          "title": "Hard 15 versus dealer 10 with late surrender",
+          "scenario": "You have a hard 15 against a dealer 10, and late surrender is allowed.",
+          "difficulty": "intermediate",
+          "explanation": "Late surrender changes this hand. In standard basic strategy, hard 15 versus dealer 10 is a surrender because the dealer's pressure is high and your hand has limited safe improvement.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Hit",
+              "isCorrect": false,
+              "explanation": "This is the correct backup without surrender, which is why it is tempting, but surrender is stronger once the option exists."
+            },
+            {
+              "label": "Surrender",
+              "isCorrect": true,
+              "explanation": "You reduce losses in a matchup where playing on is usually worse."
+            },
+            {
+              "label": "Stand",
+              "isCorrect": false,
+              "explanation": "Standing protects you from busting, but it leaves you too often stuck with a losing total against a powerful dealer start."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
