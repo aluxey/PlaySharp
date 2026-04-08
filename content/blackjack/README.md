@@ -58,5 +58,65 @@ CONTENT QUALITY REQUIREMENTS:
   - dealer bust risk
   - hand flexibility
   - value of improving
-- risk of overplaying - pair value - positional pressure from dealer upcard DIFFICULTY DISTRIBUTION: - 50% beginner - 35% intermediate - 15% advanced DIVERSITY REQUIREMENTS: - Vary question titles and scenario phrasings. - Vary distractor answers so they are believable. - Include some trap answers based on common misconceptions. - Do not always put the correct answer in the first choice position. - Use a mix of: - direct action questions - mistake recognition questions - comparison questions - “best adjustment” questions LESSON FORMAT: Each lesson must include: - slug - title - content - level QUESTION FORMAT: Each question must include: - slug - title - scenario - difficulty - explanation - isPremium - choices Each choice must include: - label - isCorrect - explanation SLUG RULES: - lowercase - hyphen-separated - unique - descriptive CONSISTENCY RULES: - Theme level, lesson level, and question difficulty must make sense together. - Beginner content should avoid overly technical edge cases. - Intermediate and advanced content can include more nuanced decisions. - Premium questions can be slightly more complex or mixed-concept. CORRECTION QUALITY: For each incorrect answer, explain: - what the player is misunderstanding, - why that instinct is tempting, - why it is still the wrong play here. OUTPUT TASK: Extend the blackjack JSON with: - 3 new themes - each theme containing 2 to 4 lessons - each theme containing 6 to 10 questions Return the FULL UPDATED JSON.
+- risk of overplaying
+- pair value
+- positional pressure from dealer upcard DIFFICULTY DISTRIBUTION:
+- 50% beginner
+- 35% intermediate
+- 15% advanced
+
+DIVERSITY REQUIREMENTS:
+- Vary question titles and scenario phrasings.
+- Vary distractor answers so they are believable.
+- Include some trap answers based on common misconceptions.
+- Do not always put the correct answer in the first choice position.
+- Use a mix of: - direct action questions
+- mistake recognition questions
+- comparison questions
+- “best adjustment” questions
+
+LESSON FORMAT: Each lesson must include:
+- slug
+- title
+- content
+- level
+
+QUESTION FORMAT:
+Each question must include:
+- slug
+- title
+- scenario
+- difficulty
+- explanation
+- isPremium
+- choices
+
+Each choice must include:
+- label
+- isCorrect
+- explanation
+
+SLUG RULES:
+- lowercase
+- hyphen-separated
+- unique
+- descriptive
+
+CONSISTENCY RULES:
+- Theme level, lesson level, and question difficulty must make sense together.
+- Beginner content should avoid overly technical edge cases.
+- Intermediate and advanced content can include more nuanced decisions.
+- Premium questions can be slightly more complex or mixed-concept.
+
+CORRECTION QUALITY:
+For each incorrect answer, explain:
+- what the player is misunderstanding,
+- why that instinct is tempting, 
+- why it is still the wrong play here.
+
+OUTPUT TASK:
+ Extend the blackjack JSON with:
+- 3 new themes
+- each theme containing 2 to 4 lessons
+- each theme containing 6 to 10 questions Return the FULL UPDATED JSON.
 ```
