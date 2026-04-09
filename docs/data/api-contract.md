@@ -17,7 +17,7 @@ Shared request and response types live in `packages/shared/src/api.ts`. The web 
 ```
 
 - The versioned content source of truth is `content/{game}/content.json`.
-- The `progress`, `profile`, and `admin` read routes are currently content-derived until user-attempt persistence is wired end to end.
+- The `progress` route is attempt-driven. The `profile` and `admin` read routes are still content-derived until more user activity is persisted end to end.
 - Authenticated user routes expect `Authorization: Bearer <token>`, using the token returned from `POST /auth/register` or `POST /auth/login`.
 
 ## Quick reference
