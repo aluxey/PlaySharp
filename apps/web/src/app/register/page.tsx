@@ -1,10 +1,46 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
+import { registerWithPassword } from '../../lib/auth-client';
 import { routes } from '../../lib/routes';
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (isSubmitting) {
+      return;
+    }
+
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    const result = await registerWithPassword({
+      name,
+      email,
+      password,
+    });
+
+    if (result.error) {
+      setErrorMessage(result.error.message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    router.push(routes.quiz);
+    router.refresh();
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background">
       <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 items-center">
@@ -53,17 +89,21 @@ export default function RegisterPage() {
               </h2>
             </div>
             <span className="px-3 py-1 rounded-lg border border-border text-xs text-foreground-secondary">
-              Shell only
+              Live API
             </span>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <label className="space-y-2 block text-sm font-medium text-foreground">
               <span>Display name</span>
               <input
                 type="text"
                 placeholder="PlaySharp learner"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary"
+                autoComplete="name"
+                required
               />
             </label>
             <label className="space-y-2 block text-sm font-medium text-foreground">
@@ -71,7 +111,11 @@ export default function RegisterPage() {
               <input
                 type="email"
                 placeholder="alex@example.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary"
+                autoComplete="email"
+                required
               />
             </label>
             <label className="space-y-2 block text-sm font-medium text-foreground">
@@ -79,18 +123,28 @@ export default function RegisterPage() {
               <input
                 type="password"
                 placeholder="Create a password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
                 className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary"
+                autoComplete="new-password"
+                required
               />
             </label>
+            {errorMessage ? (
+              <div className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+                {errorMessage}
+              </div>
+            ) : null}
             <div className="flex items-center justify-between text-sm">
               <Link className="text-primary" href={routes.login}>
                 Already have an account?
               </Link>
               <button
                 className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold"
-                type="button"
+                type="submit"
+                disabled={isSubmitting}
               >
-                Create account
+                {isSubmitting ? 'Creating account...' : 'Create account'}
               </button>
             </div>
           </form>

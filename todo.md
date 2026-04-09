@@ -55,7 +55,7 @@
 
 ### Web
 
-- [ ] Wire login/register pages to real auth endpoints.
+- [x] Wire login/register pages to real auth endpoints.
 - [ ] Submit quiz answers to the API and display result state from response.
 - [ ] Use lesson/theme routes for deep links and catalog navigation.
 - [ ] Replace placeholder stats with API-backed progress data.

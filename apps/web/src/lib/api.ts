@@ -1,3 +1,7 @@
+import 'server-only';
+
+import { cookies } from 'next/headers';
+
 import type {
   AdminLessonsResponse,
   AdminOverviewResponse,
@@ -17,7 +21,8 @@ import type {
   QuizDailyResponse,
 } from '@playsharp/shared';
 
-const apiBaseUrl = (process.env.API_BASE_URL ?? 'http://127.0.0.1:3001/api').replace(/\/$/, '');
+import { apiBaseUrl } from './api-base-url';
+import { AUTH_SESSION_COOKIE } from './auth-session';
 
 export type ApiResource<T> = {
   data: T | null;
@@ -63,8 +68,17 @@ function normalizeError(path: string, statusCode: number, payload: unknown): Api
 
 async function apiGet<T>(path: string): Promise<ApiResource<T>> {
   try {
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get(AUTH_SESSION_COOKIE)?.value;
     const response = await fetch(`${apiBaseUrl}${path}`, {
       cache: 'no-store',
+      ...(accessToken
+        ? {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        : {}),
     });
     const payload = (await response.json().catch(() => null)) as T | ApiErrorResponse | null;
 

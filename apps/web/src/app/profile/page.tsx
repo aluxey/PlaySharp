@@ -1,19 +1,10 @@
-import {
-  Award,
-  Calendar,
-  CreditCard,
-  Crown,
-  LogOut,
-  Mail,
-  Settings,
-  Target,
-  Zap,
-} from 'lucide-react';
+import { Award, Calendar, CreditCard, Crown, Mail, Settings, Target, Zap } from 'lucide-react';
 
 import type { ProfileStat } from '@playsharp/shared';
 
-import { DataCard, StatePanel } from '../../components';
+import { DataCard, LogoutButton, StatePanel } from '../../components';
 import { getProfileOverview } from '../../lib/api';
+import { routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,16 +23,17 @@ function statIcon(stat: ProfileStat) {
 
 export default async function ProfilePage() {
   const profile = await getProfileOverview();
+  const isUnauthorized = profile.error?.code === 'AUTH_UNAUTHORIZED';
 
   if (profile.error) {
     return (
       <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
         <StatePanel
           eyebrow="Profile"
-          title="Profile data is unavailable"
+          title={isUnauthorized ? 'Log in to view your profile' : 'Profile data is unavailable'}
           description={profile.error.message}
-          actionLabel="Open dashboard"
-          actionHref="/dashboard"
+          actionLabel={isUnauthorized ? 'Log in' : 'Open dashboard'}
+          actionHref={isUnauthorized ? routes.login : routes.dashboard}
           tone="error"
         />
       </div>
@@ -203,10 +195,7 @@ export default async function ProfilePage() {
                   <Mail className="w-5 h-5 text-foreground-secondary" />
                   <span className="text-foreground">Notifications</span>
                 </button>
-                <button className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-error/10 transition-all text-left text-error">
-                  <LogOut className="w-5 h-5" />
-                  <span>Log Out</span>
-                </button>
+                <LogoutButton />
               </div>
             </section>
 
