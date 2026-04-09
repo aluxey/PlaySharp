@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import {
+  type ContentCatalog,
   type ContentGame,
   type ContentGameName,
   type ContentLesson,
@@ -21,8 +22,12 @@ export type ContentGameSummary = SharedContentGameSummary;
 
 @Injectable()
 export class ContentService {
+  async getCatalog(): Promise<ContentCatalog> {
+    return loadContentCatalog();
+  }
+
   async listGameSummaries(): Promise<ContentGameSummary[]> {
-    const catalog = await loadContentCatalog();
+    const catalog = await this.getCatalog();
     return catalog.map((entry) => summarizeGameContent(entry));
   }
 

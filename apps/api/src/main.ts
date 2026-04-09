@@ -1,8 +1,12 @@
 import 'reflect-metadata';
 
+import { loadEnvFile } from 'node:process';
+
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+
+loadEnvFile('.env');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,7 +23,7 @@ async function bootstrap() {
     }),
   );
 
-  const port = Number(process.env.API_PORT ?? 3001);
+  const port = Number(process.env.API_PORT ?? process.env.PORT ?? 3001);
   await app.listen(port);
 }
 

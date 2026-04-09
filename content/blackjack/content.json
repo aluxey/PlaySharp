@@ -272,6 +272,18 @@
           "title": "Doubling Soft Hands Correctly",
           "content": "Soft doubles work because you can improve aggressively without the usual bust danger. They are strongest against dealer weakness.",
           "level": "intermediate"
+        },
+        {
+          "slug": "when-doubling-builds-edge",
+          "title": "When Doubling Builds Edge",
+          "content": "Doubling is strongest when you have a hand likely to improve and the dealer is vulnerable. The extra wager only makes sense when the structure of the spot supports it.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "soft-totals-need-pressure",
+          "title": "Soft Totals Need Pressure",
+          "content": "Soft totals look comfortable, but they still need aggressive play in the right windows because they can take another card without busting.",
+          "level": "intermediate"
         }
       ],
       "questions": [
@@ -297,6 +309,31 @@
               "label": "Hit only",
               "isCorrect": false,
               "explanation": "Hitting is understandable because it preserves flexibility, but the mistake is not maximizing a favorable doubling opportunity."
+            }
+          ]
+        },
+        {
+          "slug": "soft-17-vs-dealer-6",
+          "title": "Soft 17 versus dealer 6",
+          "scenario": "You hold A-6 and the dealer shows a 6.",
+          "difficulty": "intermediate",
+          "explanation": "Soft 17 can improve safely, and the dealer 6 is weak enough to make doubling attractive in simplified strategy training.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "You can add pressure while still having room to improve."
+            },
+            {
+              "label": "Stand immediately",
+              "isCorrect": false,
+              "explanation": "Standing leaves too much value on the table against a weak dealer upcard."
+            },
+            {
+              "label": "Always hit instead",
+              "isCorrect": false,
+              "explanation": "Hitting is safer than standing, but doubling captures more value in this spot."
             }
           ]
         },
@@ -599,6 +636,31 @@
               "label": "Stand",
               "isCorrect": false,
               "explanation": "Standing protects you from busting, but it leaves you too often stuck with a losing total against a powerful dealer start."
+            }
+          ]
+        },
+        {
+          "slug": "hard-11-vs-dealer-10",
+          "title": "Hard 11 versus dealer 10",
+          "scenario": "You have 11 and the dealer shows a 10.",
+          "difficulty": "intermediate",
+          "explanation": "Hard 11 has strong improvement potential. Even against a strong dealer upcard, doubling keeps the hand aggressive when the math stays favorable.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Double down",
+              "isCorrect": true,
+              "explanation": "You are still favored to improve into a strong total."
+            },
+            {
+              "label": "Stand and hope the dealer busts",
+              "isCorrect": false,
+              "explanation": "An 11 is too strong a building hand to freeze."
+            },
+            {
+              "label": "Split the hand",
+              "isCorrect": false,
+              "explanation": "There is nothing to split here."
             }
           ]
         }

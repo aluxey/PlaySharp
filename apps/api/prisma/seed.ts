@@ -1,3 +1,4 @@
+import { loadEnvFile } from 'node:process';
 import {
   Difficulty as PrismaDifficulty,
   GameName as PrismaGameName,
@@ -13,6 +14,8 @@ import {
 } from '@playsharp/shared';
 
 import { loadContentCatalog } from '../src/modules/content/content.loader';
+
+loadEnvFile('.env');
 
 const prisma = new PrismaClient();
 

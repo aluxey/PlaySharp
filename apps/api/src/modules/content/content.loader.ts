@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import {
@@ -12,6 +12,10 @@ const contentRoot = resolve(process.cwd(), '..', '..', 'content');
 
 function contentFilePath(game: ContentGameName) {
   return resolve(contentRoot, game, 'content.json');
+}
+
+function contentRelativePath(game: ContentGameName) {
+  return `content/${game}/content.json`;
 }
 
 async function readGameContent(game: ContentGameName): Promise<ContentGame | null> {
@@ -34,6 +38,23 @@ export async function loadContentCatalog(): Promise<ContentCatalog> {
 
 export async function loadGameContent(game: ContentGameName): Promise<ContentGame | null> {
   return readGameContent(game);
+}
+
+export async function listContentSources() {
+  const catalog = await loadContentCatalog();
+
+  return Promise.all(
+    catalog.map(async (gameContent) => {
+      const fileStats = await stat(contentFilePath(gameContent.game));
+
+      return {
+        game: gameContent.game,
+        name: gameContent.name,
+        path: contentRelativePath(gameContent.game),
+        updatedAt: fileStats.mtime.toISOString(),
+      };
+    }),
+  );
 }
 
 export function summarizeGameContent(gameContent: ContentGame) {

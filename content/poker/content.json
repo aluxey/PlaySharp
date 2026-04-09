@@ -72,6 +72,77 @@
           ]
         }
       ]
+    },
+    {
+      "slug": "pot-odds-basics",
+      "name": "Pot Odds Basics",
+      "level": "intermediate",
+      "lessons": [
+        {
+          "slug": "turning-ratios-into-decisions",
+          "title": "Turning Ratios Into Decisions",
+          "content": "Pot odds matter because they convert chip prices into clear continue or fold thresholds. Train yourself to compare the cost of a call with the total pot before guessing.",
+          "level": "intermediate"
+        },
+        {
+          "slug": "equity-shortcuts-under-pressure",
+          "title": "Equity Shortcuts Under Pressure",
+          "content": "You do not need exact combinatorics in every hand. Build a few shortcut benchmarks so draws, pairs, and overcards map quickly to realistic equity ranges.",
+          "level": "intermediate"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "flush-draw-turn-call",
+          "title": "Flush draw facing a turn bet",
+          "scenario": "You hold a flush draw on the turn and face a half-pot bet.",
+          "difficulty": "intermediate",
+          "explanation": "A half-pot bet offers a 3:1 price. If your draw plus implied value clears that threshold, calling stays disciplined.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Compare the call price with your drawing equity",
+              "isCorrect": true,
+              "explanation": "Pot odds are a pricing problem first, not a feeling-based decision."
+            },
+            {
+              "label": "Fold every draw because the turn is expensive",
+              "isCorrect": false,
+              "explanation": "Some draws remain profitable even on later streets."
+            },
+            {
+              "label": "Jam immediately with all draws",
+              "isCorrect": false,
+              "explanation": "Aggression depends on fold equity and stack depth, not just the presence of a draw."
+            }
+          ]
+        },
+        {
+          "slug": "gutshot-small-bet",
+          "title": "Gutshot versus a small river price",
+          "scenario": "You are chasing a gutshot and face a very small price relative to the pot.",
+          "difficulty": "intermediate",
+          "explanation": "Small bets widen your continuing range because the required equity threshold drops. The correct response comes from the price, not the label on your draw.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Use the pot price to decide if the draw can continue",
+              "isCorrect": true,
+              "explanation": "Cheap prices can justify continuing even with weaker draws."
+            },
+            {
+              "label": "Fold because gutshots are always too weak",
+              "isCorrect": false,
+              "explanation": "That ignores the effect of price on profitability."
+            },
+            {
+              "label": "Call only if you also have top pair",
+              "isCorrect": false,
+              "explanation": "Pair strength matters, but the core concept here is pot pricing."
+            }
+          ]
+        }
+      ]
     }
   ]
 }
