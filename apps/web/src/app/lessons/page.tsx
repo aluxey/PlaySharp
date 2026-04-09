@@ -1,119 +1,76 @@
-import Link from 'next/link';
+import type { ContentLesson } from '@playsharp/shared';
 
+import { StatePanel } from '../../components';
+import { LessonsClient, type LessonCard } from './lessons-client';
 import { getGameContent } from '../../lib/api';
-import { routes } from '../../lib/routes';
 
-const games = ['poker', 'blackjack'] as const;
+export const dynamic = 'force-dynamic';
+
+function mapLessons(
+  game: 'poker' | 'blackjack',
+  lessons: ReadonlyArray<ContentLesson>,
+): LessonCard[] {
+  return lessons.map((lesson) => ({
+    id: lesson.slug,
+    title: lesson.title,
+    description: lesson.content,
+    game,
+    difficulty: lesson.level,
+    duration: '—',
+    locked: false,
+    tags: [game, lesson.level],
+  }));
+}
 
 export default async function LessonsPage() {
-  const catalog = await Promise.all(games.map((game) => getGameContent(game)));
+  const [pokerContent, blackjackContent] = await Promise.all([
+    getGameContent('poker'),
+    getGameContent('blackjack'),
+  ]);
+  const error = pokerContent.error ?? blackjackContent.error;
 
-  return (
-    <main className="page-shell lesson-page">
-      <section className="section-heading">
-        <div>
-          <p className="eyebrow">Content browser</p>
-          <h2>Lessons organized by game and theme</h2>
-        </div>
-        <p>Clear paths, low friction, strong visual hierarchy.</p>
-      </section>
-
-      <div className="lesson-grid">
-        {catalog.map((gameContent, gameIndex) => {
-          if (!gameContent) {
-            return (
-              <article className="lesson-card" key={`missing-content-${gameIndex}`}>
-                <div className="lesson-card__header">
-                  <div>
-                    <p className="lesson-card__slug">content unavailable</p>
-                    <h3>Load the API to preview lesson paths.</h3>
-                  </div>
-                  <span className="lesson-chip">preview</span>
-                </div>
-              </article>
-            );
-          }
-
-          const totals = gameContent.themes.reduce(
-            (acc, theme) => ({
-              lessons: acc.lessons + theme.lessons.length,
-              questions: acc.questions + theme.questions.length,
-            }),
-            { lessons: 0, questions: 0 },
-          );
-
-          return (
-            <section className="glass-card" key={gameContent.game}>
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">{gameContent.name}</p>
-                  <h2>
-                    {gameContent.themes.length} themes, {totals.lessons} lessons, {totals.questions}{' '}
-                    questions
-                  </h2>
-                </div>
-                <p>Each theme should feel like a clean coaching lane.</p>
-              </div>
-
-              <div className="lesson-grid">
-                {gameContent.themes.map((theme) => {
-                  const firstLesson = theme.lessons[0];
-
-                  return (
-                    <article className="lesson-card" key={theme.slug}>
-                      <div className="lesson-card__header">
-                        <div>
-                          <p className="lesson-card__slug">{theme.slug}</p>
-                          <h3>{theme.name}</h3>
-                        </div>
-                        <span className="lesson-chip">{theme.level}</span>
-                      </div>
-
-                      <p>{firstLesson?.title ?? 'Lesson path ready to build.'}</p>
-
-                      <div className="lesson-card__meta">
-                        <span className="lesson-chip">{theme.lessons.length} lessons</span>
-                        <span className="lesson-chip">{theme.questions.length} questions</span>
-                      </div>
-
-                      <div className="lesson-card__footer">
-                        <span>
-                          {theme.questions[0]?.title ?? 'Open the first lesson to start.'}
-                        </span>
-                        {firstLesson ? (
-                          <Link
-                            className="button button--secondary button--small"
-                            href={`/lessons/${firstLesson.slug}`}
-                          >
-                            Open path
-                          </Link>
-                        ) : null}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-          );
-        })}
+  if (error && !pokerContent.data && !blackjackContent.data) {
+    return (
+      <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
+        <StatePanel
+          eyebrow="Lessons"
+          title="Lesson catalog is unavailable"
+          description={error.message}
+          actionLabel="Back to dashboard"
+          actionHref="/dashboard"
+          tone="error"
+        />
       </div>
+    );
+  }
 
-      <section className="section-heading">
-        <div>
-          <p className="eyebrow">Navigation</p>
-          <h2>Move back into practice</h2>
-        </div>
-        <p>Lessons should always route back to a quiz or dashboard step.</p>
-      </section>
+  const lessons: LessonCard[] = [];
 
-      <div className="hero-actions">
-        <Link className="button button--primary" href={routes.quiz}>
-          Open quiz
-        </Link>
-        <Link className="button button--secondary" href={routes.dashboard}>
-          Back to dashboard
-        </Link>
+  if (pokerContent.data) {
+    pokerContent.data.themes.forEach((theme) => {
+      lessons.push(...mapLessons('poker', theme.lessons));
+    });
+  }
+
+  if (blackjackContent.data) {
+    blackjackContent.data.themes.forEach((theme) => {
+      lessons.push(...mapLessons('blackjack', theme.lessons));
+    });
+  }
+
+  if (lessons.length === 0) {
+    return (
+      <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
+        <StatePanel
+          eyebrow="Lessons"
+          title="No lessons available"
+          description="The content API returned an empty lesson catalog. Populate content JSON and reseed the database."
+          actionLabel="Open dashboard"
+          actionHref="/dashboard"
+        />
       </div>
-    </main>
-  );
+    );
+  }
+
+  return <LessonsClient lessons={lessons} />;
 }

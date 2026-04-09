@@ -11,11 +11,18 @@
   },
   "dependencies": {
     "@playsharp/shared": "file:../../packages/shared",
+    "autoprefixer": "^10.4.19",
+    "lucide-react": "^0.487.0",
+    "motion": "^12.23.24",
     "next": "^15.0.0",
+    "postcss": "^8.4.38",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^2.15.2",
+    "tailwindcss": "^3.4.13"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.202",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0"
