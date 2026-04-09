@@ -13,6 +13,7 @@ export default tseslint.config(
       '**/*.prisma',
       'docs/**',
       'content/**',
+      'apps/web/postcss.config.js',
     ],
   },
   js.configs.recommended,
