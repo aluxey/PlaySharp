@@ -2,7 +2,6 @@ import { loadEnvFile } from 'node:process';
 import {
   Difficulty as PrismaDifficulty,
   GameName as PrismaGameName,
-  Prisma,
   PrismaClient,
 } from '@prisma/client';
 
@@ -19,7 +18,7 @@ loadEnvFile('.env');
 
 const prisma = new PrismaClient();
 
-type Tx = Prisma.TransactionClient;
+type Tx = Pick<PrismaClient, 'questionChoice' | 'question' | 'lesson' | 'theme' | 'game'>;
 
 function toPrismaGameName(game: ContentGameName): PrismaGameName {
   switch (game) {
