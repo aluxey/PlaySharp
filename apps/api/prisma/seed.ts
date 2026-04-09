@@ -1,9 +1,5 @@
 import { loadEnvFile } from 'node:process';
-import {
-  Difficulty as PrismaDifficulty,
-  GameName as PrismaGameName,
-  PrismaClient,
-} from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 import {
   type ContentChoice,
@@ -20,24 +16,27 @@ const prisma = new PrismaClient();
 
 type Tx = Pick<PrismaClient, 'questionChoice' | 'question' | 'lesson' | 'theme' | 'game'>;
 
+const PRISMA_GAME_NAMES = {
+  poker: 'POKER',
+  blackjack: 'BLACKJACK',
+} as const;
+
+type PrismaGameName = (typeof PRISMA_GAME_NAMES)[keyof typeof PRISMA_GAME_NAMES];
+
+const PRISMA_DIFFICULTY = {
+  beginner: 'BEGINNER',
+  intermediate: 'INTERMEDIATE',
+  advanced: 'ADVANCED',
+} as const;
+
+type PrismaDifficulty = (typeof PRISMA_DIFFICULTY)[keyof typeof PRISMA_DIFFICULTY];
+
 function toPrismaGameName(game: ContentGameName): PrismaGameName {
-  switch (game) {
-    case 'poker':
-      return PrismaGameName.POKER;
-    case 'blackjack':
-      return PrismaGameName.BLACKJACK;
-  }
+  return PRISMA_GAME_NAMES[game];
 }
 
 function toPrismaDifficulty(level: ContentDifficulty): PrismaDifficulty {
-  switch (level) {
-    case 'beginner':
-      return PrismaDifficulty.BEGINNER;
-    case 'intermediate':
-      return PrismaDifficulty.INTERMEDIATE;
-    case 'advanced':
-      return PrismaDifficulty.ADVANCED;
-  }
+  return PRISMA_DIFFICULTY[level];
 }
 
 async function syncChoices(tx: Tx, questionId: string, choices: ReadonlyArray<ContentChoice>) {
