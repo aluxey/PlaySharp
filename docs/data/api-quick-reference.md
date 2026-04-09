@@ -23,6 +23,8 @@
 
 | Route                                                  | Purpose                                | Response type                           |
 | ------------------------------------------------------ | -------------------------------------- | --------------------------------------- |
+| `POST /auth/register`                                  | Create account and return auth session | `AuthSessionResponse`                   |
+| `POST /auth/login`                                     | Authenticate and return auth session   | `AuthSessionResponse`                   |
 | `GET /health`                                          | Service check                          | inline `{ status, service, timestamp }` |
 | `GET /content/games`                                   | List game summaries                    | `ContentGamesResponse`                  |
 | `GET /content/games/:game`                             | Fetch one game manifest                | `ContentGameResponse`                   |
@@ -37,8 +39,14 @@
 | `GET /admin/lessons`                                   | List admin lesson records              | `AdminLessonsResponse`                  |
 | `GET /admin/questions`                                 | List admin question records            | `AdminQuestionsResponse`                |
 
-## Stable content and quiz error codes
+`GET /stats/me` and `GET /users/me/profile` require `Authorization: Bearer <token>`.
 
+## Stable auth, content, and quiz error codes
+
+- `AUTH_EMAIL_TAKEN`
+- `AUTH_INVALID_CREDENTIALS`
+- `AUTH_UNAUTHORIZED`
+- `AUTH_USER_NOT_FOUND`
 - `CONTENT_UNKNOWN_GAME`
 - `CONTENT_GAME_NOT_FOUND`
 - `CONTENT_THEME_NOT_FOUND`

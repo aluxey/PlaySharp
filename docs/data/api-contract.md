@@ -18,12 +18,48 @@ Shared request and response types live in `packages/shared/src/api.ts`. The web 
 
 - The versioned content source of truth is `content/{game}/content.json`.
 - The `progress`, `profile`, and `admin` read routes are currently content-derived until user-attempt persistence is wired end to end.
+- Authenticated user routes expect `Authorization: Bearer <token>`, using the token returned from `POST /auth/register` or `POST /auth/login`.
 
 ## Quick reference
 
 See `docs/data/api-quick-reference.md` for the condensed endpoint table.
 
 ## Implemented routes
+
+### Auth
+
+- `POST /auth/register`
+  - request body: `{ name, email, password }`
+  - response type: `AuthSessionResponse`
+- `POST /auth/login`
+  - request body: `{ email, password }`
+  - response type: `AuthSessionResponse`
+
+Example:
+
+```json
+{
+  "data": {
+    "session": {
+      "accessToken": "jwt-like-token",
+      "expiresAt": "2026-04-16T12:00:00.000Z",
+      "user": {
+        "id": "uuid",
+        "email": "alex@example.com",
+        "role": "user",
+        "plan": "free"
+      }
+    }
+  }
+}
+```
+
+Auth error codes:
+
+- `AUTH_EMAIL_TAKEN`
+- `AUTH_INVALID_CREDENTIALS`
+- `AUTH_UNAUTHORIZED`
+- `AUTH_USER_NOT_FOUND`
 
 ### Health
 
@@ -108,6 +144,7 @@ Quiz error codes:
 
 - `GET /stats/me`
   - response type: `ProgressOverviewResponse`
+  - auth required: yes
 
 Fields include:
 
@@ -121,6 +158,7 @@ Fields include:
 
 - `GET /users/me/profile`
   - response type: `ProfileOverviewResponse`
+  - auth required: yes
 
 Fields include:
 
@@ -144,7 +182,6 @@ Admin responses are read-only inventory views over the versioned content manifes
 
 ## Planned but not implemented here
 
-- auth write flows beyond the existing module scaffolding
 - quiz attempt creation and answer submission
 - protected admin write routes
 - billing and premium routes

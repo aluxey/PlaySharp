@@ -48,7 +48,7 @@
 
 ### API
 
-- [ ] Implement auth flows (register/login) and protect user-specific endpoints.
+- [x] Implement auth flows (register/login) and protect user-specific endpoints.
 - [ ] Add quiz attempt persistence (create attempt, store answers, compute score).
 - [ ] Power progress endpoints from attempts instead of content-only placeholders.
 - [ ] Define admin write endpoints if CRUD is required for V1.

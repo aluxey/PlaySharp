@@ -14,6 +14,10 @@ export type ApiSuccessResponse<T> = {
 };
 
 export type ApiErrorCode =
+  | 'AUTH_EMAIL_TAKEN'
+  | 'AUTH_INVALID_CREDENTIALS'
+  | 'AUTH_UNAUTHORIZED'
+  | 'AUTH_USER_NOT_FOUND'
   | 'CONTENT_UNKNOWN_GAME'
   | 'CONTENT_GAME_NOT_FOUND'
   | 'CONTENT_THEME_NOT_FOUND'
@@ -27,6 +31,38 @@ export type ApiErrorResponse = {
   message: string;
   code: ApiErrorCode | string;
 };
+
+export type AuthRole = 'user' | 'admin';
+
+export type AuthPlan = 'free' | 'premium';
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  role: AuthRole;
+  plan: AuthPlan;
+};
+
+export type AuthRegisterRequest = {
+  name: string;
+  email: string;
+  password: string;
+};
+
+export type AuthLoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type AuthSession = {
+  accessToken: string;
+  expiresAt: string;
+  user: AuthUser;
+};
+
+export type AuthSessionResponse = ApiSuccessResponse<{
+  session: AuthSession;
+}>;
 
 export type ContentGamesResponse = ApiSuccessResponse<{
   games: ReadonlyArray<ContentGameSummary>;

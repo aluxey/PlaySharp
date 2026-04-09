@@ -10,9 +10,15 @@ export function createApiError(
   const error =
     statusCode === HttpStatus.BAD_REQUEST
       ? 'Bad Request'
-      : statusCode === HttpStatus.NOT_FOUND
-        ? 'Not Found'
-        : 'Error';
+      : statusCode === HttpStatus.UNAUTHORIZED
+        ? 'Unauthorized'
+        : statusCode === HttpStatus.FORBIDDEN
+          ? 'Forbidden'
+          : statusCode === HttpStatus.NOT_FOUND
+            ? 'Not Found'
+            : statusCode === HttpStatus.CONFLICT
+              ? 'Conflict'
+              : 'Error';
 
   return {
     statusCode,

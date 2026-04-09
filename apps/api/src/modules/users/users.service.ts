@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import type {
   ContentGame,
@@ -7,14 +7,50 @@ import type {
   ProfileStat,
 } from '@playsharp/shared';
 
+import { createApiError } from '../../common/api-error';
 import { ContentService } from '../content/content.service';
+import { PrismaService } from '../prisma/prisma.service';
+
+function formatFullDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
+}
+
+function buildInitials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+}
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject(ContentService) private readonly contentService: ContentService) {}
+  constructor(
+    @Inject(ContentService) private readonly contentService: ContentService,
+    @Inject(PrismaService) private readonly prisma: PrismaService,
+  ) {}
 
-  async getProfileOverview(): Promise<ProfileOverview> {
+  async getProfileOverview(userId: string): Promise<ProfileOverview> {
     const catalog = await this.contentService.getCatalog();
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        subscription: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException(
+        createApiError(HttpStatus.NOT_FOUND, 'AUTH_USER_NOT_FOUND', `Missing user: ${userId}`),
+      );
+    }
+
     const questions = catalog.flatMap((game) =>
       game.themes.flatMap((theme) =>
         theme.questions.map((question) => ({
@@ -32,14 +68,16 @@ export class UsersService {
 
     return {
       user: {
-        name: 'Alex Parker',
-        initials: 'AP',
-        email: 'alex.parker@email.com',
-        memberSince: '2026-01-15',
-        memberSinceLabel: 'January 15, 2026',
-        plan: 'premium',
-        planLabel: 'Premium Member',
-        renewalDate: 'May 15, 2026',
+        name: user.name,
+        initials: buildInitials(user.name),
+        email: user.email,
+        memberSince: user.createdAt.toISOString(),
+        memberSinceLabel: formatFullDate(user.createdAt),
+        plan: user.plan === 'PREMIUM' ? 'premium' : 'free',
+        planLabel: user.plan === 'PREMIUM' ? 'Premium Member' : 'Free Plan',
+        renewalDate: user.subscription?.currentPeriodEnd
+          ? formatFullDate(user.subscription.currentPeriodEnd)
+          : null,
       },
       stats,
       recentQuizScores: this.buildRecentQuizScores(questions),
