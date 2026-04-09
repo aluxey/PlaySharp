@@ -1,7 +1,12 @@
 import Link from 'next/link';
 
 import { DataCard, StatePanel } from '../../components';
-import { getAdminLessons, getAdminOverview, getAdminQuestions, getAdminThemes } from '../../lib/api';
+import {
+  getAdminLessons,
+  getAdminOverview,
+  getAdminQuestions,
+  getAdminThemes,
+} from '../../lib/api';
 import { routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
@@ -64,7 +69,9 @@ export default async function AdminPage() {
       count: questions.data.length,
       points: questions.data
         .slice(0, 3)
-        .map((question) => `${question.game} · ${question.title} (${question.choiceCount} choices)`),
+        .map(
+          (question) => `${question.game} · ${question.title} (${question.choiceCount} choices)`,
+        ),
     },
   ];
 
@@ -76,7 +83,8 @@ export default async function AdminPage() {
         </p>
         <h1 className="text-4xl font-bold text-foreground">Admin</h1>
         <p className="text-foreground-secondary">
-          The admin surface now reflects the live content inventory exposed by the API. The versioned JSON files remain the source of truth.
+          The admin surface now reflects the live content inventory exposed by the API. The
+          versioned JSON files remain the source of truth.
         </p>
         <div className="flex gap-3 flex-wrap">
           <Link
@@ -142,7 +150,10 @@ export default async function AdminPage() {
         </div>
         <div className="grid md:grid-cols-2 gap-4">
           {overview.data.sources.map((source) => (
-            <div key={source.path} className="rounded-2xl border border-border bg-surface p-5 space-y-3">
+            <div
+              key={source.path}
+              className="rounded-2xl border border-border bg-surface p-5 space-y-3"
+            >
               <div className="flex items-center justify-between gap-3">
                 <h3 className="font-semibold text-foreground">{source.name}</h3>
                 <span className="text-sm text-foreground-secondary">{source.game}</span>

@@ -41,11 +41,7 @@ function upstreamUnavailable(path: string): ApiErrorResponse {
   };
 }
 
-function normalizeError(
-  path: string,
-  statusCode: number,
-  payload: unknown,
-): ApiErrorResponse {
+function normalizeError(path: string, statusCode: number, payload: unknown): ApiErrorResponse {
   if (
     payload &&
     typeof payload === 'object' &&

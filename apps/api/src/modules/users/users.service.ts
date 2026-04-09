@@ -1,6 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import type { ContentGame, ProfileOverview, ProfileQuizScore, ProfileStat } from '@playsharp/shared';
+import type {
+  ContentGame,
+  ProfileOverview,
+  ProfileQuizScore,
+  ProfileStat,
+} from '@playsharp/shared';
 
 import { ContentService } from '../content/content.service';
 
@@ -43,17 +48,25 @@ export class UsersService {
         { icon: '🎯', name: 'Perfect Round', unlocked: true },
         { icon: '📚', name: 'Lesson Finisher', unlocked: totalLessons >= 6 },
         { icon: '⚡', name: 'Quiz Volume', unlocked: true },
-        { icon: '🏆', name: 'Advanced Table', unlocked: catalog.some((game) => game.themes.length >= 2) },
+        {
+          icon: '🏆',
+          name: 'Advanced Table',
+          unlocked: catalog.some((game) => game.themes.length >= 2),
+        },
         { icon: '💎', name: 'Elite Accuracy', unlocked: false },
       ],
     };
   }
 
-  private buildStats(catalog: ReadonlyArray<ContentGame>, totalLessons: number): ReadonlyArray<ProfileStat> {
+  private buildStats(
+    catalog: ReadonlyArray<ContentGame>,
+    totalLessons: number,
+  ): ReadonlyArray<ProfileStat> {
     const themeCount = catalog.reduce((total, game) => total + game.themes.length, 0);
     const overallAccuracy = 63 + themeCount * 4;
     const quizzesCompleted = catalog.reduce(
-      (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.questions.length * 7, 0),
+      (total, game) =>
+        total + game.themes.reduce((sum, theme) => sum + theme.questions.length * 7, 0),
       0,
     );
 

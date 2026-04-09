@@ -25,9 +25,7 @@ export function StatePanel({
   return (
     <div
       className={`rounded-3xl border p-8 md:p-10 ${
-        tone === 'error'
-          ? 'bg-error/10 border-error/30'
-          : 'bg-surface-elevated border-border'
+        tone === 'error' ? 'bg-error/10 border-error/30' : 'bg-surface-elevated border-border'
       }`}
     >
       <div className="space-y-4">
@@ -52,13 +50,7 @@ export function StatePanel({
   );
 }
 
-export function PageLoadingState({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
+export function PageLoadingState({ title, description }: { title: string; description: string }) {
   return (
     <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
       <div className="animate-pulse space-y-6">

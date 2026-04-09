@@ -26,7 +26,8 @@ export function ProgressClient({ overview }: { overview: ProgressOverview }) {
           <div>
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Your Progress</h1>
             <p className="text-lg text-foreground-secondary">
-              Live coaching signals from the API contract, including trend lines, weak themes, and recurring errors.
+              Live coaching signals from the API contract, including trend lines, weak themes, and
+              recurring errors.
             </p>
           </div>
         </div>
@@ -145,7 +146,10 @@ export function ProgressClient({ overview }: { overview: ProgressOverview }) {
                     <span className="text-foreground-secondary">
                       {item.questionCount} tracked attempts
                     </span>
-                    <a className="text-primary hover:text-primary/80 transition-colors font-medium" href="/quiz">
+                    <a
+                      className="text-primary hover:text-primary/80 transition-colors font-medium"
+                      href="/quiz"
+                    >
                       Practice Now →
                     </a>
                   </div>

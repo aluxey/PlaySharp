@@ -24,12 +24,16 @@ export class ProgressService {
       0,
     );
     const themeInsights = this.buildThemeInsights(catalog);
-    const weakestTheme = [...themeInsights].sort((left, right) => left.accuracy - right.accuracy)[0] ?? null;
+    const weakestTheme =
+      [...themeInsights].sort((left, right) => left.accuracy - right.accuracy)[0] ?? null;
     const overallAccuracy = this.averageAccuracy(themeInsights);
     const lessonsCompleted =
-      totalLessons === 0 ? 0 : Math.min(totalLessons, Math.max(1, Math.floor(totalLessons * 0.625)));
+      totalLessons === 0
+        ? 0
+        : Math.min(totalLessons, Math.max(1, Math.floor(totalLessons * 0.625)));
     const questionsAnswered = catalog.reduce(
-      (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.questions.length * 18, 0),
+      (total, game) =>
+        total + game.themes.reduce((sum, theme) => sum + theme.questions.length * 18, 0),
       totalLessons * 6,
     );
 
@@ -77,7 +81,9 @@ export class ProgressService {
     });
   }
 
-  private buildThemeInsights(catalog: ReadonlyArray<ContentGame>): ReadonlyArray<ProgressThemeInsight> {
+  private buildThemeInsights(
+    catalog: ReadonlyArray<ContentGame>,
+  ): ReadonlyArray<ProgressThemeInsight> {
     return catalog.flatMap((game, gameIndex) =>
       game.themes.map((theme, themeIndex) => {
         const index = gameIndex * 3 + themeIndex;
@@ -94,7 +100,9 @@ export class ProgressService {
     );
   }
 
-  private buildRecurringMistakes(catalog: ReadonlyArray<ContentGame>): ReadonlyArray<RecurringMistake> {
+  private buildRecurringMistakes(
+    catalog: ReadonlyArray<ContentGame>,
+  ): ReadonlyArray<RecurringMistake> {
     const mistakes = catalog.flatMap((game, gameIndex) =>
       game.themes.flatMap((theme, themeIndex) =>
         theme.questions.slice(0, 2).map((question, questionIndex) => ({

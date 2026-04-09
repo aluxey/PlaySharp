@@ -1,4 +1,14 @@
-import { Award, Calendar, CreditCard, Crown, LogOut, Mail, Settings, Target, Zap } from 'lucide-react';
+import {
+  Award,
+  Calendar,
+  CreditCard,
+  Crown,
+  LogOut,
+  Mail,
+  Settings,
+  Target,
+  Zap,
+} from 'lucide-react';
 
 import type { ProfileStat } from '@playsharp/shared';
 
