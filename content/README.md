@@ -12,6 +12,8 @@ This folder is the versioned source of truth for educational content.
 - Keep content files small and explicit
 - Use stable slugs for themes, lessons, and questions
 - Mirror the database seed structure when content is synced
+- Commit content changes alongside the code that depends on them
+- Rerun `npm run seed --workspace @playsharp/api` after changing manifests
 
 ## Manifest shape
 
@@ -22,3 +24,9 @@ Each game manifest contains:
 - `themes[]`
 
 Each theme contains lessons and questions with stable slugs, level labels, and answer choices.
+
+## Workflow
+
+1. Edit `content/{game}/content.json`
+2. Review the affected API/web screens locally
+3. Rerun the Prisma seed so PostgreSQL matches the manifests

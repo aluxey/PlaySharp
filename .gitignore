@@ -12,3 +12,4 @@ coverage/
 .env.production
 apps/api/.env
 apps/web/.env
+.codex

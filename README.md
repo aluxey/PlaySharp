@@ -10,13 +10,109 @@ clear explanations, and visible progress tracking.
 - API: NestJS + PostgreSQL + Prisma
 - Package manager: npm workspaces
 
-## Getting started
+## Requirements
 
-1. Read the technical setup guide: `docs/technical-setup.md`
-2. Install dependencies with `npm install`
-3. Copy `.env.example` to the app-specific env files described in the guide
-4. Create the database and run the Prisma migration and seed
-5. Start the apps with `npm run dev`
+- Node.js 20 or newer
+- npm 10 or newer
+- Docker (recommended) or PostgreSQL 16+
+
+## Local setup
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Create the environment files
+
+```bash
+cp .env.example apps/api/.env
+cp .env.example apps/web/.env.local
+```
+
+Update `apps/api/.env` with local values. A working local example is:
+
+```bash
+DATABASE_URL="postgresql://playsharp:playsharp123@localhost:5432/playsharp?schema=public"
+WEB_APP_URL="http://localhost:3000"
+API_PORT=3001
+JWT_SECRET="replace-me"
+```
+
+Update `apps/web/.env.local` with:
+
+```bash
+API_BASE_URL="http://localhost:3001/api"
+```
+
+### 3. Start PostgreSQL
+
+First run:
+
+```bash
+docker run --name playsharp-postgres \
+  -e POSTGRES_USER=playsharp \
+  -e POSTGRES_PASSWORD=playsharp123 \
+  -e POSTGRES_DB=playsharp \
+  -p 5432:5432 \
+  -v playsharp_pgdata:/var/lib/postgresql/data \
+  -d postgres:16
+```
+
+Next runs:
+
+```bash
+docker start playsharp-postgres
+```
+
+### 4. Initialize the database schema and seed
+
+```bash
+npm run prisma:generate --workspace @playsharp/api
+cd apps/api
+npx prisma db push --skip-generate
+npm run seed
+cd ../..
+```
+
+The repository currently does not ship a committed Prisma migration, so `prisma db push`
+is the right local setup command before seeding.
+
+### 5. Run the project
+
+Start the full stack:
+
+```bash
+npm run dev
+```
+
+Run only the API:
+
+```bash
+npm run dev:api
+```
+
+Run only the web app:
+
+```bash
+npm run dev:web
+```
+
+Local URLs:
+
+- Web app: `http://localhost:3000`
+- API base URL: `http://localhost:3001/api`
+- API health check: `http://localhost:3001/api/health`
+
+Most web routes call the API directly, so in practice the frontend is only fully usable when
+PostgreSQL and the API are both running.
+
+### 6. Stop PostgreSQL
+
+```bash
+docker stop playsharp-postgres
+```
 
 ## Main commands
 

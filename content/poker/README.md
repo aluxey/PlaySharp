@@ -2,10 +2,11 @@
 
 Poker content is stored in `content.json` and grouped by theme, lesson, and question sets.
 
-Expected next layers:
+Current scope:
 
-- themes
-- lessons
-- questions
-- explanations
-- stable slugs for sync
+- 2 themes
+- versioned lessons
+- versioned quiz questions
+- stable slugs for API and seed sync
+
+After updates, rerun `npm run seed --workspace @playsharp/api`.

@@ -1,55 +1,150 @@
 # API Contract
 
-## Health
+Shared request and response types live in `packages/shared/src/api.ts`. The web app should treat those types as the source of truth for route payloads.
 
-- `GET /health` - service check
+## Contract rules
 
-## Auth
+- All successful responses use a top-level `data` envelope.
+- Content and quiz validation/not-found failures return a stable error object:
 
-- `POST /auth/register` - create a user
-- `POST /auth/login` - authenticate a user
+```json
+{
+  "statusCode": 404,
+  "error": "Not Found",
+  "code": "CONTENT_GAME_NOT_FOUND",
+  "message": "Missing content for game: poker"
+}
+```
 
-## Content
+- The versioned content source of truth is `content/{game}/content.json`.
+- The `progress`, `profile`, and `admin` read routes are currently content-derived until user-attempt persistence is wired end to end.
 
-- `GET /content/games` - list game summaries
-- `GET /content/games/:game` - fetch one game manifest
-- `GET /content/games/:game/themes` - list themes for a game
-- `GET /content/games/:game/themes/:themeSlug/lessons` - list lessons for a theme
-- `GET /content/games/:game/themes/:themeSlug/questions` - list questions for a theme
+## Quick reference
 
-## Quiz
+See `docs/data/api-quick-reference.md` for the condensed endpoint table.
 
-- `GET /quiz/daily?game=poker` - fetch the daily quiz
-- `POST /quiz/start` - create a quiz attempt
-- `POST /quiz/answer` - submit one answer
-- `POST /quiz/end` - close the attempt
+## Implemented routes
 
-## Lessons
+### Health
 
-- `GET /lessons` - list lessons
-- `GET /lessons/:id` - fetch one lesson
+- `GET /health`
 
-## Progress
+Response:
 
-- `GET /stats/me` - personal stats
-- `GET /history` - quiz history
+```json
+{
+  "status": "ok",
+  "service": "api",
+  "timestamp": "2026-04-09T12:00:00.000Z"
+}
+```
 
-## Admin
+### Content
 
+- `GET /content/games`
+  - response type: `ContentGamesResponse`
+- `GET /content/games/:game`
+  - response type: `ContentGameResponse`
+- `GET /content/games/:game/themes`
+  - response type: `ContentThemesResponse`
+- `GET /content/games/:game/themes/:themeSlug/lessons`
+  - response type: `ContentThemeLessonsResponse`
+- `GET /content/games/:game/themes/:themeSlug/questions`
+  - response type: `ContentThemeQuestionsResponse`
+
+Example:
+
+```json
+{
+  "data": {
+    "games": [
+      {
+        "game": "poker",
+        "name": "Poker",
+        "themeCount": 2,
+        "lessonCount": 4,
+        "questionCount": 4
+      }
+    ]
+  }
+}
+```
+
+Content error codes:
+
+- `CONTENT_UNKNOWN_GAME`
+- `CONTENT_GAME_NOT_FOUND`
+- `CONTENT_THEME_NOT_FOUND`
+
+### Quiz
+
+- `GET /quiz/daily?game=poker`
+  - response type: `QuizDailyResponse`
+
+Example:
+
+```json
+{
+  "data": {
+    "quiz": {
+      "game": "poker",
+      "themeSlug": "preflop-position",
+      "themeName": "Preflop Position",
+      "question": {
+        "slug": "button-open-raise",
+        "title": "Button open raise"
+      }
+    }
+  }
+}
+```
+
+Quiz error codes:
+
+- `QUIZ_UNKNOWN_GAME`
+- `QUIZ_DAILY_NOT_FOUND`
+
+### Progress
+
+- `GET /stats/me`
+  - response type: `ProgressOverviewResponse`
+
+Fields include:
+
+- `summary`
+- `weeklyAccuracy`
+- `themesToImprove`
+- `recurringMistakes`
+- `recommendation`
+
+### Profile
+
+- `GET /users/me/profile`
+  - response type: `ProfileOverviewResponse`
+
+Fields include:
+
+- `user`
+- `stats`
+- `recentQuizScores`
+- `achievements`
+
+### Admin
+
+- `GET /admin/overview`
+  - response type: `AdminOverviewResponse`
 - `GET /admin/themes`
-- `POST /admin/themes`
+  - response type: `AdminThemesResponse`
 - `GET /admin/lessons`
-- `POST /admin/lessons`
+  - response type: `AdminLessonsResponse`
 - `GET /admin/questions`
-- `POST /admin/questions`
+  - response type: `AdminQuestionsResponse`
 
-## Future premium routes
+Admin responses are read-only inventory views over the versioned content manifests.
 
-- `POST /billing/checkout`
-- `GET /billing/status`
+## Planned but not implemented here
 
-## Notes
-
-- Admin routes must be protected.
-- Quiz routes should stay fast and stateless where possible.
-- Responses should include enough context for immediate UI feedback.
+- auth write flows beyond the existing module scaffolding
+- quiz attempt creation and answer submission
+- protected admin write routes
+- billing and premium routes
