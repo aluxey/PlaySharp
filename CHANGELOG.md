@@ -9,3 +9,4 @@
 - Replaced placeholder progress summaries with aggregates from persisted attempts and daily usage on `GET /stats/me`.
 - Wired the web login/register pages to live auth endpoints through Next route handlers, added cookie-backed sessions, and enabled logout.
 - Wired the quiz page to submit answers through the live API/session path and render result state from the persisted attempt response.
+- Replaced the hardcoded dashboard summary cards and recommendation sections with API-backed profile/progress data.
