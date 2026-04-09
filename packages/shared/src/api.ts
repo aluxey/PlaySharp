@@ -21,8 +21,13 @@ export type ApiErrorCode =
   | 'CONTENT_UNKNOWN_GAME'
   | 'CONTENT_GAME_NOT_FOUND'
   | 'CONTENT_THEME_NOT_FOUND'
+  | 'QUIZ_ATTEMPT_EMPTY'
+  | 'QUIZ_CHOICE_NOT_FOUND'
+  | 'QUIZ_GAME_NOT_FOUND'
+  | 'QUIZ_INVALID_ATTEMPT'
   | 'QUIZ_UNKNOWN_GAME'
   | 'QUIZ_DAILY_NOT_FOUND'
+  | 'QUIZ_QUESTION_NOT_FOUND'
   | 'UPSTREAM_UNAVAILABLE';
 
 export type ApiErrorResponse = {
@@ -91,6 +96,44 @@ export type ContentThemeQuestionsResponse = ApiSuccessResponse<{
 
 export type QuizDailyResponse = ApiSuccessResponse<{
   quiz: DailyQuiz;
+}>;
+
+export type QuizAttemptAnswerRequest = {
+  themeSlug: string;
+  questionSlug: string;
+  selectedChoiceLabel: string;
+  responseTimeMs?: number;
+};
+
+export type QuizAttemptSubmitRequest = {
+  game: ContentGameName;
+  answers: ReadonlyArray<QuizAttemptAnswerRequest>;
+};
+
+export type QuizAttemptAnswerResult = {
+  themeSlug: string;
+  themeName: string;
+  questionSlug: string;
+  questionTitle: string;
+  selectedChoiceLabel: string;
+  correctChoiceLabel: string;
+  isCorrect: boolean;
+  explanation: string;
+};
+
+export type QuizAttemptResult = {
+  id: string;
+  game: ContentGameName;
+  score: number;
+  totalQuestions: number;
+  correctAnswers: number;
+  startedAt: string;
+  finishedAt: string;
+  answers: ReadonlyArray<QuizAttemptAnswerResult>;
+};
+
+export type QuizAttemptSubmitResponse = ApiSuccessResponse<{
+  attempt: QuizAttemptResult;
 }>;
 
 export type ProgressSummary = {

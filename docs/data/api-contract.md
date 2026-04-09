@@ -116,6 +116,10 @@ Content error codes:
 
 - `GET /quiz/daily?game=poker`
   - response type: `QuizDailyResponse`
+- `POST /quiz/attempts`
+  - request body: `QuizAttemptSubmitRequest`
+  - response type: `QuizAttemptSubmitResponse`
+  - auth required: yes
 
 Example:
 
@@ -137,8 +141,13 @@ Example:
 
 Quiz error codes:
 
+- `QUIZ_ATTEMPT_EMPTY`
+- `QUIZ_CHOICE_NOT_FOUND`
+- `QUIZ_GAME_NOT_FOUND`
+- `QUIZ_INVALID_ATTEMPT`
 - `QUIZ_UNKNOWN_GAME`
 - `QUIZ_DAILY_NOT_FOUND`
+- `QUIZ_QUESTION_NOT_FOUND`
 
 ### Progress
 
@@ -182,6 +191,5 @@ Admin responses are read-only inventory views over the versioned content manifes
 
 ## Planned but not implemented here
 
-- quiz attempt creation and answer submission
 - protected admin write routes
 - billing and premium routes

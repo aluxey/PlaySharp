@@ -32,6 +32,7 @@
 | `GET /content/games/:game/themes/:themeSlug/lessons`   | List lessons for a theme               | `ContentThemeLessonsResponse`           |
 | `GET /content/games/:game/themes/:themeSlug/questions` | List questions for a theme             | `ContentThemeQuestionsResponse`         |
 | `GET /quiz/daily?game=poker`                           | Fetch the daily quiz                   | `QuizDailyResponse`                     |
+| `POST /quiz/attempts`                                  | Persist submitted quiz answers         | `QuizAttemptSubmitResponse`             |
 | `GET /stats/me`                                        | Fetch progress overview                | `ProgressOverviewResponse`              |
 | `GET /users/me/profile`                                | Fetch profile overview                 | `ProfileOverviewResponse`               |
 | `GET /admin/overview`                                  | Fetch source-of-truth inventory totals | `AdminOverviewResponse`                 |
@@ -40,6 +41,7 @@
 | `GET /admin/questions`                                 | List admin question records            | `AdminQuestionsResponse`                |
 
 `GET /stats/me` and `GET /users/me/profile` require `Authorization: Bearer <token>`.
+`POST /quiz/attempts` also requires `Authorization: Bearer <token>`.
 
 ## Stable auth, content, and quiz error codes
 
@@ -52,6 +54,11 @@
 - `CONTENT_THEME_NOT_FOUND`
 - `QUIZ_UNKNOWN_GAME`
 - `QUIZ_DAILY_NOT_FOUND`
+- `QUIZ_ATTEMPT_EMPTY`
+- `QUIZ_CHOICE_NOT_FOUND`
+- `QUIZ_GAME_NOT_FOUND`
+- `QUIZ_INVALID_ATTEMPT`
+- `QUIZ_QUESTION_NOT_FOUND`
 
 ## Source of truth
 
