@@ -1,26 +1,28 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { Filter, Lock, Search } from 'lucide-react';
 
 import { ContentCard } from '../../components/premium-cards';
-
-export type LessonCard = {
-  id: string;
-  title: string;
-  description: string;
-  game: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  duration?: string;
-  locked?: boolean;
-  tags: ReadonlyArray<string>;
-};
+import { routes } from '../../lib/routes';
+import type { LessonCard, LessonThemeLink } from './catalog';
 
 type LessonsClientProps = {
   lessons: ReadonlyArray<LessonCard>;
+  themes: ReadonlyArray<LessonThemeLink>;
+  title?: string;
+  description?: string;
+  activeThemeHref?: string;
 };
 
-export function LessonsClient({ lessons }: LessonsClientProps) {
+export function LessonsClient({
+  lessons,
+  themes,
+  title = 'Master Your Game',
+  description = 'Lessons synced from the API across poker and blackjack, organized by theme and level.',
+  activeThemeHref,
+}: LessonsClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [gameFilter, setGameFilter] = useState<'all' | 'poker' | 'blackjack'>('all');
   const [difficultyFilter, setDifficultyFilter] = useState<
@@ -49,20 +51,73 @@ export function LessonsClient({ lessons }: LessonsClientProps) {
       <div className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
           <div className="mb-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-              Master Your Game
-            </h1>
-            <p className="text-lg text-foreground-secondary max-w-2xl">
-              Lessons synced depuis l'API : poker et blackjack, par thème et niveau.
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">{title}</h1>
+            <p className="text-lg text-foreground-secondary max-w-2xl">{description}</p>
           </div>
+
+          {themes.length > 0 ? (
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center justify-between gap-4 flex-wrap">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.18em] text-foreground-secondary">
+                    Theme paths
+                  </p>
+                  <p className="text-sm text-foreground-secondary">
+                    Jump straight into a specific game and theme route.
+                  </p>
+                </div>
+                {activeThemeHref ? (
+                  <Link
+                    className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                    href={routes.lessons}
+                  >
+                    View all lessons
+                  </Link>
+                ) : null}
+              </div>
+
+              <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                {themes.map((theme) => {
+                  const isActive = theme.href === activeThemeHref;
+
+                  return (
+                    <Link
+                      key={theme.href}
+                      className={`rounded-2xl border p-4 transition-all ${
+                        isActive
+                          ? 'border-primary bg-primary/10 shadow-lg shadow-primary/10'
+                          : 'border-border bg-surface-elevated hover:border-primary/30'
+                      }`}
+                      href={theme.href}
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.18em] text-foreground-secondary">
+                            {theme.gameName}
+                          </p>
+                          <h2 className="font-semibold text-foreground">{theme.name}</h2>
+                        </div>
+                        <span className="text-xs px-2 py-1 rounded-lg border bg-surface text-foreground-secondary">
+                          {theme.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground-secondary">
+                        {theme.lessonCount} lesson{theme.lessonCount !== 1 ? 's' : ''} ·{' '}
+                        {theme.questionCount} question{theme.questionCount !== 1 ? 's' : ''}
+                      </p>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
           <div className="mt-8 space-y-4">
             <div className="relative max-w-xl">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-secondary" />
               <input
                 type="text"
-                placeholder="Search lessons..."
+                placeholder={activeThemeHref ? 'Search this theme...' : 'Search lessons...'}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-surface-elevated border border-border rounded-2xl text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary transition-all"
@@ -127,26 +182,23 @@ export function LessonsClient({ lessons }: LessonsClientProps) {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((lesson, index) => (
                 <div key={lesson.id} style={{ animationDelay: `${index * 50}ms` }}>
-                  <ContentCard
-                    title={lesson.title}
-                    description={lesson.description}
-                    image={lesson.game === 'poker' ? undefined : undefined}
-                    tags={lesson.tags}
-                    difficulty={lesson.difficulty}
-                    duration={lesson.duration}
-                    locked={lesson.locked}
-                    onClick={() => {
-                      if (lesson.locked) return;
-                      window.location.href = `/lessons/${lesson.id}`;
-                    }}
-                  />
+                  <Link className="block" href={lesson.href}>
+                    <ContentCard
+                      title={lesson.title}
+                      description={lesson.description}
+                      image={lesson.game === 'poker' ? undefined : undefined}
+                      tags={lesson.tags}
+                      difficulty={lesson.difficulty}
+                      locked={lesson.locked}
+                    />
+                  </Link>
                 </div>
               ))}
             </div>
           </>
         )}
 
-        {filtered.some((l) => l.locked) && (
+        {filtered.some((lesson) => lesson.locked) ? (
           <div className="mt-12 bg-gradient-to-br from-premium/20 via-surface-elevated to-premium/10 border border-premium/30 rounded-3xl p-8 md:p-12 text-center">
             <Lock className="w-12 h-12 text-premium mx-auto mb-4" />
             <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
@@ -160,7 +212,7 @@ export function LessonsClient({ lessons }: LessonsClientProps) {
               Upgrade to Premium
             </button>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { ArrowRight, Target } from 'lucide-react';
 import type { DailyQuiz } from '@playsharp/shared';
 
 import { submitQuizAttempt } from '../../lib/quiz-client';
-import { routes } from '../../lib/routes';
+import { lessonThemeRoute, routes } from '../../lib/routes';
 
 type QuizClientProps = {
   quiz: DailyQuiz | null;
@@ -112,6 +112,12 @@ export function QuizClient({ quiz }: QuizClientProps) {
             >
               Try again
             </button>
+            <Link
+              className="px-5 py-3 rounded-xl border border-border text-foreground"
+              href={lessonThemeRoute(resolvedQuiz.game, resolvedQuiz.themeSlug)}
+            >
+              Open lesson path
+            </Link>
             <Link
               className="px-5 py-3 rounded-xl border border-border text-foreground"
               href={routes.dashboard}

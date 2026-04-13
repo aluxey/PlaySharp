@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { AlertCircle, Calendar, Lightbulb, Target, TrendingUp } from 'lucide-react';
 import {
   CartesianGrid,
@@ -15,6 +16,7 @@ import type { ProgressOverview } from '@playsharp/shared';
 
 import { StatePanel } from '../../components/page-state';
 import { DataCard, ProgressBar } from '../../components/premium-cards';
+import { lessonThemeRoute } from '../../lib/routes';
 
 export function ProgressClient({ overview }: { overview: ProgressOverview }) {
   const summary = overview.summary;
@@ -146,12 +148,12 @@ export function ProgressClient({ overview }: { overview: ProgressOverview }) {
                     <span className="text-foreground-secondary">
                       {item.questionCount} tracked attempts
                     </span>
-                    <a
+                    <Link
                       className="text-primary hover:text-primary/80 transition-colors font-medium"
-                      href="/quiz"
+                      href={lessonThemeRoute(item.game, item.themeSlug)}
                     >
-                      Practice Now →
-                    </a>
+                      Open Theme →
+                    </Link>
                   </div>
                 </div>
               ))}

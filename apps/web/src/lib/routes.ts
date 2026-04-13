@@ -1,3 +1,5 @@
+import type { ContentGameName } from '@playsharp/shared';
+
 export const routes = {
   home: '/',
   dashboard: '/dashboard',
@@ -22,3 +24,11 @@ export const authNavItems = [
   { label: 'Log in', href: routes.login },
   { label: 'Register', href: routes.register },
 ] as const;
+
+export function lessonThemeRoute(game: ContentGameName, themeSlug: string) {
+  return `${routes.lessons}/${game}/${themeSlug}`;
+}
+
+export function lessonDetailRoute(game: ContentGameName, themeSlug: string, lessonSlug: string) {
+  return `${lessonThemeRoute(game, themeSlug)}/${lessonSlug}`;
+}

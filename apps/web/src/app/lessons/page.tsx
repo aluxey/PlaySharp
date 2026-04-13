@@ -1,26 +1,15 @@
-import type { ContentLesson } from '@playsharp/shared';
-
 import { StatePanel } from '../../components';
-import { LessonsClient, type LessonCard } from './lessons-client';
 import { getGameContent } from '../../lib/api';
+import { routes } from '../../lib/routes';
+import {
+  buildLessonCards,
+  buildThemeLinks,
+  type LessonCard,
+  type LessonThemeLink,
+} from './catalog';
+import { LessonsClient } from './lessons-client';
 
 export const dynamic = 'force-dynamic';
-
-function mapLessons(
-  game: 'poker' | 'blackjack',
-  lessons: ReadonlyArray<ContentLesson>,
-): LessonCard[] {
-  return lessons.map((lesson) => ({
-    id: lesson.slug,
-    title: lesson.title,
-    description: lesson.content,
-    game,
-    difficulty: lesson.level,
-    duration: '—',
-    locked: false,
-    tags: [game, lesson.level],
-  }));
-}
 
 export default async function LessonsPage() {
   const [pokerContent, blackjackContent] = await Promise.all([
@@ -37,7 +26,7 @@ export default async function LessonsPage() {
           title="Lesson catalog is unavailable"
           description={error.message}
           actionLabel="Back to dashboard"
-          actionHref="/dashboard"
+          actionHref={routes.dashboard}
           tone="error"
         />
       </div>
@@ -45,17 +34,16 @@ export default async function LessonsPage() {
   }
 
   const lessons: LessonCard[] = [];
+  const themes: LessonThemeLink[] = [];
 
   if (pokerContent.data) {
-    pokerContent.data.themes.forEach((theme) => {
-      lessons.push(...mapLessons('poker', theme.lessons));
-    });
+    lessons.push(...buildLessonCards(pokerContent.data));
+    themes.push(...buildThemeLinks(pokerContent.data));
   }
 
   if (blackjackContent.data) {
-    blackjackContent.data.themes.forEach((theme) => {
-      lessons.push(...mapLessons('blackjack', theme.lessons));
-    });
+    lessons.push(...buildLessonCards(blackjackContent.data));
+    themes.push(...buildThemeLinks(blackjackContent.data));
   }
 
   if (lessons.length === 0) {
@@ -66,11 +54,11 @@ export default async function LessonsPage() {
           title="No lessons available"
           description="The content API returned an empty lesson catalog. Populate content JSON and reseed the database."
           actionLabel="Open dashboard"
-          actionHref="/dashboard"
+          actionHref={routes.dashboard}
         />
       </div>
     );
   }
 
-  return <LessonsClient lessons={lessons} />;
+  return <LessonsClient lessons={lessons} themes={themes} />;
 }

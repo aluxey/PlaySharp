@@ -3,7 +3,7 @@ import { ArrowRight, Award, Flame, Target, TrendingUp, Zap } from 'lucide-react'
 
 import { DataCard, HeroCard, ProgressBar, StatePanel } from '../../components';
 import { getProfileOverview, getProgressOverview } from '../../lib/api';
-import { routes } from '../../lib/routes';
+import { lessonThemeRoute, routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
@@ -163,9 +163,10 @@ export default async function DashboardPage() {
           ) : (
             <div className="grid md:grid-cols-3 gap-6">
               {areasToImprove.map((item, index) => (
-                <div
+                <Link
                   key={`${item.game}-${item.themeSlug}`}
-                  className="bg-surface-elevated border border-border rounded-2xl p-6 hover:border-warning/30 transition-all"
+                  href={lessonThemeRoute(item.game, item.themeSlug)}
+                  className="block bg-surface-elevated border border-border rounded-2xl p-6 hover:border-warning/30 transition-all"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <div className="flex items-center justify-between mb-4">
@@ -182,7 +183,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-foreground-secondary">
                     {item.questionCount} tracked attempts
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           )}
@@ -213,7 +214,11 @@ export default async function DashboardPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {recommendationCards.map((item) => (
-                <Link key={`${item.game}-${item.themeSlug}`} href={routes.quiz}>
+                <Link
+                  key={`${item.game}-${item.themeSlug}`}
+                  href={lessonThemeRoute(item.game, item.themeSlug)}
+                  className="block"
+                >
                   <div className="bg-surface-elevated border border-border rounded-2xl overflow-hidden hover:border-primary/30 transition-all cursor-pointer">
                     <div className="p-6">
                       <div className="flex items-start justify-between gap-2 mb-3">
@@ -235,7 +240,7 @@ export default async function DashboardPage() {
                           {item.questionCount} attempts
                         </span>
                         <span className="text-xs text-foreground-secondary ml-auto">
-                          Quick drill
+                          Open lesson path
                         </span>
                       </div>
                     </div>

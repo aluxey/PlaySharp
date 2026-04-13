@@ -162,6 +162,48 @@ export async function getLessonBySlug(slug: string): Promise<ApiResource<LessonD
   };
 }
 
+export async function getLessonByRoute(
+  game: ContentGameName,
+  themeSlug: string,
+  lessonSlug: string,
+): Promise<ApiResource<LessonDetail>> {
+  const content = await getGameContent(game);
+
+  if (!content.data) {
+    return {
+      data: null,
+      error: content.error,
+    };
+  }
+
+  const theme = content.data.themes.find((entry) => entry.slug === themeSlug);
+  if (!theme) {
+    return {
+      data: null,
+      error: null,
+    };
+  }
+
+  const lesson = theme.lessons.find((entry) => entry.slug === lessonSlug);
+  if (!lesson) {
+    return {
+      data: null,
+      error: null,
+    };
+  }
+
+  return {
+    data: {
+      game: content.data.game,
+      gameName: content.data.name,
+      themeSlug: theme.slug,
+      themeName: theme.name,
+      lesson,
+    },
+    error: null,
+  };
+}
+
 export async function getDailyQuiz(
   game: ContentGameName = 'poker',
 ): Promise<ApiResource<DailyQuiz>> {

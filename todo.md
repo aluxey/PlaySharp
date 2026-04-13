@@ -57,7 +57,7 @@
 
 - [x] Wire login/register pages to real auth endpoints.
 - [x] Submit quiz answers to the API and display result state from response.
-- [ ] Use lesson/theme routes for deep links and catalog navigation.
+- [x] Use lesson/theme routes for deep links and catalog navigation.
 - [x] Replace placeholder stats with API-backed progress data.
 
 ### Quality and operations
