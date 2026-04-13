@@ -65,8 +65,8 @@ export function RegisterForm() {
               dashboard become available after account creation.
             </div>
             <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-success" /> The first quiz is the fastest
-              way to start generating data.
+              <span className="w-2 h-2 rounded-full bg-success" /> The first quiz is the fastest way
+              to start generating data.
             </div>
           </div>
           <div className="flex gap-3 flex-wrap">

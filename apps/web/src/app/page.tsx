@@ -26,8 +26,8 @@ export default async function HomePage() {
                 Learn faster when the app remembers your game.
               </h1>
               <p className="max-w-2xl text-lg text-foreground-secondary">
-                Register once, stay signed in, and let PlaySharp carry your quiz history,
-                dashboard, profile, and progress across the site.
+                Register once, stay signed in, and let PlaySharp carry your quiz history, dashboard,
+                profile, and progress across the site.
               </p>
             </div>
 
@@ -45,7 +45,10 @@ export default async function HomePage() {
               >
                 Log in
               </Link>
-              <Link className="px-5 py-3 rounded-2xl text-foreground-secondary" href={routes.lessons}>
+              <Link
+                className="px-5 py-3 rounded-2xl text-foreground-secondary"
+                href={routes.lessons}
+              >
                 Browse lessons
               </Link>
             </div>

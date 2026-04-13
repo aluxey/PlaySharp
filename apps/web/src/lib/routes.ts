@@ -54,7 +54,10 @@ export function normalizeAuthRedirectPath(path: string | null | undefined) {
   return normalizedPath;
 }
 
-function buildAuthRoute(basePath: typeof routes.login | typeof routes.register, nextPath?: string | null) {
+function buildAuthRoute(
+  basePath: typeof routes.login | typeof routes.register,
+  nextPath?: string | null,
+) {
   const normalizedNextPath = normalizeAuthRedirectPath(nextPath);
 
   if (!normalizedNextPath) {

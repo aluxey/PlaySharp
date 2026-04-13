@@ -51,9 +51,7 @@ function initialsFromEmail(email: string) {
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const navItems =
-    user.role === 'admin'
-      ? [...appNavItems, { label: 'Admin', href: routes.admin }]
-      : appNavItems;
+    user.role === 'admin' ? [...appNavItems, { label: 'Admin', href: routes.admin }] : appNavItems;
 
   return (
     <aside className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0 z-10">
@@ -233,7 +231,8 @@ export function PublicMobileNav() {
       <div className="flex items-center justify-around px-2 py-3">
         {[...publicNavItems, ...authNavItems].map((item) => {
           const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const Icon = publicNavIcons[item.label as keyof typeof publicNavIcons] ??
+          const Icon =
+            publicNavIcons[item.label as keyof typeof publicNavIcons] ??
             authNavIcons[item.label as keyof typeof authNavIcons] ??
             Sparkles;
 
