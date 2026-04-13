@@ -2,14 +2,24 @@ import { redirect } from 'next/navigation';
 
 import { LoginForm } from '../../features/auth/login-form';
 import { getAuthState } from '../../lib/auth-state';
-import { routes } from '../../lib/routes';
+import { normalizeAuthRedirectPath, resolvePostAuthRedirect, routes } from '../../lib/routes';
 
-export default async function LoginPage() {
+type LoginPageProps = {
+  searchParams: Promise<{
+    next?: string | ReadonlyArray<string>;
+  }>;
+};
+
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const nextPath = normalizeAuthRedirectPath(
+    typeof resolvedSearchParams.next === 'string' ? resolvedSearchParams.next : null,
+  );
   const authState = await getAuthState();
 
   if (authState.isAuthenticated) {
-    redirect(routes.dashboard);
+    redirect(resolvePostAuthRedirect(nextPath, routes.dashboard));
   }
 
-  return <LoginForm />;
+  return <LoginForm nextPath={nextPath} />;
 }

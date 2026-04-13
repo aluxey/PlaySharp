@@ -22,6 +22,29 @@ type AttemptAnswerRecord = {
   isCorrect: boolean;
 };
 
+type QuizAttemptRecord = {
+  finishedAt: Date | null;
+  questionAttempts: ReadonlyArray<{
+    isCorrect: boolean;
+    question: {
+      slug: string;
+      title: string;
+      theme: {
+        slug: string;
+        name: string;
+        game: {
+          name: string;
+        };
+      };
+    };
+  }>;
+};
+
+type DailyUsageRecord = {
+  date: Date;
+  questionsAnswered: number;
+};
+
 const weeklyTrendFormatter = new Intl.DateTimeFormat('en-US', {
   weekday: 'short',
   timeZone: 'UTC',
@@ -70,35 +93,32 @@ export class ProgressService {
   ) {}
 
   async getOverview(userId: string): Promise<ProgressOverview> {
-    const [catalog, quizAttempts, dailyUsage] = await Promise.all([
-      this.contentService.getCatalog(),
-      this.prisma.quizAttempt.findMany({
-        where: {
-          userId,
-          finishedAt: {
-            not: null,
-          },
+    const quizAttemptsPromise = this.prisma.quizAttempt.findMany({
+      where: {
+        userId,
+        finishedAt: {
+          not: null,
         },
-        orderBy: {
-          finishedAt: 'asc',
-        },
-        select: {
-          finishedAt: true,
-          questionAttempts: {
-            select: {
-              isCorrect: true,
-              question: {
-                select: {
-                  slug: true,
-                  title: true,
-                  theme: {
-                    select: {
-                      slug: true,
-                      name: true,
-                      game: {
-                        select: {
-                          name: true,
-                        },
+      },
+      orderBy: {
+        finishedAt: 'asc',
+      },
+      select: {
+        finishedAt: true,
+        questionAttempts: {
+          select: {
+            isCorrect: true,
+            question: {
+              select: {
+                slug: true,
+                title: true,
+                theme: {
+                  select: {
+                    slug: true,
+                    name: true,
+                    game: {
+                      select: {
+                        name: true,
                       },
                     },
                   },
@@ -107,15 +127,20 @@ export class ProgressService {
             },
           },
         },
-      }),
-      this.prisma.dailyUsage.findMany({
-        where: { userId },
-        orderBy: { date: 'desc' },
-        select: {
-          date: true,
-          questionsAnswered: true,
-        },
-      }),
+      },
+    }) as Promise<ReadonlyArray<QuizAttemptRecord>>;
+    const dailyUsagePromise = this.prisma.dailyUsage.findMany({
+      where: { userId },
+      orderBy: { date: 'desc' },
+      select: {
+        date: true,
+        questionsAnswered: true,
+      },
+    }) as Promise<ReadonlyArray<DailyUsageRecord>>;
+    const [catalog, quizAttempts, dailyUsage] = await Promise.all([
+      this.contentService.getCatalog(),
+      quizAttemptsPromise,
+      dailyUsagePromise,
     ]);
     const answers = quizAttempts.flatMap((attempt) => {
       if (attempt.finishedAt === null) {
@@ -124,15 +149,17 @@ export class ProgressService {
 
       const finishedAt = attempt.finishedAt;
 
-      return attempt.questionAttempts.map<AttemptAnswerRecord>((questionAttempt) => ({
-        finishedAt,
-        game: toSharedGameName(questionAttempt.question.theme.game.name),
-        themeSlug: questionAttempt.question.theme.slug,
-        themeName: questionAttempt.question.theme.name,
-        questionSlug: questionAttempt.question.slug,
-        questionTitle: questionAttempt.question.title,
-        isCorrect: questionAttempt.isCorrect,
-      }));
+      return attempt.questionAttempts.map(
+        (questionAttempt): AttemptAnswerRecord => ({
+          finishedAt,
+          game: toSharedGameName(questionAttempt.question.theme.game.name),
+          themeSlug: questionAttempt.question.theme.slug,
+          themeName: questionAttempt.question.theme.name,
+          questionSlug: questionAttempt.question.slug,
+          questionTitle: questionAttempt.question.title,
+          isCorrect: questionAttempt.isCorrect,
+        }),
+      );
     });
     const totalLessons = catalog.reduce(
       (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),

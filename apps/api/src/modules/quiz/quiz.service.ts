@@ -18,6 +18,53 @@ const PRISMA_GAME_NAMES = {
   blackjack: 'BLACKJACK',
 } as const;
 
+type PersistedGameRecord = {
+  id: string;
+};
+
+type PersistedQuestionChoice = {
+  id: string;
+  label: string;
+  isCorrect: boolean;
+};
+
+type PersistedQuestionRecord = {
+  id: string;
+  slug: string;
+  title: string;
+  explanation: string;
+  theme: {
+    id: string;
+    slug: string;
+    name: string;
+  };
+  choices: ReadonlyArray<PersistedQuestionChoice>;
+};
+
+type EvaluatedAnswerRecord = {
+  question: PersistedQuestionRecord;
+  selectedChoice: PersistedQuestionChoice;
+  correctChoice: PersistedQuestionChoice;
+  responseTimeMs: number | undefined;
+  isCorrect: boolean;
+};
+
+type CreatedAttemptRecord = {
+  id: string;
+  startedAt: Date;
+  finishedAt: Date | null;
+  score: number;
+};
+
+type QuizTransactionClient = {
+  quizAttempt: {
+    create(args: unknown): Promise<CreatedAttemptRecord>;
+  };
+  dailyUsage: {
+    upsert(args: unknown): Promise<unknown>;
+  };
+};
+
 function toPrismaGameName(game: ContentGameName) {
   return PRISMA_GAME_NAMES[game];
 }
@@ -62,10 +109,10 @@ export class QuizService {
       );
     }
 
-    const game = await this.prisma.game.findUnique({
+    const game = (await this.prisma.game.findUnique({
       where: { name: toPrismaGameName(input.game) },
       select: { id: true },
-    });
+    })) as PersistedGameRecord | null;
 
     if (!game) {
       throw new NotFoundException(
@@ -77,7 +124,7 @@ export class QuizService {
       );
     }
 
-    const questions = await this.prisma.question.findMany({
+    const questions = (await this.prisma.question.findMany({
       where: {
         OR: input.answers.map((answer) => ({
           slug: answer.questionSlug,
@@ -101,11 +148,11 @@ export class QuizService {
           },
         },
       },
-    });
-    const questionMap = new Map(
+    })) as ReadonlyArray<PersistedQuestionRecord>;
+    const questionMap = new Map<string, PersistedQuestionRecord>(
       questions.map((question) => [`${question.theme.slug}:${question.slug}`, question]),
     );
-    const evaluatedAnswers = input.answers.map((answer) => {
+    const evaluatedAnswers: ReadonlyArray<EvaluatedAnswerRecord> = input.answers.map((answer) => {
       const question = questionMap.get(`${answer.themeSlug}:${answer.questionSlug}`);
 
       if (!question) {
@@ -160,8 +207,9 @@ export class QuizService {
     );
     const startedAt = new Date(finishedAt.getTime() - totalResponseTime);
     const correctAnswers = evaluatedAnswers.filter((answer) => answer.isCorrect).length;
-    const attempt = await this.prisma.$transaction(async (tx) => {
-      const createdAttempt = await tx.quizAttempt.create({
+    const attempt = await this.prisma.$transaction(async (tx: unknown) => {
+      const transactionClient = tx as QuizTransactionClient;
+      const createdAttempt = await transactionClient.quizAttempt.create({
         data: {
           userId,
           gameId: game.id,
@@ -206,7 +254,7 @@ export class QuizService {
         },
       });
 
-      await tx.dailyUsage.upsert({
+      await transactionClient.dailyUsage.upsert({
         where: {
           userId_date: {
             userId,

@@ -2,19 +2,22 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { loginWithPassword } from '../../lib/auth-client';
 import { buildRegisterRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
 
-export function LoginForm() {
+type LoginFormProps = {
+  nextPath: string | null;
+};
+
+export function LoginForm({ nextPath }: LoginFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const nextPath = resolvePostAuthRedirect(searchParams.get('next'), routes.dashboard);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.dashboard);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,7 +40,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push(nextPath);
+    router.push(postAuthRedirect);
     router.refresh();
   }
 
@@ -75,7 +78,7 @@ export function LoginForm() {
             </Link>
             <Link
               className="px-4 py-2 rounded-xl border border-border text-foreground"
-              href={buildRegisterRoute(searchParams.get('next'))}
+              href={buildRegisterRoute(nextPath)}
             >
               Create account
             </Link>
@@ -124,7 +127,7 @@ export function LoginForm() {
               </div>
             ) : null}
             <div className="flex items-center justify-between text-sm gap-4">
-              <Link className="text-primary" href={buildRegisterRoute(searchParams.get('next'))}>
+              <Link className="text-primary" href={buildRegisterRoute(nextPath)}>
                 Need an account?
               </Link>
               <button

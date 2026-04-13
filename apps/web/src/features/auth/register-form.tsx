@@ -2,20 +2,23 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { registerWithPassword } from '../../lib/auth-client';
 import { buildLoginRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
 
-export function RegisterForm() {
+type RegisterFormProps = {
+  nextPath: string | null;
+};
+
+export function RegisterForm({ nextPath }: RegisterFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const nextPath = resolvePostAuthRedirect(searchParams.get('next'), routes.quiz);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.quiz);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,7 +42,7 @@ export function RegisterForm() {
       return;
     }
 
-    router.push(nextPath);
+    router.push(postAuthRedirect);
     router.refresh();
   }
 
@@ -78,7 +81,7 @@ export function RegisterForm() {
             </Link>
             <Link
               className="px-4 py-2 rounded-xl border border-border text-foreground"
-              href={buildLoginRoute(searchParams.get('next'))}
+              href={buildLoginRoute(nextPath)}
             >
               Log in
             </Link>
@@ -142,7 +145,7 @@ export function RegisterForm() {
               </div>
             ) : null}
             <div className="flex items-center justify-between text-sm gap-4">
-              <Link className="text-primary" href={buildLoginRoute(searchParams.get('next'))}>
+              <Link className="text-primary" href={buildLoginRoute(nextPath)}>
                 Already have an account?
               </Link>
               <button

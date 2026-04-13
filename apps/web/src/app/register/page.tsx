@@ -2,14 +2,24 @@ import { redirect } from 'next/navigation';
 
 import { RegisterForm } from '../../features/auth/register-form';
 import { getAuthState } from '../../lib/auth-state';
-import { routes } from '../../lib/routes';
+import { normalizeAuthRedirectPath, resolvePostAuthRedirect, routes } from '../../lib/routes';
 
-export default async function RegisterPage() {
+type RegisterPageProps = {
+  searchParams: Promise<{
+    next?: string | ReadonlyArray<string>;
+  }>;
+};
+
+export default async function RegisterPage({ searchParams }: RegisterPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const nextPath = normalizeAuthRedirectPath(
+    typeof resolvedSearchParams.next === 'string' ? resolvedSearchParams.next : null,
+  );
   const authState = await getAuthState();
 
   if (authState.isAuthenticated) {
-    redirect(routes.dashboard);
+    redirect(resolvePostAuthRedirect(nextPath, routes.dashboard));
   }
 
-  return <RegisterForm />;
+  return <RegisterForm nextPath={nextPath} />;
 }
