@@ -62,7 +62,7 @@
 
 ### Quality and operations
 
-- [ ] Ensure CI runs lint, typecheck, and format checks.
+- [x] Ensure CI runs lint, typecheck, and format checks.
 - [ ] Add smoke tests for API health and web routes.
 - [ ] Document a minimal deployment/staging setup once V1 is stable.
 
