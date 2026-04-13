@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { loginWithPassword } from '../../lib/auth-client';
+import { useToast } from '../../components';
 import { buildRegisterRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
+import { getLoginErrorToast } from './auth-toast';
 
 type LoginFormProps = {
   nextPath: string | null;
@@ -13,6 +15,7 @@ type LoginFormProps = {
 
 export function LoginForm({ nextPath }: LoginFormProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -35,11 +38,22 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     });
 
     if (result.error) {
+      const toast = getLoginErrorToast(result.error);
+      showToast({
+        title: toast.title,
+        description: toast.description,
+        tone: 'error',
+      });
       setErrorMessage(result.error.message);
       setIsSubmitting(false);
       return;
     }
 
+    showToast({
+      title: 'Signed in',
+      description: 'Welcome back. Your account is ready.',
+      tone: 'success',
+    });
     router.push(postAuthRedirect);
     router.refresh();
   }

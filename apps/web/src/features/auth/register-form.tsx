@@ -5,7 +5,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { registerWithPassword } from '../../lib/auth-client';
+import { useToast } from '../../components';
 import { buildLoginRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
+import { getRegisterErrorToast } from './auth-toast';
 
 type RegisterFormProps = {
   nextPath: string | null;
@@ -13,6 +15,7 @@ type RegisterFormProps = {
 
 export function RegisterForm({ nextPath }: RegisterFormProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,11 +40,22 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
     });
 
     if (result.error) {
+      const toast = getRegisterErrorToast(result.error);
+      showToast({
+        title: toast.title,
+        description: toast.description,
+        tone: 'error',
+      });
       setErrorMessage(result.error.message);
       setIsSubmitting(false);
       return;
     }
 
+    showToast({
+      title: 'Account created',
+      description: 'Your profile is ready. Redirecting you into PlaySharp now.',
+      tone: 'success',
+    });
     router.push(postAuthRedirect);
     router.refresh();
   }
