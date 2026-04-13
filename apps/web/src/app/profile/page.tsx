@@ -1,10 +1,11 @@
+import { redirect } from 'next/navigation';
 import { Award, Calendar, CreditCard, Crown, Mail, Settings, Target, Zap } from 'lucide-react';
 
 import type { ProfileStat } from '@playsharp/shared';
 
 import { DataCard, LogoutButton, StatePanel } from '../../components';
 import { getProfileOverview } from '../../lib/api';
-import { routes } from '../../lib/routes';
+import { buildLoginRoute, routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,17 +24,20 @@ function statIcon(stat: ProfileStat) {
 
 export default async function ProfilePage() {
   const profile = await getProfileOverview();
-  const isUnauthorized = profile.error?.code === 'AUTH_UNAUTHORIZED';
+
+  if (profile.error?.code === 'AUTH_UNAUTHORIZED') {
+    redirect(buildLoginRoute(routes.profile));
+  }
 
   if (profile.error) {
     return (
       <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
         <StatePanel
           eyebrow="Profile"
-          title={isUnauthorized ? 'Log in to view your profile' : 'Profile data is unavailable'}
+          title="Profile data is unavailable"
           description={profile.error.message}
-          actionLabel={isUnauthorized ? 'Log in' : 'Open dashboard'}
-          actionHref={isUnauthorized ? routes.login : routes.dashboard}
+          actionLabel="Open dashboard"
+          actionHref={routes.dashboard}
           tone="error"
         />
       </div>

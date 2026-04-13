@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 import { AppShell } from '../components/app-shell';
+import { getAuthState } from '../lib/auth-state';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -12,11 +13,13 @@ export const metadata: Metadata = {
   description: 'Interactive poker and blackjack training studio.',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const authState = await getAuthState();
+
   return (
     <html lang="en">
       <body className="bg-background text-foreground">
-        <AppShell>{children}</AppShell>
+        <AppShell user={authState.user}>{children}</AppShell>
       </body>
     </html>
   );

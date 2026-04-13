@@ -1,23 +1,28 @@
+import { redirect } from 'next/navigation';
+
 import { StatePanel } from '../../components';
 import { getProgressOverview } from '../../lib/api';
-import { routes } from '../../lib/routes';
+import { buildLoginRoute, routes } from '../../lib/routes';
 import { ProgressClient } from './progress-client';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ProgressPage() {
   const overview = await getProgressOverview();
-  const isUnauthorized = overview.error?.code === 'AUTH_UNAUTHORIZED';
+
+  if (overview.error?.code === 'AUTH_UNAUTHORIZED') {
+    redirect(buildLoginRoute(routes.progress));
+  }
 
   if (overview.error) {
     return (
       <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
         <StatePanel
           eyebrow="Progress"
-          title={isUnauthorized ? 'Log in to view progress' : 'Progress data is unavailable'}
+          title="Progress data is unavailable"
           description={overview.error.message}
-          actionLabel={isUnauthorized ? 'Log in' : 'Open dashboard'}
-          actionHref={isUnauthorized ? routes.login : routes.dashboard}
+          actionLabel="Open dashboard"
+          actionHref={routes.dashboard}
           tone="error"
         />
       </div>

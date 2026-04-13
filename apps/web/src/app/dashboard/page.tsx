@@ -1,9 +1,10 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { ArrowRight, Award, Flame, Target, TrendingUp, Zap } from 'lucide-react';
 
 import { DataCard, HeroCard, ProgressBar, StatePanel } from '../../components';
 import { getProfileOverview, getProgressOverview } from '../../lib/api';
-import { lessonThemeRoute, routes } from '../../lib/routes';
+import { buildLoginRoute, lessonThemeRoute, routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,17 +15,20 @@ function statValue(stats: ReadonlyArray<{ key: string; value: string }>, key: st
 export default async function DashboardPage() {
   const [profile, overview] = await Promise.all([getProfileOverview(), getProgressOverview()]);
   const error = profile.error ?? overview.error;
-  const isUnauthorized = error?.code === 'AUTH_UNAUTHORIZED';
+
+  if (error?.code === 'AUTH_UNAUTHORIZED') {
+    redirect(buildLoginRoute(routes.dashboard));
+  }
 
   if (error && !profile.data && !overview.data) {
     return (
       <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
         <StatePanel
           eyebrow="Dashboard"
-          title={isUnauthorized ? 'Log in to open your dashboard' : 'Dashboard data is unavailable'}
+          title="Dashboard data is unavailable"
           description={error.message}
-          actionLabel={isUnauthorized ? 'Log in' : 'Open lessons'}
-          actionHref={isUnauthorized ? routes.login : routes.lessons}
+          actionLabel="Open lessons"
+          actionHref={routes.lessons}
           tone="error"
         />
       </div>
