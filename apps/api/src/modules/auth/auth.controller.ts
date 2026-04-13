@@ -1,9 +1,12 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 
-import type { AuthSessionResponse } from '@playsharp/shared';
+import type { AuthCurrentUserResponse, AuthSessionResponse } from '@playsharp/shared';
 
+import { CurrentUser } from './current-user.decorator';
+import { AuthGuard } from './auth.guard';
 import { LoginRequestDto, RegisterRequestDto } from './auth.dto';
 import { AuthService } from './auth.service';
+import type { AuthenticatedUser } from './auth.types';
 
 @Controller('auth')
 export class AuthController {
@@ -19,5 +22,15 @@ export class AuthController {
   async login(@Body() body: LoginRequestDto): Promise<AuthSessionResponse> {
     const session = await this.authService.login(body);
     return { data: { session } };
+  }
+
+  @Get('me')
+  @UseGuards(AuthGuard)
+  async getCurrentUser(@CurrentUser() user: AuthenticatedUser): Promise<AuthCurrentUserResponse> {
+    return {
+      data: {
+        user,
+      },
+    };
   }
 }

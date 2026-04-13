@@ -69,6 +69,10 @@ export type AuthSessionResponse = ApiSuccessResponse<{
   session: AuthSession;
 }>;
 
+export type AuthCurrentUserResponse = ApiSuccessResponse<{
+  user: AuthUser;
+}>;
+
 export type ContentGamesResponse = ApiSuccessResponse<{
   games: ReadonlyArray<ContentGameSummary>;
 }>;

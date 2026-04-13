@@ -7,6 +7,8 @@ import type {
   AdminOverviewResponse,
   AdminQuestionsResponse,
   AdminThemesResponse,
+  AuthCurrentUserResponse,
+  AuthUser,
   ApiErrorResponse,
   ContentGame,
   ContentGameName,
@@ -209,6 +211,11 @@ export async function getDailyQuiz(
 ): Promise<ApiResource<DailyQuiz>> {
   const response = await apiGet<QuizDailyResponse>(`/quiz/daily?game=${game}`);
   return selectData(response, (payload) => payload.data.quiz);
+}
+
+export async function getCurrentAuthUser(): Promise<ApiResource<AuthUser>> {
+  const response = await apiGet<AuthCurrentUserResponse>('/auth/me');
+  return selectData(response, (payload) => payload.data.user);
 }
 
 export async function getProgressOverview(): Promise<ApiResource<ProgressOverview>> {
