@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 
-import { StatePanel } from '../../../components';
-import { getLessonBySlug } from '../../../lib/api';
-import { lessonDetailRoute, routes } from '../../../lib/routes';
+import { StatePanel } from '../../../../components';
+import { getLessonBySlug } from '../../../../lib/api';
+import { lessonDetailRoute, routes } from '../../../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 

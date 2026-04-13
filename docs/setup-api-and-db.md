@@ -21,10 +21,12 @@ PORT=3001
 
 ```bash
 cd apps/api
-npx prisma migrate dev
-npx prisma db seed
+npm run prisma:generate
+npm run prisma:push
+npm run seed
 ```
 
+The repository does not ship committed Prisma migrations, so local schema updates should go through `prisma db push`.
 The seed reads JSON content from `content/` and syncs games, themes, lessons, questions, and answer choices into PostgreSQL.
 
 4. Start the API

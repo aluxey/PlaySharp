@@ -70,10 +70,8 @@ docker start playsharp-postgres
 
 ```bash
 npm run prisma:generate --workspace @playsharp/api
-cd apps/api
-npx prisma db push --skip-generate
-npm run seed
-cd ../..
+npm run prisma:push --workspace @playsharp/api
+npm run seed --workspace @playsharp/api
 ```
 
 The repository currently does not ship a committed Prisma migration, so `prisma db push`

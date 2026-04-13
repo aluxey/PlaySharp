@@ -53,7 +53,7 @@ Use an existing PostgreSQL instance or create a new database named `playsharp`.
 
 ```bash
 npm run prisma:generate --workspace @playsharp/api
-npm run prisma:migrate --workspace @playsharp/api
+npm run prisma:push --workspace @playsharp/api
 npm run seed --workspace @playsharp/api
 ```
 

@@ -5,6 +5,14 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/lessons/:slug',
+        destination: '/lessons/legacy/:slug',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
