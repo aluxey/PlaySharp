@@ -284,6 +284,12 @@
           "title": "Soft Totals Need Pressure",
           "content": "Soft totals look comfortable, but they still need aggressive play in the right windows because they can take another card without busting.",
           "level": "intermediate"
+        },
+        {
+          "slug": "rule-sensitive-soft-19-doubles",
+          "title": "Rule-Sensitive Soft 19 Doubles",
+          "content": "Some advanced soft-hand edges only appear when specific rules allow them. Soft 19 versus dealer 6 is a classic case where rule awareness separates a routine stand from a thin value double.",
+          "level": "advanced"
         }
       ],
       "questions": [
@@ -486,6 +492,12 @@
           "title": "Late Surrender as Damage Control",
           "content": "Surrender is not fear; it is disciplined damage control. Use it only when the hand is so poor that saving half the bet beats playing it out.",
           "level": "intermediate"
+        },
+        {
+          "slug": "rule-dependent-pair-exceptions",
+          "title": "Rule-Dependent Pair Exceptions",
+          "content": "Advanced pair decisions depend on rules like doubling after split and surrender availability. The correct play can flip once those rules change, so memorize the exception together with the rule that enables it.",
+          "level": "advanced"
         }
       ],
       "questions": [

@@ -143,6 +143,77 @@
           ]
         }
       ]
+    },
+    {
+      "slug": "three-bet-pot-pressure",
+      "name": "3-Bet Pot Pressure",
+      "level": "advanced",
+      "lessons": [
+        {
+          "slug": "range-advantage-after-the-reraise",
+          "title": "Range Advantage After the Reraise",
+          "content": "Advanced preflop pressure changes who owns more strong hands on later streets. In many 3-bet pots, the reraiser starts with more overpairs, strong broadways, and premium blockers, which creates cleaner pressure spots.",
+          "level": "advanced"
+        },
+        {
+          "slug": "disciplined-continuation-bets-in-tighter-pots",
+          "title": "Disciplined Continuation Bets in Tighter Pots",
+          "content": "Do not autopilot small continuation bets just because you took the betting lead. Once ranges tighten, board texture and who keeps the nutted combinations matter more than generic aggression.",
+          "level": "advanced"
+        }
+      ],
+      "questions": [
+        {
+          "slug": "c-betting-a-dry-low-board",
+          "title": "C-betting a dry low board in a 3-bet pot",
+          "scenario": "You 3-bet from the button, get called, and the flop comes 8-4-2 rainbow.",
+          "difficulty": "advanced",
+          "explanation": "The reraiser often keeps the overpair and high-card advantage on disconnected low boards, so a controlled continuation bet can pressure capped bluff-catchers without forcing every hand into a huge pot.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Make a small continuation bet with range discipline",
+              "isCorrect": true,
+              "explanation": "Your range still leans stronger on this texture, so a measured c-bet captures fold equity while keeping the pot manageable."
+            },
+            {
+              "label": "Check every overcard hand because you missed the flop",
+              "isCorrect": false,
+              "explanation": "This gives up too much pressure in a spot where your range still represents many strong hands."
+            },
+            {
+              "label": "Jam immediately to maximize fold equity",
+              "isCorrect": false,
+              "explanation": "Shoving wildly overplays the advantage. The edge comes from disciplined pressure, not maximum volatility."
+            }
+          ]
+        },
+        {
+          "slug": "checking-back-top-pair-on-coordinated-board",
+          "title": "Checking back top pair on a coordinated board",
+          "scenario": "You 3-bet in position, flop top pair on a connected board, and face a caller who still keeps strong draws and two-pair combinations.",
+          "difficulty": "advanced",
+          "explanation": "Advanced 3-bet pots are not only about betting more. Some top-pair hands benefit from checking back to protect your range, control the pot, and realize equity against aggressive check-raise trees.",
+          "isPremium": false,
+          "choices": [
+            {
+              "label": "Mix in checks to control the pot and protect your range",
+              "isCorrect": true,
+              "explanation": "Checking some strong-but-vulnerable hands keeps your range sturdier and avoids donating value against powerful draws."
+            },
+            {
+              "label": "Bet every top-pair hand because 3-bet pots always reward aggression",
+              "isCorrect": false,
+              "explanation": "That is too rigid. Coordinated boards punish automatic betting with hands that dislike huge pots."
+            },
+            {
+              "label": "Fold immediately because the board is too dynamic",
+              "isCorrect": false,
+              "explanation": "Top pair is still far too strong to abandon. The question is how to manage the hand, not whether to quit it."
+            }
+          ]
+        }
+      ]
     }
   ]
 }

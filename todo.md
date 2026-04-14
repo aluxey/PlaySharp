@@ -43,7 +43,7 @@
 ### Content and data
 
 - [x] Add content validation (schema or lint) to prevent malformed JSON.
-- [ ] Expand content coverage per difficulty distribution and avoid duplicates.
+- [x] Expand content coverage per difficulty distribution and avoid duplicates.
 - [x] Ensure content updates always run `npm run seed --workspace @playsharp/api`.
 
 ### API
