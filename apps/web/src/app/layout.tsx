@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
-import { AppShell, ToastProvider } from '../components';
+import { AppShell, AuthProvider, ToastProvider } from '../components';
 import { getAuthState } from '../lib/auth-state';
 import './globals.css';
 
@@ -20,7 +20,9 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en">
       <body className="bg-background text-foreground">
         <ToastProvider>
-          <AppShell user={authState.user}>{children}</AppShell>
+          <AuthProvider initialUser={authState.user}>
+            <AppShell>{children}</AppShell>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>
