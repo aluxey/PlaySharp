@@ -162,6 +162,7 @@ before smoke checks to catch content drift automatically.
 
 ## Current status
 
-The repository has a working technical baseline: monorepo tooling, scaffolded apps, shared
-packages, and the first product routes. The next step is to connect auth, data, and the quiz
-engine.
+The repository now has a working V1 learning slice: auth, quiz attempt persistence, lesson and
+progress flows, a protected admin inventory view, content validation, and seeded smoke coverage.
+The next step is to keep hardening the experience and staging workflow rather than filling basic
+scaffolding gaps.

@@ -85,8 +85,8 @@ npm run dev:api
 
 ## Current implementation notes
 
-- The web app uses the App Router and currently exposes scaffolded routes for the V1 screens.
-- The API currently exposes a health endpoint and module boundaries for future domains.
+- The web app uses the App Router and now covers the main V1 screens, including auth, quiz, lessons, progress, profile, and admin inventory routes.
+- The API exposes health, auth, quiz, progress, profile, content, and admin inventory contracts.
 - The Prisma schema lives in `apps/api/prisma/schema.prisma`.
 - The `content` folder is the versioned source of truth for educational content.
 

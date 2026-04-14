@@ -29,8 +29,8 @@
 - V1 scope, metrics, and roadmap are documented.
 - UX/UI foundation and frontend screens are in place.
 - Content schema and Prisma seed pipeline are established.
-- API contracts exist for content, quiz, progress, profile, and admin.
-- Next major effort: connect interactive states directly to API contracts and persist attempts.
+- API contracts and persisted V1 flows exist for auth, quiz, progress, profile, and admin inventory.
+- Next major effort: keep hardening the protected V1 slice for staging feedback and future admin workflow expansion.
 
 ## Next steps (suggested TODOs)
 

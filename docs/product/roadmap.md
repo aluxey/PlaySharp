@@ -3,17 +3,19 @@
 ## Status
 
 - Phase 0 is documented
-- Phase 1 scaffolding is underway
-- Phase 2 content and data scaffolding is underway
-- Phase 4 frontend polish is underway
-- The next step is to connect the remaining interactive states directly to the API contracts
+- Phase 1 UX and screen foundations are in place
+- Phase 2 content, validation, and seed workflow are in place
+- Phase 3 V1 API contracts and persistence are in place
+- Phase 4 main frontend learning loop is in place
+- Phase 5 quality guardrails and smoke coverage are in place
+- The next step is to harden staging workflows and refine post-V1 admin tooling
 
 ## Current focus
 
 - Keep the V1 scope and success metrics visible
-- Sync versioned content with Prisma seed data
-- Expose stable content and quiz contracts in the API
-- Make the website feel premium, visual, and coach-like
+- Keep content, seed data, and smoke coverage aligned
+- Harden the staging path and protected admin access
+- Continue visual polish without reopening scope
 - Keep premium and social features out of the first delivery slice
 
 ## Delivery phases
