@@ -60,11 +60,18 @@ npm run start --workspace @playsharp/api
 npm run start --workspace @playsharp/web -- --hostname 0.0.0.0 --port 3000
 ```
 
+7. Promote at least one existing user to admin if the staging team needs the admin workspace:
+
+```bash
+npm run admin:promote --workspace @playsharp/api -- --email you@example.com
+```
+
 ## Staging validation checklist
 
 - `GET /api/health` returns `status: ok`
 - Landing page loads
 - Register -> quiz attempt -> lesson route -> progress page works end to end
+- Admin account can open `/admin` and non-admin accounts cannot
 - Content catalog loads on lessons and quiz pages
 - `npm run seed --workspace @playsharp/api` is rerun after content changes
 

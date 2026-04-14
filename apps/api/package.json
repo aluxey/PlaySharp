@@ -8,6 +8,7 @@
     "start": "node dist/apps/api/src/main.js",
     "lint": "eslint src prisma --max-warnings 0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
+    "admin:promote": "tsx prisma/promote-admin.ts",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push --skip-generate",
     "prisma:migrate": "prisma migrate dev",

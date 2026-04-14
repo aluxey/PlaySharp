@@ -97,6 +97,12 @@ Run only the web app:
 npm run dev:web
 ```
 
+To grant admin access to an existing account after it registers:
+
+```bash
+npm run admin:promote --workspace @playsharp/api -- --email you@example.com
+```
+
 Local URLs:
 
 - Web app: `http://localhost:3000`
@@ -118,6 +124,7 @@ docker stop playsharp-postgres
 - `npm run dev:api` - start the API only
 - `npm run dev:web` - start the web app only
 - `npm run build` - build both workspaces
+- `npm run admin:promote --workspace @playsharp/api -- --email you@example.com` - promote an existing user to admin
 - `npm run seed --workspace @playsharp/api` - sync versioned content into PostgreSQL
 - `npm run smoke` - run post-build smoke checks for API health, core web routes, and the quiz journey
 - `npm run lint` - run ESLint across the repo

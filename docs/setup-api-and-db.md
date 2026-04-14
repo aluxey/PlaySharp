@@ -53,6 +53,14 @@ npm run dev --workspace @playsharp/web
 
 The lessons, quiz, progress, profile, and admin pages call the API directly, so keep the API running and the database seeded.
 
+6. Promote an admin account when needed
+
+Register the account through the web app or API first, then promote it:
+
+```bash
+npm run admin:promote --workspace @playsharp/api -- --email you@example.com
+```
+
 Notes
 
 - The source of truth for educational content is `content/{poker,blackjack}/content.json`.
