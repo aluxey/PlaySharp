@@ -66,6 +66,7 @@
 
 - [x] Ensure CI runs lint, typecheck, and format checks.
 - [x] Add smoke tests for API health and web routes.
+- [x] Validate admin access control in the smoke flow for guest, user, and admin roles.
 - [x] Document a minimal deployment/staging setup once V1 is stable.
 
 ## Out of scope for V1 (do not start yet)

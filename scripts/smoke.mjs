@@ -71,7 +71,9 @@ try {
   });
 
   await runChecks();
-  console.log('Smoke checks passed for API health, core web routes, and the quiz journey.');
+  console.log(
+    'Smoke checks passed for API health, core web routes, the quiz journey, and admin access control.',
+  );
 } finally {
   await stopServer(webServer);
   await stopServer(apiServer);
@@ -207,6 +209,8 @@ async function expectAuthenticatedQuizJourney() {
     progressHtml.includes('Questions Answered'),
     'Progress page should render the overview stats',
   );
+
+  await expectAdminSuccess(email, 'smoke-test-password');
 }
 
 async function expectPage(pathname, text) {
@@ -264,6 +268,57 @@ async function expectAdminForbidden(accessToken) {
 
   const pageHtml = await pageResponse.text();
   assert.ok(pageHtml.includes('Admins only'), 'Admin page should explain the role restriction');
+}
+
+async function expectAdminSuccess(email, password) {
+  await runCommand(
+    'npm',
+    ['run', 'admin:promote', '--workspace', '@playsharp/api', '--', '--email', email],
+    'Admin promotion',
+  );
+
+  const loginPayload = await expectJson(`${apiBaseUrl}/auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
+  });
+  const adminAccessToken = loginPayload?.data?.session?.accessToken;
+  const adminUser = loginPayload?.data?.session?.user;
+
+  assert.ok(
+    typeof adminAccessToken === 'string' && adminAccessToken.length > 0,
+    'Admin login should return an access token',
+  );
+  assert.equal(adminUser?.role, 'admin', 'Admin login should return an admin role');
+
+  const overviewPayload = await expectJson(`${apiBaseUrl}/admin/overview`, {
+    headers: {
+      Authorization: `Bearer ${adminAccessToken}`,
+    },
+  });
+  const overview = overviewPayload?.data?.overview;
+
+  assert.ok(overview, 'Admin overview should return data for an admin token');
+  assert.ok(overview.totals.games >= 2, 'Admin overview should include catalog totals');
+
+  const pageResponse = await fetch(`${webOrigin}/admin`, {
+    headers: {
+      Cookie: `playsharp_access_token=${adminAccessToken}`,
+    },
+  });
+  assert.equal(pageResponse.status, 200, 'Admin page should render for an admin user');
+
+  const pageHtml = await pageResponse.text();
+  assert.ok(
+    pageHtml.includes('Internal workspace'),
+    'Admin page should render the admin workspace heading',
+  );
+  assert.ok(pageHtml.includes('Versioned manifests'), 'Admin page should render inventory details');
 }
 
 async function expectJson(url, options) {
