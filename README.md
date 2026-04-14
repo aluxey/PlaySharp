@@ -118,6 +118,7 @@ docker stop playsharp-postgres
 - `npm run dev:api` - start the API only
 - `npm run dev:web` - start the web app only
 - `npm run build` - build both workspaces
+- `npm run seed --workspace @playsharp/api` - sync versioned content into PostgreSQL
 - `npm run smoke` - run post-build smoke checks for API health and core web routes
 - `npm run lint` - run ESLint across the repo
 - `npm run typecheck` - run TypeScript checks across the workspaces
@@ -126,6 +127,10 @@ docker stop playsharp-postgres
 Run `npm run build` before `npm run smoke`. The smoke runner starts the built API and web apps,
 so it also needs a reachable PostgreSQL instance through the same `DATABASE_URL` used by the
 API.
+
+After editing files under `content/`, rerun `npm run seed --workspace @playsharp/api` so the
+database stays aligned with the versioned manifests. CI now also runs `prisma:push` and `seed`
+before smoke checks to catch content drift automatically.
 
 ## Repository layout
 

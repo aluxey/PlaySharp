@@ -33,6 +33,13 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run build
+      - run: npm run prisma:generate --workspace @playsharp/api
+      - run: npm run prisma:push --workspace @playsharp/api
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/playsharp?schema=public
+      - run: npm run seed --workspace @playsharp/api
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/playsharp?schema=public
       - run: npm run smoke
         env:
           DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/playsharp?schema=public

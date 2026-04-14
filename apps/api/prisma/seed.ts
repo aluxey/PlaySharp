@@ -10,7 +10,13 @@ import {
 
 import { loadContentCatalog } from '../src/modules/content/content.loader';
 
-loadEnvFile('.env');
+try {
+  loadEnvFile('.env');
+} catch (error) {
+  if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) {
+    throw error;
+  }
+}
 
 const prisma = new PrismaClient();
 
