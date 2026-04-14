@@ -145,6 +145,7 @@ before smoke checks to catch content drift automatically.
 ## Documentation
 
 - `docs/technical-setup.md`
+- `docs/deployment-staging.md`
 - `docs/product/vision.md`
 - `docs/product/roadmap.md`
 - `docs/ux/frontend-guidelines.md`
