@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, UseGuards } from '@nestjs/common';
 
 import type {
   AdminLessonsResponse,
@@ -7,9 +7,12 @@ import type {
   AdminThemesResponse,
 } from '@playsharp/shared';
 
+import { AdminGuard } from '../auth/admin.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { AdminService } from './admin.service';
 
 @Controller('admin')
+@UseGuards(AuthGuard, AdminGuard)
 export class AdminController {
   constructor(@Inject(AdminService) private readonly adminService: AdminService) {}
 

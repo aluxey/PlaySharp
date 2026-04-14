@@ -93,6 +93,7 @@ async function runChecks() {
   await expectPage('/lessons', 'Master Your Game');
   await expectPage('/quiz', 'Answer fast, learn faster');
   await expectDashboardRedirect();
+  await expectAdminGuestGate();
   await expectAuthenticatedQuizJourney();
 }
 
@@ -115,6 +116,8 @@ async function expectAuthenticatedQuizJourney() {
     typeof accessToken === 'string' && accessToken.length > 0,
     'Register should return an access token',
   );
+
+  await expectAdminForbidden(accessToken);
 
   const quizPayload = await expectJson(`${apiBaseUrl}/quiz/daily?game=poker`);
   const quiz = quizPayload?.data?.quiz;
@@ -229,11 +232,55 @@ async function expectDashboardRedirect() {
   assert.equal(redirectUrl.searchParams.get('next'), '/dashboard');
 }
 
+async function expectAdminGuestGate() {
+  const response = await fetch(`${webOrigin}/admin`);
+  assert.equal(response.status, 200, 'Admin page should render a guest access gate');
+
+  const html = await response.text();
+  assert.ok(
+    html.includes('Admin sign-in required'),
+    'Admin guest gate should explain the sign-in requirement',
+  );
+  assert.ok(
+    html.includes('/login?next=%2Fadmin'),
+    'Admin guest gate should link to the login route',
+  );
+}
+
+async function expectAdminForbidden(accessToken) {
+  const apiError = await expectErrorJson(`${apiBaseUrl}/admin/overview`, 403, 'AUTH_FORBIDDEN', {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  assert.equal(apiError.error, 'Forbidden');
+
+  const pageResponse = await fetch(`${webOrigin}/admin`, {
+    headers: {
+      Cookie: `playsharp_access_token=${accessToken}`,
+    },
+  });
+  assert.equal(pageResponse.status, 200, 'Admin page should render an access denied state');
+
+  const pageHtml = await pageResponse.text();
+  assert.ok(pageHtml.includes('Admins only'), 'Admin page should explain the role restriction');
+}
+
 async function expectJson(url, options) {
   const response = await fetch(url, options);
   assert.ok(response.ok, `${url} should return a successful HTTP response, got ${response.status}`);
 
   return response.json();
+}
+
+async function expectErrorJson(url, status, code, options) {
+  const response = await fetch(url, options);
+  assert.equal(response.status, status, `${url} should return HTTP ${status}`);
+
+  const payload = await response.json();
+  assert.equal(payload.code, code, `${url} should return error code ${code}`);
+
+  return payload;
 }
 
 function startServer(name, args, extraEnv) {

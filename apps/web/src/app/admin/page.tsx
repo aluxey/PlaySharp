@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import { DataCard, StatePanel } from '../../components';
 import {
@@ -7,11 +8,44 @@ import {
   getAdminQuestions,
   getAdminThemes,
 } from '../../lib/api';
-import { routes } from '../../lib/routes';
+import { getAuthState } from '../../lib/auth-state';
+import { buildLoginRoute, routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
+  const authState = await getAuthState();
+
+  if (!authState.isAuthenticated) {
+    return (
+      <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
+        <StatePanel
+          eyebrow="Admin"
+          title="Admin sign-in required"
+          description="This workspace is restricted to authenticated admin accounts. Sign in with an admin account to review the content inventory."
+          actionLabel="Log in"
+          actionHref={buildLoginRoute(routes.admin)}
+          tone="error"
+        />
+      </div>
+    );
+  }
+
+  if (authState.user?.role !== 'admin') {
+    return (
+      <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
+        <StatePanel
+          eyebrow="Admin"
+          title="Admins only"
+          description="This workspace is restricted to admin accounts. Signed-in learners can keep using the dashboard, quiz, lessons, and progress routes."
+          actionLabel="Open dashboard"
+          actionHref={routes.dashboard}
+          tone="error"
+        />
+      </div>
+    );
+  }
+
   const [overview, themes, lessons, questions] = await Promise.all([
     getAdminOverview(),
     getAdminThemes(),
@@ -20,6 +54,25 @@ export default async function AdminPage() {
   ]);
 
   const error = overview.error ?? themes.error ?? lessons.error ?? questions.error;
+
+  if (error?.code === 'AUTH_UNAUTHORIZED') {
+    redirect(buildLoginRoute(routes.admin));
+  }
+
+  if (error?.code === 'AUTH_FORBIDDEN') {
+    return (
+      <div className="min-h-screen max-w-6xl mx-auto px-4 py-12">
+        <StatePanel
+          eyebrow="Admin"
+          title="Admins only"
+          description="The API rejected this request because the current account does not have admin access."
+          actionLabel="Open dashboard"
+          actionHref={routes.dashboard}
+          tone="error"
+        />
+      </div>
+    );
+  }
 
   if (error) {
     return (

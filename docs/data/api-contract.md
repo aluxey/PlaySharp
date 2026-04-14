@@ -180,12 +180,20 @@ Fields include:
 
 - `GET /admin/overview`
   - response type: `AdminOverviewResponse`
+  - auth required: yes
+  - admin role required: yes
 - `GET /admin/themes`
   - response type: `AdminThemesResponse`
+  - auth required: yes
+  - admin role required: yes
 - `GET /admin/lessons`
   - response type: `AdminLessonsResponse`
+  - auth required: yes
+  - admin role required: yes
 - `GET /admin/questions`
   - response type: `AdminQuestionsResponse`
+  - auth required: yes
+  - admin role required: yes
 
 Admin responses are read-only inventory views over the versioned content manifests.
 V1 keeps content writes in the repository and seed workflow instead of exposing admin CRUD routes.

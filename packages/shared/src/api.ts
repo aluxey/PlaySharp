@@ -14,6 +14,7 @@ export type ApiSuccessResponse<T> = {
 };
 
 export type ApiErrorCode =
+  | 'AUTH_FORBIDDEN'
   | 'AUTH_EMAIL_TAKEN'
   | 'AUTH_INVALID_CREDENTIALS'
   | 'AUTH_UNAUTHORIZED'

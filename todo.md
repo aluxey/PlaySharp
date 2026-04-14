@@ -51,6 +51,7 @@
 - [x] Implement auth flows (register/login) and protect user-specific endpoints.
 - [x] Add quiz attempt persistence (create attempt, store answers, compute score).
 - [x] Power progress endpoints from attempts instead of content-only placeholders.
+- [x] Protect admin inventory endpoints and page behind admin-only access.
 - [x] Defer admin write endpoints until post-V1 CRUD work.
 
 ### Web
