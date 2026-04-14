@@ -37,7 +37,7 @@
 ### Product and UX
 
 - [ ] Validate the V1 user journey end-to-end (quiz -> feedback -> lesson -> progress).
-- [ ] Confirm which admin features are needed in V1 (read-only vs CRUD) and document it.
+- [x] Confirm which admin features are needed in V1 (read-only vs CRUD) and document it.
 - [ ] Align each screen with `docs/ux/screens.md` content requirements.
 
 ### Content and data
@@ -51,7 +51,7 @@
 - [x] Implement auth flows (register/login) and protect user-specific endpoints.
 - [x] Add quiz attempt persistence (create attempt, store answers, compute score).
 - [x] Power progress endpoints from attempts instead of content-only placeholders.
-- [ ] Define admin write endpoints if CRUD is required for V1.
+- [x] Defer admin write endpoints until post-V1 CRUD work.
 
 ### Web
 

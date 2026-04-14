@@ -188,8 +188,12 @@ Fields include:
   - response type: `AdminQuestionsResponse`
 
 Admin responses are read-only inventory views over the versioned content manifests.
+V1 keeps content writes in the repository and seed workflow instead of exposing admin CRUD routes.
 
 ## Planned but not implemented here
 
-- protected admin write routes
 - billing and premium routes
+
+## Deferred after V1
+
+- protected admin write routes

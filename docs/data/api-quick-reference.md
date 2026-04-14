@@ -42,6 +42,8 @@
 
 `GET /stats/me` and `GET /users/me/profile` require `Authorization: Bearer <token>`.
 `POST /quiz/attempts` also requires `Authorization: Bearer <token>`.
+Admin routes are read-only inventory endpoints in V1, and content writes stay in `content/`
+plus `npm run seed --workspace @playsharp/api`.
 
 ## Stable auth, content, and quiz error codes
 
