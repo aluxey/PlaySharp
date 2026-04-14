@@ -36,7 +36,7 @@
 
 ### Product and UX
 
-- [ ] Validate the V1 user journey end-to-end (quiz -> feedback -> lesson -> progress).
+- [x] Validate the V1 user journey end-to-end (quiz -> feedback -> lesson -> progress).
 - [x] Confirm which admin features are needed in V1 (read-only vs CRUD) and document it.
 - [ ] Align each screen with `docs/ux/screens.md` content requirements.
 

@@ -71,7 +71,7 @@ try {
   });
 
   await runChecks();
-  console.log('Smoke checks passed for API health and core web routes.');
+  console.log('Smoke checks passed for API health, core web routes, and the quiz journey.');
 } finally {
   await stopServer(webServer);
   await stopServer(apiServer);
@@ -93,6 +93,117 @@ async function runChecks() {
   await expectPage('/lessons', 'Master Your Game');
   await expectPage('/quiz', 'Answer fast, learn faster');
   await expectDashboardRedirect();
+  await expectAuthenticatedQuizJourney();
+}
+
+async function expectAuthenticatedQuizJourney() {
+  const email = `smoke-${Date.now()}-${Math.random().toString(36).slice(2)}@playsharp.test`;
+  const authPayload = await expectJson(`${apiBaseUrl}/auth/register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: 'Smoke Test User',
+      email,
+      password: 'smoke-test-password',
+    }),
+  });
+  const accessToken = authPayload?.data?.session?.accessToken;
+
+  assert.ok(
+    typeof accessToken === 'string' && accessToken.length > 0,
+    'Register should return an access token',
+  );
+
+  const quizPayload = await expectJson(`${apiBaseUrl}/quiz/daily?game=poker`);
+  const quiz = quizPayload?.data?.quiz;
+  assert.ok(quiz, 'Daily quiz should return quiz data');
+
+  const correctChoice = quiz.question.choices.find((choice) => choice.isCorrect);
+  assert.ok(correctChoice, 'Daily quiz should expose one correct choice');
+
+  const attemptPayload = await expectJson(`${apiBaseUrl}/quiz/attempts`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      game: quiz.game,
+      answers: [
+        {
+          themeSlug: quiz.themeSlug,
+          questionSlug: quiz.question.slug,
+          selectedChoiceLabel: correctChoice.label,
+        },
+      ],
+    }),
+  });
+  const attempt = attemptPayload?.data?.attempt;
+
+  assert.ok(attempt, 'Quiz attempt should return result data');
+  assert.equal(attempt.score, 1, 'Quiz attempt should score the correct answer');
+  assert.equal(attempt.correctAnswers, 1, 'Quiz attempt should count one correct answer');
+  assert.equal(attempt.totalQuestions, 1, 'Quiz attempt should report one submitted question');
+  assert.equal(attempt.answers[0]?.isCorrect, true, 'Feedback should mark the answer as correct');
+  assert.ok(
+    typeof attempt.answers[0]?.explanation === 'string' &&
+      attempt.answers[0].explanation.length > 0,
+    'Feedback should include an explanation',
+  );
+
+  const lessonResponse = await fetch(`${webOrigin}/lessons/${quiz.game}/${quiz.themeSlug}`);
+  assert.equal(
+    lessonResponse.status,
+    200,
+    'Theme lesson route should render after the quiz attempt',
+  );
+
+  const lessonHtml = await lessonResponse.text();
+  assert.ok(
+    lessonHtml.includes(quiz.themeName),
+    'Theme lesson route should include the quiz theme name',
+  );
+
+  const statsPayload = await expectJson(`${apiBaseUrl}/stats/me`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const overview = statsPayload?.data?.overview;
+
+  assert.ok(overview, 'Progress overview should return after a completed quiz attempt');
+  assert.ok(
+    overview.summary.questionsAnswered >= 1,
+    'Progress overview should count the completed answer',
+  );
+  assert.ok(
+    overview.themesToImprove.some((theme) => theme.themeSlug === quiz.themeSlug),
+    'Progress overview should include the quiz theme',
+  );
+
+  const progressResponse = await fetch(`${webOrigin}/progress`, {
+    headers: {
+      Cookie: `playsharp_access_token=${accessToken}`,
+    },
+    redirect: 'manual',
+  });
+  assert.equal(
+    progressResponse.status,
+    200,
+    'Progress page should render for the authenticated user',
+  );
+
+  const progressHtml = await progressResponse.text();
+  assert.ok(
+    progressHtml.includes('Your Progress'),
+    'Progress page should render the progress heading',
+  );
+  assert.ok(
+    progressHtml.includes('Questions Answered'),
+    'Progress page should render the overview stats',
+  );
 }
 
 async function expectPage(pathname, text) {
@@ -116,6 +227,13 @@ async function expectDashboardRedirect() {
   const redirectUrl = new URL(location, webOrigin);
   assert.equal(redirectUrl.pathname, '/login');
   assert.equal(redirectUrl.searchParams.get('next'), '/dashboard');
+}
+
+async function expectJson(url, options) {
+  const response = await fetch(url, options);
+  assert.ok(response.ok, `${url} should return a successful HTTP response, got ${response.status}`);
+
+  return response.json();
 }
 
 function startServer(name, args, extraEnv) {
