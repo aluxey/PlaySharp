@@ -8,6 +8,8 @@ import {
   supportedGames,
 } from '@playsharp/shared';
 
+import { validateGameContent } from './content.validation';
+
 const contentRoot = resolve(process.cwd(), '..', '..', 'content');
 
 function contentFilePath(game: ContentGameName) {
@@ -20,11 +22,18 @@ function contentRelativePath(game: ContentGameName) {
 
 async function readGameContent(game: ContentGameName): Promise<ContentGame | null> {
   try {
+    const sourcePath = contentRelativePath(game);
     const raw = await readFile(contentFilePath(game), 'utf8');
-    return JSON.parse(raw) as ContentGame;
+    const parsed = JSON.parse(raw) as unknown;
+
+    return validateGameContent(game, parsed, sourcePath);
   } catch (error) {
     if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
       return null;
+    }
+
+    if (error instanceof SyntaxError) {
+      throw new Error(`${contentRelativePath(game)}: ${error.message}`);
     }
 
     throw error;
