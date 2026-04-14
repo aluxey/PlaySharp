@@ -6,7 +6,13 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-loadEnvFile('.env');
+try {
+  loadEnvFile('.env');
+} catch (error) {
+  if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) {
+    throw error;
+  }
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
