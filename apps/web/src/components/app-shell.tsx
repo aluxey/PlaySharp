@@ -21,7 +21,6 @@ export function AppShell({ children }: AppShellProps) {
   if (isAuthPage) {
     return (
       <div className="min-h-screen bg-background">
-        <AnimatedBackground />
         <main className="relative z-10">{children}</main>
       </div>
     );

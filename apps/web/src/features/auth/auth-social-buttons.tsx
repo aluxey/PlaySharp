@@ -50,15 +50,15 @@ export function AuthSocialButtons({ contextLabel }: AuthSocialButtonsProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-slate-500">
-        <span className="h-px flex-1 bg-white/10" />
-        <span>Or continue with</span>
-        <span className="h-px flex-1 bg-white/10" />
+      <div className="flex items-center gap-3 text-sm text-slate-500">
+        <span className="h-px flex-1 bg-[#252c45]" />
+        <span>{contextLabel === 'register' ? 'Or register with' : 'Or sign in with'}</span>
+        <span className="h-px flex-1 bg-[#252c45]" />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <button
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-white/8 hover:shadow-[0_10px_30px_rgba(59,130,246,0.12)]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#4a5165] bg-transparent px-4 py-3 text-lg font-medium text-white transition-colors hover:bg-white/5"
           type="button"
           onClick={() => handleProviderClick('Google')}
         >
@@ -67,7 +67,7 @@ export function AuthSocialButtons({ contextLabel }: AuthSocialButtonsProps) {
         </button>
 
         <button
-          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:bg-white/8 hover:shadow-[0_10px_30px_rgba(59,130,246,0.12)]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#4a5165] bg-transparent px-4 py-3 text-lg font-medium text-white transition-colors hover:bg-white/5"
           type="button"
           onClick={() => handleProviderClick('Apple')}
         >

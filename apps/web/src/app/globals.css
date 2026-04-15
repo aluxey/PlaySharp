@@ -92,6 +92,53 @@ a {
   }
 }
 
+@keyframes auth-shell-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes auth-panel-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes auth-content-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes auth-float-soft {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
 .auth-display {
   font-family: 'Bebas Neue', 'Sora', system-ui, sans-serif;
   letter-spacing: 0.04em;
@@ -120,6 +167,32 @@ a {
 
 .auth-form-enter {
   animation: auth-enter 420ms ease-out both;
+}
+
+.auth-shell-enter {
+  animation: auth-shell-enter 360ms ease-out both;
+}
+
+.auth-panel-enter {
+  animation: auth-panel-enter 420ms ease-out both;
+}
+
+.auth-content-enter {
+  animation: auth-content-enter 420ms ease-out 60ms both;
+}
+
+.auth-bubble-a {
+  animation: auth-float-soft 12s ease-in-out infinite;
+}
+
+.auth-bubble-b {
+  animation: auth-float-soft 15s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+.auth-bubble-c {
+  animation: auth-float-soft 13s ease-in-out infinite;
+  animation-delay: -5s;
 }
 
 .auth-cta::after {
@@ -162,6 +235,12 @@ a {
   .auth-orb,
   .auth-orb-delay,
   .auth-form-enter,
+  .auth-shell-enter,
+  .auth-panel-enter,
+  .auth-content-enter,
+  .auth-bubble-a,
+  .auth-bubble-b,
+  .auth-bubble-c,
   .auth-cta::after {
     animation: none;
     transition: none;

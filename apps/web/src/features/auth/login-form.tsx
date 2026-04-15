@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { loginWithPassword } from '../../lib/auth-client';
 import { useAuth, useToast } from '../../components';
@@ -36,7 +36,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     email: false,
     password: false,
   });
-  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.dashboard);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.home);
   const emailError = validateEmailAddress(email);
   const passwordError = validateLoginPassword(password);
   const visibleEmailError = (touchedFields.email || hasSubmitted) && emailError ? emailError : null;
@@ -44,10 +44,10 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     (touchedFields.password || hasSubmitted) && passwordError ? passwordError : null;
 
   function fieldClassName(hasError: boolean, hasTrailingButton = false) {
-    return `auth-input w-full rounded-2xl border bg-white/5 px-4 py-3.5 text-white placeholder:text-slate-500 transition-[border-color,box-shadow,background-color] focus:outline-none ${
+    return `auth-input w-full rounded-xl border bg-[#26282f] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-[border-color,box-shadow,background-color] focus:outline-none ${
       hasError
-        ? 'border-error/60 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
-        : 'border-white/10 focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.16),0_0_24px_rgba(59,130,246,0.16)]'
+        ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]'
+        : 'border-[#464b5f] focus:border-[#5a6fff] focus:shadow-[0_0_0_3px_rgba(90,111,255,0.2)]'
     } ${hasTrailingButton ? 'pr-12' : ''}`;
   }
 
@@ -116,43 +116,31 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       activeTab="login"
       nextPath={nextPath}
       formEyebrow="Member access"
-      formTitle="Welcome back"
-      formDescription="Use your email and password to jump back into PlaySharp Training Studio."
+      formTitle="Sign in"
+      formDescription="New here?"
       helper={
         <>
-          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
-          <span>Secure session. Member navigation updates as soon as you sign in.</span>
-        </>
-      }
-      footer={
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-300">
-          <p>
-            New to PlaySharp?{' '}
-            <Link
-              className="font-medium text-sky-300 transition-colors hover:text-white"
-              href={buildRegisterRoute(nextPath)}
-            >
-              Create account
-            </Link>
-          </p>
           <Link
-            className="font-medium text-slate-400 transition-colors hover:text-white"
-            href={routes.home}
+            className="font-medium text-[#6a87ff] transition-colors hover:text-white"
+            href={buildRegisterRoute(nextPath)}
           >
-            Back home
+            Create an account
           </Link>
-        </div>
+        </>
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-white" htmlFor="login-email">
+          <label
+            className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+            htmlFor="login-email"
+          >
             Email
           </label>
           <input
             id="login-email"
             type="email"
-            placeholder="alex@example.com"
+            placeholder="Email"
             value={email}
             onChange={(event) => handleEmailChange(event.target.value)}
             onBlur={() =>
@@ -176,11 +164,14 @@ export function LoginForm({ nextPath }: LoginFormProps) {
 
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-3 text-sm">
-            <label className="font-medium text-white" htmlFor="login-password">
+            <label
+              className="font-medium uppercase tracking-[0.14em] text-slate-500"
+              htmlFor="login-password"
+            >
               Password
             </label>
             <Link
-              className="font-medium text-slate-400 transition-colors hover:text-white"
+              className="font-medium text-[#6a87ff] transition-colors hover:text-white"
               href={buildForgotPasswordRoute(nextPath)}
             >
               Forgot password?
@@ -208,7 +199,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-400 transition-colors hover:text-white"
+              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-500 transition-colors hover:text-slate-200"
               onClick={() => setShowPassword((current) => !current)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -224,20 +215,17 @@ export function LoginForm({ nextPath }: LoginFormProps) {
         </div>
 
         {errorMessage ? (
-          <div className="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+          <div className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
             {errorMessage}
           </div>
         ) : null}
 
         <button
-          className="auth-cta relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-[#3B82F6] px-5 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(59,130,246,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(59,130,246,0.32)] disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-[#4a5165] bg-transparent px-5 py-3.5 text-xl font-medium text-white transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-70"
           type="submit"
           disabled={isSubmitting}
         >
-          <span className="relative z-10 inline-flex items-center gap-2">
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
-            <ArrowRight className="h-4 w-4" />
-          </span>
+          {isSubmitting ? 'Signing in...' : 'Sign in'}
         </button>
 
         <AuthSocialButtons contextLabel="login" />

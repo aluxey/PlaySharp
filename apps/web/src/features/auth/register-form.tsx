@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, CheckCircle2, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { registerWithPassword } from '../../lib/auth-client';
 import { useAuth, useToast } from '../../components';
@@ -25,44 +25,67 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
   const router = useRouter();
   const { setAuthenticatedUser } = useAuth();
   const { showToast } = useToast();
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [touchedFields, setTouchedFields] = useState({
-    name: false,
+    firstName: false,
+    lastName: false,
     email: false,
     password: false,
+    terms: false,
   });
-  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.quiz);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.home);
+  const normalizedFirstName = firstName.trim();
+  const normalizedLastName = lastName.trim();
+  const name = `${normalizedFirstName} ${normalizedLastName}`.trim();
   const nameError = validateDisplayName(name);
+  const firstNameError = normalizedFirstName.length === 0 ? 'Enter your first name.' : null;
+  const lastNameError = normalizedLastName.length === 0 ? 'Enter your last name.' : null;
   const emailError = validateEmailAddress(email);
   const passwordError = validateRegisterPassword(password);
-  const visibleNameError = (touchedFields.name || hasSubmitted) && nameError ? nameError : null;
+  const visibleFirstNameError =
+    (touchedFields.firstName || hasSubmitted) && firstNameError ? firstNameError : null;
+  const visibleLastNameError =
+    (touchedFields.lastName || hasSubmitted) && lastNameError ? lastNameError : null;
   const visibleEmailError = (touchedFields.email || hasSubmitted) && emailError ? emailError : null;
   const visiblePasswordError =
     (touchedFields.password || hasSubmitted) && passwordError ? passwordError : null;
+  const visibleTermsError =
+    (touchedFields.terms || hasSubmitted) && !hasAcceptedTerms
+      ? 'Accept the terms to create your account.'
+      : null;
   const isFormValid =
-    name.trim().length > 0 &&
+    normalizedFirstName.length > 0 &&
+    normalizedLastName.length > 0 &&
     email.trim().length > 0 &&
     password.length > 0 &&
     !nameError &&
     !emailError &&
-    !passwordError;
+    !passwordError &&
+    hasAcceptedTerms;
 
   function fieldClassName(hasError: boolean, hasTrailingButton = false) {
-    return `auth-input w-full rounded-2xl border bg-white/5 px-4 py-3.5 text-white placeholder:text-slate-500 transition-[border-color,box-shadow,background-color] focus:outline-none ${
+    return `auth-input w-full rounded-xl border bg-[#26282f] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-[border-color,box-shadow,background-color] focus:outline-none ${
       hasError
-        ? 'border-error/60 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
-        : 'border-white/10 focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.16),0_0_24px_rgba(59,130,246,0.16)]'
+        ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]'
+        : 'border-[#464b5f] focus:border-[#5a6fff] focus:shadow-[0_0_0_3px_rgba(90,111,255,0.2)]'
     } ${hasTrailingButton ? 'pr-12' : ''}`;
   }
 
-  function handleNameChange(nextName: string) {
-    setName(nextName);
+  function handleFirstNameChange(nextName: string) {
+    setFirstName(nextName);
+    setErrorMessage(null);
+  }
+
+  function handleLastNameChange(nextName: string) {
+    setLastName(nextName);
     setErrorMessage(null);
   }
 
@@ -85,13 +108,15 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
 
     setHasSubmitted(true);
     setTouchedFields({
-      name: true,
+      firstName: true,
+      lastName: true,
       email: true,
       password: true,
+      terms: true,
     });
     setErrorMessage(null);
 
-    if (nameError || emailError || passwordError) {
+    if (nameError || emailError || passwordError || !hasAcceptedTerms) {
       return;
     }
 
@@ -136,72 +161,97 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
       activeTab="register"
       nextPath={nextPath}
       formEyebrow="New member"
-      formTitle="Build your training profile"
-      formDescription="Set up your account and move straight into the first performance rep."
+      formTitle="Create account"
+      formDescription="Already have an account?"
       helper={
         <>
-          <Sparkles className="h-3.5 w-3.5 shrink-0" />
-          <span>No second step. Account creation also signs you in.</span>
-        </>
-      }
-      footer={
-        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-300">
-          <p>
-            Already have an account?{' '}
-            <Link
-              className="font-medium text-sky-300 transition-colors hover:text-white"
-              href={buildLoginRoute(nextPath)}
-            >
-              Log in
-            </Link>
-          </p>
           <Link
-            className="font-medium text-slate-400 transition-colors hover:text-white"
-            href={routes.home}
+            className="font-medium text-[#6a87ff] transition-colors hover:text-white"
+            href={buildLoginRoute(nextPath)}
           >
-            Back home
+            Log in
           </Link>
-        </div>
+        </>
       }
     >
       <form className="space-y-4" onSubmit={handleSubmit}>
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-white" htmlFor="register-name">
-            Display name
-          </label>
-          <input
-            id="register-name"
-            type="text"
-            placeholder="PlaySharp learner"
-            value={name}
-            onChange={(event) => handleNameChange(event.target.value)}
-            onBlur={() =>
-              setTouchedFields((current) => ({
-                ...current,
-                name: true,
-              }))
-            }
-            className={fieldClassName(Boolean(visibleNameError))}
-            autoComplete="name"
-            aria-invalid={visibleNameError ? 'true' : 'false'}
-            aria-describedby={visibleNameError ? 'register-name-error' : undefined}
-            required
-          />
-          {visibleNameError ? (
-            <p id="register-name-error" className="text-sm text-error">
-              {visibleNameError}
-            </p>
-          ) : null}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <label
+              className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+              htmlFor="register-first-name"
+            >
+              First name
+            </label>
+            <input
+              id="register-first-name"
+              type="text"
+              placeholder="First name"
+              value={firstName}
+              onChange={(event) => handleFirstNameChange(event.target.value)}
+              onBlur={() =>
+                setTouchedFields((current) => ({
+                  ...current,
+                  firstName: true,
+                }))
+              }
+              className={fieldClassName(Boolean(visibleFirstNameError || nameError))}
+              autoComplete="given-name"
+              aria-invalid={visibleFirstNameError ? 'true' : 'false'}
+              aria-describedby={visibleFirstNameError ? 'register-first-name-error' : undefined}
+              required
+            />
+            {visibleFirstNameError ? (
+              <p id="register-first-name-error" className="text-sm text-error">
+                {visibleFirstNameError}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="space-y-2">
+            <label
+              className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+              htmlFor="register-last-name"
+            >
+              Last name
+            </label>
+            <input
+              id="register-last-name"
+              type="text"
+              placeholder="Last name"
+              value={lastName}
+              onChange={(event) => handleLastNameChange(event.target.value)}
+              onBlur={() =>
+                setTouchedFields((current) => ({
+                  ...current,
+                  lastName: true,
+                }))
+              }
+              className={fieldClassName(Boolean(visibleLastNameError || nameError))}
+              autoComplete="family-name"
+              aria-invalid={visibleLastNameError ? 'true' : 'false'}
+              aria-describedby={visibleLastNameError ? 'register-last-name-error' : undefined}
+              required
+            />
+            {visibleLastNameError ? (
+              <p id="register-last-name-error" className="text-sm text-error">
+                {visibleLastNameError}
+              </p>
+            ) : null}
+          </div>
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-white" htmlFor="register-email">
+          <label
+            className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+            htmlFor="register-email"
+          >
             Email
           </label>
           <input
             id="register-email"
             type="email"
-            placeholder="alex@example.com"
+            placeholder="Email"
             value={email}
             onChange={(event) => handleEmailChange(event.target.value)}
             onBlur={() =>
@@ -224,7 +274,10 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-white" htmlFor="register-password">
+          <label
+            className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+            htmlFor="register-password"
+          >
             Password
           </label>
           <div className="relative">
@@ -249,7 +302,7 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-400 transition-colors hover:text-white"
+              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-500 transition-colors hover:text-slate-200"
               onClick={() => setShowPassword((current) => !current)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
@@ -263,28 +316,45 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
           ) : null}
         </div>
 
-        {isFormValid ? (
-          <div className="inline-flex items-center gap-2 rounded-full border border-success/25 bg-success/10 px-3 py-2 text-xs font-medium text-emerald-300">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            All fields look ready.
-          </div>
-        ) : null}
+        <div className="space-y-2">
+          <label className="inline-flex items-start gap-2 text-sm text-slate-300">
+            <input
+              type="checkbox"
+              checked={hasAcceptedTerms}
+              onChange={(event) => {
+                setHasAcceptedTerms(event.target.checked);
+                setTouchedFields((current) => ({
+                  ...current,
+                  terms: true,
+                }));
+              }}
+              className="mt-1 h-4 w-4 rounded border-[#4a5165] bg-[#26282f] text-[#5a6fff] focus:ring-[#5a6fff]"
+            />
+            <span>
+              I agree to the{' '}
+              <Link
+                className="text-[#6a87ff] transition-colors hover:text-white"
+                href={routes.home}
+              >
+                Terms & Conditions
+              </Link>
+            </span>
+          </label>
+          {visibleTermsError ? <p className="text-sm text-error">{visibleTermsError}</p> : null}
+        </div>
 
         {errorMessage ? (
-          <div className="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+          <div className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
             {errorMessage}
           </div>
         ) : null}
 
         <button
-          className="auth-cta relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-[#3B82F6] px-5 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(59,130,246,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(59,130,246,0.32)] disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-[#4a5165] bg-transparent px-5 py-3.5 text-xl font-medium text-white transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-70"
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !isFormValid}
         >
-          <span className="relative z-10 inline-flex items-center gap-2">
-            {isSubmitting ? 'Creating account...' : 'Create account'}
-            <ArrowRight className="h-4 w-4" />
-          </span>
+          {isSubmitting ? 'Creating account...' : 'Create account'}
         </button>
 
         <AuthSocialButtons contextLabel="register" />

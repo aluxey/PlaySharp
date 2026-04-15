@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { redirect } from 'next/navigation';
 import { ArrowRight, BookOpen, Check, Crown, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 
 import { getAuthState } from '../lib/auth-state';
@@ -45,10 +44,6 @@ const comparisonCards = [
 export default async function HomePage() {
   const authState = await getAuthState();
 
-  if (authState.isAuthenticated) {
-    redirect(routes.dashboard);
-  }
-
   return (
     <div className="min-h-screen">
       <section className="max-w-7xl mx-auto px-4 md:px-8 py-14 md:py-20">
@@ -69,19 +64,39 @@ export default async function HomePage() {
             </div>
 
             <div className="flex gap-3 flex-wrap">
-              <Link
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold"
-                href={routes.register}
-              >
-                Create account
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-border text-foreground font-semibold"
-                href={routes.login}
-              >
-                Log in
-              </Link>
+              {authState.isAuthenticated ? (
+                <>
+                  <Link
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold"
+                    href={routes.dashboard}
+                  >
+                    Open dashboard
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-border text-foreground font-semibold"
+                    href={routes.quiz}
+                  >
+                    Continue training
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold"
+                    href={routes.register}
+                  >
+                    Create account
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                  <Link
+                    className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-border text-foreground font-semibold"
+                    href={routes.login}
+                  >
+                    Log in
+                  </Link>
+                </>
+              )}
               <Link
                 className="px-5 py-3 rounded-2xl text-foreground-secondary"
                 href={routes.lessons}
