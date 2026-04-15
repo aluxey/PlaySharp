@@ -18,7 +18,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
   const authState = await getAuthState();
 
   if (authState.isAuthenticated) {
-    redirect(resolvePostAuthRedirect(nextPath, routes.dashboard));
+    redirect(resolvePostAuthRedirect(nextPath, routes.home));
   }
 
   return <RegisterForm nextPath={nextPath} />;
