@@ -3,12 +3,20 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 import { loginWithPassword } from '../../lib/auth-client';
 import { useAuth, useToast } from '../../components';
-import { buildRegisterRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
+import {
+  buildForgotPasswordRoute,
+  buildRegisterRoute,
+  resolvePostAuthRedirect,
+  routes,
+} from '../../lib/routes';
+import { AuthLayout } from './auth-layout';
+import { AuthSocialButtons } from './auth-social-buttons';
 import { getLoginErrorToast } from './auth-toast';
+import { validateEmailAddress, validateLoginPassword } from './auth-validation';
 
 type LoginFormProps = {
   nextPath: string | null;
@@ -22,31 +30,36 @@ export function LoginForm({ nextPath }: LoginFormProps) {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [touchedFields, setTouchedFields] = useState({
+    email: false,
+    password: false,
+  });
   const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.dashboard);
-  const sessionSignals = [
-    {
-      label: 'Protected progress',
-      description: 'Restore dashboard, streaks, quiz history, and member navigation instantly.',
-      icon: ShieldCheck,
-    },
-    {
-      label: 'Coach continuity',
-      description: 'Jump back into the next lesson or recommendation instead of restarting cold.',
-      icon: TrendingUp,
-    },
-    {
-      label: 'Fast resume',
-      description: 'One sign-in restores the exact flow you were trying to reach.',
-      icon: Zap,
-    },
-  ] as const;
-  const recoveryStats = [
-    { value: '1 click', label: 'to restore the session' },
-    { value: 'Live', label: 'cookie-backed auth state' },
-    { value: '0 reset', label: 'to keep your progress context' },
-  ] as const;
-  const fieldClassName =
-    'w-full rounded-2xl border border-border bg-surface px-4 py-3.5 text-foreground placeholder:text-foreground-secondary focus:border-primary focus:outline-none';
+  const emailError = validateEmailAddress(email);
+  const passwordError = validateLoginPassword(password);
+  const visibleEmailError = (touchedFields.email || hasSubmitted) && emailError ? emailError : null;
+  const visiblePasswordError =
+    (touchedFields.password || hasSubmitted) && passwordError ? passwordError : null;
+
+  function fieldClassName(hasError: boolean, hasTrailingButton = false) {
+    return `auth-input w-full rounded-2xl border bg-white/5 px-4 py-3.5 text-white placeholder:text-slate-500 transition-[border-color,box-shadow,background-color] focus:outline-none ${
+      hasError
+        ? 'border-error/60 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.12)]'
+        : 'border-white/10 focus:border-primary focus:shadow-[0_0_0_3px_rgba(59,130,246,0.16),0_0_24px_rgba(59,130,246,0.16)]'
+    } ${hasTrailingButton ? 'pr-12' : ''}`;
+  }
+
+  function handleEmailChange(nextEmail: string) {
+    setEmail(nextEmail);
+    setErrorMessage(null);
+  }
+
+  function handlePasswordChange(nextPassword: string) {
+    setPassword(nextPassword);
+    setErrorMessage(null);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -55,7 +68,14 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       return;
     }
 
+    setHasSubmitted(true);
+    setTouchedFields({ email: true, password: true });
     setErrorMessage(null);
+
+    if (emailError || passwordError) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     const result = await loginWithPassword({
@@ -92,174 +112,136 @@ export function LoginForm({ nextPath }: LoginFormProps) {
   }
 
   return (
-    <div className="min-h-screen px-4 py-8 md:py-12">
-      <div className="mx-auto grid max-w-6xl gap-6 xl:grid-cols-[1.08fr_0.92fr]">
-        <section className="relative overflow-hidden rounded-[2rem] border border-primary/20 bg-gradient-to-br from-surface-elevated via-surface to-background p-6 md:p-8 lg:p-10 shadow-2xl shadow-primary/10">
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-r from-primary/15 via-secondary/10 to-transparent blur-3xl" />
-          <div className="relative space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-4 py-2 text-sm text-primary">
-              <ShieldCheck className="h-4 w-4" />
-              Returning member access
-            </div>
+    <AuthLayout
+      activeTab="login"
+      nextPath={nextPath}
+      formEyebrow="Member access"
+      formTitle="Welcome back"
+      formDescription="Use your email and password to jump back into PlaySharp Training Studio."
+      helper={
+        <>
+          <ShieldCheck className="h-3.5 w-3.5 shrink-0" />
+          <span>Secure session. Member navigation updates as soon as you sign in.</span>
+        </>
+      }
+      footer={
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-300">
+          <p>
+            New to PlaySharp?{' '}
+            <Link
+              className="font-medium text-sky-300 transition-colors hover:text-white"
+              href={buildRegisterRoute(nextPath)}
+            >
+              Create account
+            </Link>
+          </p>
+          <Link
+            className="font-medium text-slate-400 transition-colors hover:text-white"
+            href={routes.home}
+          >
+            Back home
+          </Link>
+        </div>
+      }
+    >
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-white" htmlFor="login-email">
+            Email
+          </label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="alex@example.com"
+            value={email}
+            onChange={(event) => handleEmailChange(event.target.value)}
+            onBlur={() =>
+              setTouchedFields((current) => ({
+                ...current,
+                email: true,
+              }))
+            }
+            className={fieldClassName(Boolean(visibleEmailError))}
+            autoComplete="email"
+            aria-invalid={visibleEmailError ? 'true' : 'false'}
+            aria-describedby={visibleEmailError ? 'login-email-error' : undefined}
+            required
+          />
+          {visibleEmailError ? (
+            <p id="login-email-error" className="text-sm text-error">
+              {visibleEmailError}
+            </p>
+          ) : null}
+        </div>
 
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <p className="text-sm uppercase tracking-[0.22em] text-foreground-secondary">
-                  Authentication
-                </p>
-                <h1 className="max-w-xl text-4xl font-bold leading-tight text-foreground md:text-5xl">
-                  Log in and pick up exactly where your training left off.
-                </h1>
-                <p className="max-w-2xl text-base text-foreground-secondary md:text-lg">
-                  Sign in to restore your dashboard, progress trends, quiz history, and the next
-                  route you were trying to reach.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                {recoveryStats.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="rounded-2xl border border-border bg-background/60 p-4"
-                  >
-                    <p className="text-xl font-semibold text-foreground">{stat.value}</p>
-                    <p className="mt-1 text-sm text-foreground-secondary">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {nextPath ? (
-              <div className="rounded-2xl border border-secondary/20 bg-secondary/10 p-4 text-sm text-foreground-secondary">
-                <p className="font-medium text-foreground">Next stop after sign-in</p>
-                <p className="mt-1 font-mono text-xs text-secondary">{postAuthRedirect}</p>
-              </div>
-            ) : null}
-
-            <div className="space-y-4">
-              {sessionSignals.map((signal) => {
-                const Icon = signal.icon;
-
-                return (
-                  <div
-                    key={signal.label}
-                    className="flex gap-4 rounded-2xl border border-border bg-background/50 p-4"
-                  >
-                    <div className="mt-0.5 rounded-2xl border border-primary/20 bg-primary/10 p-2.5 text-primary">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="font-semibold text-foreground">{signal.label}</p>
-                      <p className="text-sm leading-relaxed text-foreground-secondary">
-                        {signal.description}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              <Link
-                className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 font-semibold text-primary-foreground"
-                href={routes.home}
-              >
-                Back home
-              </Link>
-              <Link
-                className="inline-flex items-center gap-2 rounded-2xl border border-border px-5 py-3 font-semibold text-foreground"
-                href={buildRegisterRoute(nextPath)}
-              >
-                Create account
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <label className="font-medium text-white" htmlFor="login-password">
+              Password
+            </label>
+            <Link
+              className="font-medium text-slate-400 transition-colors hover:text-white"
+              href={buildForgotPasswordRoute(nextPath)}
+            >
+              Forgot password?
+            </Link>
           </div>
-        </section>
 
-        <section className="rounded-[2rem] border border-border bg-surface-elevated/95 p-6 shadow-2xl shadow-primary/10 md:p-8 lg:p-10">
-          <div className="space-y-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="text-sm uppercase tracking-[0.18em] text-foreground-secondary">
-                  Secure access
-                </p>
-                <h2 className="text-3xl font-semibold text-foreground">Welcome back</h2>
-                <p className="max-w-md text-sm leading-relaxed text-foreground-secondary">
-                  Use the same account to restore your saved progress and member navigation without
-                  any extra setup.
-                </p>
-              </div>
-              <span className="inline-flex items-center gap-2 rounded-full border border-success/25 bg-success/10 px-3 py-1 text-xs font-medium text-success">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Live session
-              </span>
-            </div>
-
-            <form className="space-y-5" onSubmit={handleSubmit}>
-              <label className="block space-y-2 text-sm font-medium text-foreground">
-                <span>Email</span>
-                <input
-                  type="email"
-                  placeholder="alex@example.com"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  className={fieldClassName}
-                  autoComplete="email"
-                  required
-                />
-              </label>
-
-              <label className="block space-y-2 text-sm font-medium text-foreground">
-                <span>Password</span>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  className={fieldClassName}
-                  autoComplete="current-password"
-                  required
-                />
-              </label>
-
-              <div className="rounded-2xl border border-border bg-background/60 p-4">
-                <div className="flex items-start gap-3 text-sm text-foreground-secondary">
-                  <Sparkles className="mt-0.5 h-4 w-4 shrink-0 text-secondary" />
-                  <p>
-                    After sign-in, PlaySharp restores your member navigation and sends you to{' '}
-                    <span className="font-medium text-foreground">{postAuthRedirect}</span>.
-                  </p>
-                </div>
-              </div>
-
-              {errorMessage ? (
-                <div className="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
-                  {errorMessage}
-                </div>
-              ) : null}
-
-              <button
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-5 py-3.5 font-semibold text-primary-foreground transition-opacity disabled:opacity-70"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
-                <ArrowRight className="h-4 w-4" />
-              </button>
-
-              <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
-                <Link className="font-medium text-primary" href={buildRegisterRoute(nextPath)}>
-                  Need an account?
-                </Link>
-                <p className="text-foreground-secondary">
-                  Session cookies stay on this device only.
-                </p>
-              </div>
-            </form>
+          <div className="relative">
+            <input
+              id="login-password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => handlePasswordChange(event.target.value)}
+              onBlur={() =>
+                setTouchedFields((current) => ({
+                  ...current,
+                  password: true,
+                }))
+              }
+              className={fieldClassName(Boolean(visiblePasswordError), true)}
+              autoComplete="current-password"
+              aria-invalid={visiblePasswordError ? 'true' : 'false'}
+              aria-describedby={visiblePasswordError ? 'login-password-error' : undefined}
+              required
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-400 transition-colors hover:text-white"
+              onClick={() => setShowPassword((current) => !current)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
-        </section>
-      </div>
-    </div>
+
+          {visiblePasswordError ? (
+            <p id="login-password-error" className="text-sm text-error">
+              {visiblePasswordError}
+            </p>
+          ) : null}
+        </div>
+
+        {errorMessage ? (
+          <div className="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <button
+          className="auth-cta relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-[#3B82F6] px-5 py-3.5 font-semibold text-white shadow-[0_12px_30px_rgba(59,130,246,0.24)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(59,130,246,0.32)] disabled:cursor-not-allowed disabled:opacity-70"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          <span className="relative z-10 inline-flex items-center gap-2">
+            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            <ArrowRight className="h-4 w-4" />
+          </span>
+        </button>
+
+        <AuthSocialButtons contextLabel="login" />
+      </form>
+    </AuthLayout>
   );
 }

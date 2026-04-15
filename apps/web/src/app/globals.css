@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -67,4 +67,103 @@ a {
 *::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, var(--primary), var(--secondary));
   border-radius: 999px;
+}
+
+@keyframes auth-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(0, -18px, 0) scale(1.03);
+  }
+}
+
+@keyframes auth-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-display {
+  font-family: 'Bebas Neue', 'Sora', system-ui, sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.auth-mesh {
+  background:
+    radial-gradient(circle at top left, rgba(59, 130, 246, 0.12), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(124, 92, 255, 0.14), transparent 22%),
+    linear-gradient(135deg, rgba(13, 17, 23, 0.98), rgba(9, 13, 20, 1));
+}
+
+.auth-scanlines {
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 100% 4px;
+}
+
+.auth-orb {
+  animation: auth-float 12s ease-in-out infinite;
+}
+
+.auth-orb-delay {
+  animation: auth-float 14s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.auth-form-enter {
+  animation: auth-enter 420ms ease-out both;
+}
+
+.auth-cta::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -32%;
+  width: 30%;
+  transform: skewX(-24deg);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.42),
+    rgba(255, 255, 255, 0)
+  );
+  opacity: 0;
+  transition:
+    transform 650ms ease,
+    opacity 220ms ease;
+}
+
+.auth-cta:hover::after,
+.auth-cta:focus-visible::after {
+  opacity: 1;
+  transform: translateX(360%) skewX(-24deg);
+}
+
+.auth-input:-webkit-autofill,
+.auth-input:-webkit-autofill:hover,
+.auth-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  caret-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px rgba(13, 17, 23, 0.98) inset;
+  box-shadow: 0 0 0 1000px rgba(13, 17, 23, 0.98) inset;
+  transition: background-color 9999s ease-out 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-orb,
+  .auth-orb-delay,
+  .auth-form-enter,
+  .auth-cta::after {
+    animation: none;
+    transition: none;
+  }
 }

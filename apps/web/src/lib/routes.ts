@@ -10,6 +10,7 @@ export const routes = {
   admin: '/admin',
   login: '/login',
   register: '/register',
+  forgotPassword: '/forgot-password',
 } as const;
 
 export const appNavItems = [
@@ -46,7 +47,9 @@ export function normalizeAuthRedirectPath(path: string | null | undefined) {
     normalizedPath === routes.login ||
     normalizedPath.startsWith(`${routes.login}?`) ||
     normalizedPath === routes.register ||
-    normalizedPath.startsWith(`${routes.register}?`)
+    normalizedPath.startsWith(`${routes.register}?`) ||
+    normalizedPath === routes.forgotPassword ||
+    normalizedPath.startsWith(`${routes.forgotPassword}?`)
   ) {
     return null;
   }
@@ -55,7 +58,7 @@ export function normalizeAuthRedirectPath(path: string | null | undefined) {
 }
 
 function buildAuthRoute(
-  basePath: typeof routes.login | typeof routes.register,
+  basePath: typeof routes.login | typeof routes.register | typeof routes.forgotPassword,
   nextPath?: string | null,
 ) {
   const normalizedNextPath = normalizeAuthRedirectPath(nextPath);
@@ -74,6 +77,10 @@ export function buildLoginRoute(nextPath?: string | null) {
 
 export function buildRegisterRoute(nextPath?: string | null) {
   return buildAuthRoute(routes.register, nextPath);
+}
+
+export function buildForgotPasswordRoute(nextPath?: string | null) {
+  return buildAuthRoute(routes.forgotPassword, nextPath);
 }
 
 export function resolvePostAuthRedirect(nextPath: string | null | undefined, fallbackPath: string) {

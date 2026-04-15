@@ -59,6 +59,7 @@
 
 - [x] Wire login/register pages to real auth endpoints.
 - [x] Polish the login/register experience and sync client auth state immediately after auth.
+- [x] Add password visibility toggles, inline auth validation, and a forgot-password placeholder flow.
 - [x] Submit quiz answers to the API and display result state from response.
 - [x] Use lesson/theme routes for deep links and catalog navigation.
 - [x] Replace placeholder stats with API-backed progress data.

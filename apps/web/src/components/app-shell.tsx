@@ -15,7 +15,8 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
   const { user } = useAuth();
-  const isAuthPage = pathname === routes.login || pathname === routes.register;
+  const isAuthPage =
+    pathname === routes.login || pathname === routes.register || pathname === routes.forgotPassword;
 
   if (isAuthPage) {
     return (
