@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { loginWithPassword } from '../../lib/auth-client';
@@ -23,7 +22,6 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ nextPath }: LoginFormProps) {
-  const router = useRouter();
   const { setAuthenticatedUser } = useAuth();
   const { showToast } = useToast();
   const [email, setEmail] = useState('');
@@ -107,8 +105,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       description: `Welcome back ${result.data.user.email}. Your account is ready.`,
       tone: 'success',
     });
-    router.replace(postAuthRedirect);
-    router.refresh();
+    window.location.assign(postAuthRedirect);
   }
 
   return (

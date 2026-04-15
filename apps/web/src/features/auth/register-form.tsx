@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 
 import { registerWithPassword } from '../../lib/auth-client';
@@ -22,7 +21,6 @@ type RegisterFormProps = {
 };
 
 export function RegisterForm({ nextPath }: RegisterFormProps) {
-  const router = useRouter();
   const { setAuthenticatedUser } = useAuth();
   const { showToast } = useToast();
   const [firstName, setFirstName] = useState('');
@@ -152,8 +150,7 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
       description: `Your profile is ready, ${result.data.user.email}. Redirecting you into PlaySharp now.`,
       tone: 'success',
     });
-    router.replace(postAuthRedirect);
-    router.refresh();
+    window.location.assign(postAuthRedirect);
   }
 
   return (

@@ -47,6 +47,7 @@ async function postAuthRequest(
   try {
     const response = await fetch(path, {
       method: 'POST',
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },

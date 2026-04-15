@@ -50,7 +50,9 @@ export function AuthLayout({
                 <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[linear-gradient(160deg,#5f67f6,#5a78ff)] text-white shadow-[0_12px_30px_rgba(39,59,184,0.42)]">
                   <Zap className="h-5 w-5" />
                 </span>
-                <span className="text-2xl font-semibold tracking-[-0.01em] text-white sm:text-3xl">PlaySharp</span>
+                <span className="text-2xl font-semibold tracking-[-0.01em] text-white sm:text-3xl">
+                  PlaySharp
+                </span>
               </Link>
 
               <Link
@@ -66,7 +68,9 @@ export function AuthLayout({
               <h1 className="max-w-md text-[38px] font-semibold leading-tight tracking-tight text-white sm:text-[52px]">
                 Capturing Moments,
               </h1>
-              <p className="text-[32px] leading-none text-slate-300/68 sm:text-[46px]">Creating Memories</p>
+              <p className="text-[32px] leading-none text-slate-300/68 sm:text-[46px]">
+                Creating Memories
+              </p>
               <div className="flex items-center gap-3 pt-5">
                 {slideDots.map((dot) => {
                   const isActive = activeTab === 'register' ? dot.registerActive : dot.loginActive;
@@ -74,7 +78,11 @@ export function AuthLayout({
                   return (
                     <span
                       key={dot.id}
-                      className={isActive ? 'h-2.5 w-7 rounded-full bg-white/90' : 'h-2.5 w-2.5 rounded-full bg-white/45'}
+                      className={
+                        isActive
+                          ? 'h-2.5 w-7 rounded-full bg-white/90'
+                          : 'h-2.5 w-2.5 rounded-full bg-white/45'
+                      }
                     />
                   );
                 })}
