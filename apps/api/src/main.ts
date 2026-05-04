@@ -5,8 +5,10 @@ import { loadEnvFile } from 'node:process';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { validateApiEnv } from './config/env';
 
 loadEnvFile('.env');
+validateApiEnv();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

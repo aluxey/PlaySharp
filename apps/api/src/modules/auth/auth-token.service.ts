@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import type { AuthSession } from '@playsharp/shared';
 
+import { requireJwtSecret } from '../../config/env';
 import type { AuthenticatedUser } from './auth.types';
 
 type TokenPayload = {
@@ -27,7 +28,7 @@ function decodeBase64Url(value: string) {
 
 @Injectable()
 export class AuthTokenService {
-  private readonly secret = process.env.JWT_SECRET ?? 'playsharp-dev-secret';
+  private readonly secret = requireJwtSecret();
 
   createSession(user: AuthenticatedUser): AuthSession {
     const issuedAt = Math.floor(Date.now() / 1000);

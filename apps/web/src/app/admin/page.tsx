@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
 import { DataCard, StatePanel } from '../../components';
 import {
@@ -6,12 +7,23 @@ import {
   getAdminOverview,
   getAdminQuestions,
   getAdminThemes,
+  getCurrentAuthUser,
 } from '../../lib/api';
-import { routes } from '../../lib/routes';
+import { buildLoginRoute, routes } from '../../lib/routes';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
+  const currentUser = await getCurrentAuthUser();
+
+  if (currentUser.error?.code === 'AUTH_UNAUTHORIZED') {
+    redirect(buildLoginRoute(routes.admin));
+  }
+
+  if (!currentUser.data || currentUser.data.role !== 'admin') {
+    redirect(routes.dashboard);
+  }
+
   const [overview, themes, lessons, questions] = await Promise.all([
     getAdminOverview(),
     getAdminThemes(),
