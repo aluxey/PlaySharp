@@ -22,22 +22,22 @@ type AttemptAnswerRecord = {
   isCorrect: boolean;
 };
 
-type QuizAttemptRecord = {
-  finishedAt: Date | null;
-  questionAttempts: ReadonlyArray<{
-    isCorrect: boolean;
-    question: {
+type QuestionAttemptRecord = {
+  isCorrect: boolean;
+  quizAttempt: {
+    finishedAt: Date | null;
+  };
+  question: {
+    slug: string;
+    title: string;
+    theme: {
       slug: string;
-      title: string;
-      theme: {
-        slug: string;
+      name: string;
+      game: {
         name: string;
-        game: {
-          name: string;
-        };
       };
     };
-  }>;
+  };
 };
 
 type DailyUsageRecord = {
@@ -56,6 +56,7 @@ const shortDateFormatter = new Intl.DateTimeFormat('en-US', {
   year: 'numeric',
   timeZone: 'UTC',
 });
+const RECENT_ATTEMPT_LOOKBACK_DAYS = 90;
 
 function toDateKey(date: Date) {
   return date.toISOString().slice(0, 10);
@@ -93,34 +94,41 @@ export class ProgressService {
   ) {}
 
   async getOverview(userId: string): Promise<ProgressOverview> {
-    const quizAttemptsPromise = this.prisma.quizAttempt.findMany({
+    const today = fromDateKey(toDateKey(new Date()));
+    const recentStart = addUtcDays(today, -(RECENT_ATTEMPT_LOOKBACK_DAYS - 1));
+    const questionAttemptsPromise = this.prisma.questionAttempt.findMany({
       where: {
-        userId,
-        finishedAt: {
-          not: null,
+        quizAttempt: {
+          userId,
+          finishedAt: {
+            not: null,
+            gte: recentStart,
+          },
         },
       },
       orderBy: {
-        finishedAt: 'asc',
+        quizAttempt: {
+          finishedAt: 'asc',
+        },
       },
       select: {
-        finishedAt: true,
-        questionAttempts: {
+        isCorrect: true,
+        quizAttempt: {
           select: {
-            isCorrect: true,
-            question: {
+            finishedAt: true,
+          },
+        },
+        question: {
+          select: {
+            slug: true,
+            title: true,
+            theme: {
               select: {
                 slug: true,
-                title: true,
-                theme: {
+                name: true,
+                game: {
                   select: {
-                    slug: true,
                     name: true,
-                    game: {
-                      select: {
-                        name: true,
-                      },
-                    },
                   },
                 },
               },
@@ -128,47 +136,72 @@ export class ProgressService {
           },
         },
       },
-    }) as Promise<ReadonlyArray<QuizAttemptRecord>>;
+    }) as Promise<ReadonlyArray<QuestionAttemptRecord>>;
+    const totalAnswersPromise = this.prisma.questionAttempt.count({
+      where: {
+        quizAttempt: {
+          userId,
+          finishedAt: {
+            not: null,
+          },
+        },
+      },
+    });
+    const correctAnswersPromise = this.prisma.questionAttempt.count({
+      where: {
+        isCorrect: true,
+        quizAttempt: {
+          userId,
+          finishedAt: {
+            not: null,
+          },
+        },
+      },
+    });
     const dailyUsagePromise = this.prisma.dailyUsage.findMany({
-      where: { userId },
+      where: {
+        userId,
+        date: {
+          gte: addUtcDays(today, -365),
+        },
+      },
       orderBy: { date: 'desc' },
       select: {
         date: true,
         questionsAnswered: true,
       },
     }) as Promise<ReadonlyArray<DailyUsageRecord>>;
-    const [catalog, quizAttempts, dailyUsage] = await Promise.all([
-      this.contentService.getCatalog(),
-      quizAttemptsPromise,
-      dailyUsagePromise,
-    ]);
-    const answers = quizAttempts.flatMap((attempt) => {
-      if (attempt.finishedAt === null) {
+    const [catalog, questionAttempts, totalAnswers, correctAnswers, dailyUsage] = await Promise.all(
+      [
+        this.contentService.getCatalog(),
+        questionAttemptsPromise,
+        totalAnswersPromise,
+        correctAnswersPromise,
+        dailyUsagePromise,
+      ],
+    );
+    const answers = questionAttempts.flatMap((questionAttempt) => {
+      if (questionAttempt.quizAttempt.finishedAt === null) {
         return [];
       }
 
-      const finishedAt = attempt.finishedAt;
-
-      return attempt.questionAttempts.map(
-        (questionAttempt): AttemptAnswerRecord => ({
-          finishedAt,
+      return [
+        {
+          finishedAt: questionAttempt.quizAttempt.finishedAt,
           game: toSharedGameName(questionAttempt.question.theme.game.name),
           themeSlug: questionAttempt.question.theme.slug,
           themeName: questionAttempt.question.theme.name,
           questionSlug: questionAttempt.question.slug,
           questionTitle: questionAttempt.question.title,
           isCorrect: questionAttempt.isCorrect,
-        }),
-      );
+        },
+      ];
     });
     const totalLessons = catalog.reduce(
       (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),
       0,
     );
-    const overallAccuracy = calculateAccuracy(
-      answers.filter((answer) => answer.isCorrect).length,
-      answers.length,
-    );
+    const overallAccuracy = calculateAccuracy(correctAnswers, totalAnswers);
     const weeklyAccuracy = this.buildWeeklyTrend(answers, overallAccuracy);
     const themeInsights = this.buildThemeInsights(answers);
     const weakestTheme =
@@ -179,7 +212,7 @@ export class ProgressService {
     return {
       summary: {
         overallAccuracy,
-        questionsAnswered: answers.length,
+        questionsAnswered: totalAnswers,
         currentStreak: this.buildCurrentStreak(dailyUsage),
         lessonsCompleted,
         totalLessons,

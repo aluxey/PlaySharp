@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Target } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Target } from 'lucide-react';
 
-import type { DailyQuiz } from '@playsharp/shared';
+import type { DailyQuiz, QuizAttemptAnswerResult } from '@playsharp/shared';
 
 import { submitQuizAttempt } from '../../lib/quiz-client';
 import { lessonThemeRoute, routes } from '../../lib/routes';
@@ -13,16 +13,29 @@ type QuizClientProps = {
   quiz: DailyQuiz | null;
 };
 
+function answerKey(answer: { themeSlug: string; questionSlug: string }) {
+  return `${answer.themeSlug}:${answer.questionSlug}`;
+}
+
 export function QuizClient({ quiz }: QuizClientProps) {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [showResult, setShowResult] = useState(false);
+  const questions = useMemo(() => {
+    if (!quiz) {
+      return [];
+    }
+
+    return quiz.questions.length > 0
+      ? quiz.questions
+      : [{ themeSlug: quiz.themeSlug, themeName: quiz.themeName, question: quiz.question }];
+  }, [quiz]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, string>>({});
   const [attemptResult, setAttemptResult] =
     useState<Awaited<ReturnType<typeof submitQuizAttempt>>['data']>(null);
   const [isComplete, setIsComplete] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!quiz) {
+  if (!quiz || questions.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 py-12">
         <div className="max-w-xl w-full bg-surface-elevated border border-border rounded-3xl p-10 text-center space-y-4">
@@ -34,59 +47,91 @@ export function QuizClient({ quiz }: QuizClientProps) {
   }
 
   const resolvedQuiz = quiz;
-  const question = resolvedQuiz.question;
-  const total = 1;
-  const answerResult = attemptResult?.answers[0] ?? null;
-  const score = attemptResult?.score ?? 0;
-  const correctChoiceLabel = answerResult?.correctChoiceLabel ?? null;
+  const current = questions[currentIndex] ?? questions[0];
 
-  async function handleValidate(selectedChoiceLabel: string) {
-    if (showResult || isSubmitting) {
+  if (!current) {
+    return null;
+  }
+
+  const currentKey = answerKey({
+    themeSlug: current.themeSlug,
+    questionSlug: current.question.slug,
+  });
+  const selectedAnswer = selectedAnswers[currentKey] ?? null;
+  const resultByQuestion = new Map(
+    attemptResult?.answers.map((answer) => [answerKey(answer), answer]) ?? [],
+  );
+  const answerResult = resultByQuestion.get(currentKey) ?? null;
+  const showResults = attemptResult !== null;
+  const total = questions.length;
+  const progress = Math.round(((currentIndex + 1) / total) * 100);
+  const allAnswered = questions.every((entry) =>
+    Boolean(
+      selectedAnswers[
+        answerKey({
+          themeSlug: entry.themeSlug,
+          questionSlug: entry.question.slug,
+        })
+      ],
+    ),
+  );
+
+  async function handleSubmitAttempt() {
+    if (isSubmitting || !allAnswered) {
       return;
     }
 
-    setSelectedAnswer(selectedChoiceLabel);
     setSubmissionError(null);
     setIsSubmitting(true);
 
     const result = await submitQuizAttempt({
       game: resolvedQuiz.game,
-      answers: [
-        {
-          themeSlug: resolvedQuiz.themeSlug,
-          questionSlug: question.slug,
-          selectedChoiceLabel,
-        },
-      ],
+      answers: questions.map((entry) => ({
+        themeSlug: entry.themeSlug,
+        questionSlug: entry.question.slug,
+        selectedChoiceLabel:
+          selectedAnswers[
+            answerKey({
+              themeSlug: entry.themeSlug,
+              questionSlug: entry.question.slug,
+            })
+          ] ?? '',
+      })),
     });
 
     if (result.error) {
       setSubmissionError(result.error.message);
-      setSelectedAnswer(null);
       setIsSubmitting(false);
       return;
     }
 
     setAttemptResult(result.data);
-    setShowResult(true);
+    setCurrentIndex(0);
     setIsSubmitting(false);
   }
 
-  function handleFinish() {
-    setIsComplete(true);
-  }
-
   function handleRestart() {
-    setSelectedAnswer(null);
-    setShowResult(false);
+    setCurrentIndex(0);
+    setSelectedAnswers({});
     setAttemptResult(null);
     setIsComplete(false);
     setSubmissionError(null);
     setIsSubmitting(false);
   }
 
-  if (isComplete) {
-    const percentage = Math.round((score / total) * 100);
+  function selectChoice(label: string) {
+    if (showResults || isSubmitting) {
+      return;
+    }
+
+    setSelectedAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [currentKey]: label,
+    }));
+  }
+
+  if (isComplete && attemptResult) {
+    const percentage = Math.round((attemptResult.score / total) * 100);
     const tag =
       percentage === 100 ? 'Perfect Score!' : percentage >= 70 ? 'Great Job!' : 'Keep Training!';
 
@@ -94,14 +139,14 @@ export function QuizClient({ quiz }: QuizClientProps) {
       <div className="min-h-screen flex items-center justify-center px-4 py-12">
         <div className="max-w-xl w-full bg-surface-elevated border border-border rounded-3xl p-10 text-center space-y-6">
           <div className="w-20 h-20 mx-auto rounded-2xl bg-primary/10 flex items-center justify-center text-3xl">
-            {percentage === 100 ? '🏆' : percentage >= 70 ? '🎯' : '💪'}
+            {percentage === 100 ? 'Trophy' : percentage >= 70 ? 'Target' : 'Train'}
           </div>
           <p className="text-sm uppercase tracking-[0.22em] text-foreground-secondary">
             Quiz complete
           </p>
           <h1 className="text-3xl font-bold text-foreground">{tag}</h1>
           <p className="text-4xl font-extrabold text-foreground">
-            {score}/{total}
+            {attemptResult.score}/{total}
           </p>
           <p className="text-foreground-secondary">{percentage}% accuracy</p>
           <div className="flex justify-center gap-3 flex-wrap">
@@ -114,7 +159,7 @@ export function QuizClient({ quiz }: QuizClientProps) {
             </button>
             <Link
               className="px-5 py-3 rounded-xl border border-border text-foreground"
-              href={lessonThemeRoute(resolvedQuiz.game, resolvedQuiz.themeSlug)}
+              href={lessonThemeRoute(resolvedQuiz.game, current.themeSlug)}
             >
               Open lesson path
             </Link>
@@ -130,6 +175,8 @@ export function QuizClient({ quiz }: QuizClientProps) {
     );
   }
 
+  const correctChoiceLabel = answerResult?.correctChoiceLabel ?? null;
+
   return (
     <div className="min-h-screen max-w-6xl mx-auto px-4 py-12 space-y-6">
       <div className="flex flex-col gap-2">
@@ -142,14 +189,14 @@ export function QuizClient({ quiz }: QuizClientProps) {
               Answer fast, learn faster
             </h1>
             <p className="text-foreground-secondary">
-              Question 1 of 1 · Theme: {resolvedQuiz.themeName}
+              Question {currentIndex + 1} of {total} · Theme: {current.themeName}
             </p>
           </div>
           <div className="flex items-center gap-2 text-sm text-foreground-secondary">
             <div className="w-24 h-2 rounded-full bg-surface">
-              <div className="h-2 rounded-full bg-primary" style={{ width: '100%' }} />
+              <div className="h-2 rounded-full bg-primary" style={{ width: `${progress}%` }} />
             </div>
-            <span>100%</span>
+            <span>{progress}%</span>
           </div>
         </div>
       </div>
@@ -158,20 +205,24 @@ export function QuizClient({ quiz }: QuizClientProps) {
         <div className="md:col-span-2 bg-surface-elevated border border-border rounded-2xl p-6 space-y-4">
           <div className="flex items-start gap-3">
             <span className="px-3 py-1 rounded-lg bg-primary/10 text-primary text-sm font-semibold">
-              Daily question
+              Daily set
             </span>
             <span className="px-3 py-1 rounded-lg bg-secondary/10 text-secondary text-sm font-semibold">
-              Live preview
+              {resolvedQuiz.game.toUpperCase()}
             </span>
           </div>
-          <h2 className="text-2xl font-bold text-foreground leading-snug">{question.title}</h2>
-          <p className="text-foreground-secondary">{question.scenario ?? resolvedQuiz.themeName}</p>
+          <h2 className="text-2xl font-bold text-foreground leading-snug">
+            {current.question.title}
+          </h2>
+          <p className="text-foreground-secondary">
+            {current.question.scenario ?? current.themeName}
+          </p>
 
           <div className="space-y-3">
-            {question.choices.map((option) => {
+            {current.question.choices.map((option) => {
               const isSelected = selectedAnswer === option.label;
-              const showCorrect = showResult && option.label === correctChoiceLabel;
-              const showIncorrect = showResult && isSelected && answerResult?.isCorrect === false;
+              const showCorrect = showResults && option.label === correctChoiceLabel;
+              const showIncorrect = showResults && isSelected && answerResult?.isCorrect === false;
 
               return (
                 <button
@@ -185,14 +236,14 @@ export function QuizClient({ quiz }: QuizClientProps) {
                           ? 'border-primary bg-primary/10'
                           : 'border-border bg-surface'
                   }`}
-                  onClick={() => handleValidate(option.label)}
-                  disabled={showResult || isSubmitting}
+                  onClick={() => selectChoice(option.label)}
+                  disabled={showResults || isSubmitting}
                   type="button"
                 >
                   <span className="font-semibold text-foreground">{option.label}</span>
-                  {showResult ? (
+                  {showResults ? (
                     <span className="float-right font-semibold">
-                      {option.label === correctChoiceLabel ? '✓' : isSelected ? '✕' : ''}
+                      {option.label === correctChoiceLabel ? 'Correct' : isSelected ? 'Miss' : ''}
                     </span>
                   ) : null}
                 </button>
@@ -211,37 +262,60 @@ export function QuizClient({ quiz }: QuizClientProps) {
             </div>
           ) : null}
 
-          {showResult ? (
-            <div
-              className={`p-4 rounded-xl border ${
-                answerResult?.isCorrect
-                  ? 'border-success bg-success/10'
-                  : 'border-error bg-error/10'
-              }`}
-            >
-              <p className="font-semibold mb-1">
-                {answerResult?.isCorrect ? '✓ Correct' : '✗ Incorrect'}
-              </p>
-              <p className="text-sm text-foreground-secondary">
-                {answerResult?.explanation ?? question.explanation}
-              </p>
-            </div>
+          {showResults ? (
+            <ResultPanel
+              answerResult={answerResult}
+              fallbackExplanation={current.question.explanation}
+            />
           ) : null}
 
-          <div className="flex justify-between items-center pt-2">
-            <span className="text-sm text-foreground-secondary">
-              {isSubmitting ? 'Submitting your answer...' : 'Tap an answer to validate.'}
-            </span>
-            {showResult ? (
+          <div className="flex justify-between items-center pt-2 gap-3">
+            <button
+              className="px-4 py-2 rounded-xl border border-border text-foreground disabled:opacity-50 flex items-center gap-2"
+              onClick={() => setCurrentIndex((index) => Math.max(0, index - 1))}
+              disabled={currentIndex === 0}
+              type="button"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Previous
+            </button>
+
+            {showResults ? (
               <button
                 className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold flex items-center gap-2"
-                onClick={handleFinish}
+                onClick={() => {
+                  if (currentIndex === total - 1) {
+                    setIsComplete(true);
+                    return;
+                  }
+
+                  setCurrentIndex((index) => Math.min(total - 1, index + 1));
+                }}
                 type="button"
               >
-                Finish
+                {currentIndex === total - 1 ? 'Finish' : 'Next result'}
                 <ArrowRight className="w-4 h-4" />
               </button>
-            ) : null}
+            ) : currentIndex === total - 1 ? (
+              <button
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold disabled:opacity-60"
+                onClick={handleSubmitAttempt}
+                disabled={!allAnswered || isSubmitting}
+                type="button"
+              >
+                {isSubmitting ? 'Submitting...' : 'Submit quiz'}
+              </button>
+            ) : (
+              <button
+                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold disabled:opacity-60 flex items-center gap-2"
+                onClick={() => setCurrentIndex((index) => Math.min(total - 1, index + 1))}
+                disabled={!selectedAnswer}
+                type="button"
+              >
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -257,27 +331,51 @@ export function QuizClient({ quiz }: QuizClientProps) {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-foreground-secondary">Theme</span>
-              <span className="font-semibold">{resolvedQuiz.themeName}</span>
+              <span className="font-semibold text-right">{current.themeName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-foreground-secondary">Feedback</span>
-              <span className="font-semibold text-right">
-                {(answerResult?.explanation ?? question.explanation).slice(0, 42)}...
+              <span className="text-foreground-secondary">Answered</span>
+              <span className="font-semibold">
+                {Object.keys(selectedAnswers).length}/{total}
               </span>
             </div>
           </div>
 
           <div className="w-36 h-36 mx-auto rounded-full border border-border bg-surface flex flex-col items-center justify-center">
-            <span className="text-2xl font-bold">68%</span>
-            <span className="text-xs text-foreground-secondary">daily accuracy</span>
+            <span className="text-2xl font-bold">
+              {attemptResult ? `${attemptResult.score}/${total}` : `${currentIndex + 1}/${total}`}
+            </span>
+            <span className="text-xs text-foreground-secondary">
+              {attemptResult ? 'score' : 'progress'}
+            </span>
           </div>
 
           <p className="text-sm text-foreground-secondary">
-            Keep the quiz fast. The goal is to answer, read the explanation, and go straight to the
-            relevant lesson path.
+            Complete the set, submit once, then review every explanation before moving to lessons.
           </p>
         </aside>
       </div>
+    </div>
+  );
+}
+
+function ResultPanel({
+  answerResult,
+  fallbackExplanation,
+}: {
+  answerResult: QuizAttemptAnswerResult | null;
+  fallbackExplanation: string;
+}) {
+  return (
+    <div
+      className={`p-4 rounded-xl border ${
+        answerResult?.isCorrect ? 'border-success bg-success/10' : 'border-error bg-error/10'
+      }`}
+    >
+      <p className="font-semibold mb-1">{answerResult?.isCorrect ? 'Correct' : 'Incorrect'}</p>
+      <p className="text-sm text-foreground-secondary">
+        {answerResult?.explanation ?? fallbackExplanation}
+      </p>
     </div>
   );
 }

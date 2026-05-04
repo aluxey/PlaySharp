@@ -9,6 +9,7 @@ import {
   type ContentGameSummary as SharedContentGameSummary,
   type ContentTheme,
   type DailyQuiz,
+  type DailyQuizQuestion,
 } from '@playsharp/shared';
 
 import {
@@ -71,21 +72,27 @@ export class ContentService {
       return null;
     }
 
-    const theme = gameContent.themes.find((candidate) => candidate.questions.length > 0);
-    if (!theme) {
-      return null;
-    }
+    const questions: DailyQuizQuestion[] = gameContent.themes
+      .flatMap((theme) =>
+        theme.questions.map((question) => ({
+          themeSlug: theme.slug,
+          themeName: theme.name,
+          question,
+        })),
+      )
+      .slice(0, 5);
+    const firstQuestion = questions[0];
 
-    const question = theme.questions[0];
-    if (!question) {
+    if (!firstQuestion) {
       return null;
     }
 
     return {
       game: gameContent.game,
-      themeSlug: theme.slug,
-      themeName: theme.name,
-      question,
+      questions,
+      themeSlug: firstQuestion.themeSlug,
+      themeName: firstQuestion.themeName,
+      question: firstQuestion.question,
     };
   }
 }

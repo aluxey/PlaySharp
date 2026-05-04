@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
+  ArrayMaxSize,
   IsArray,
   IsIn,
   IsInt,
@@ -43,6 +44,7 @@ export class SubmitQuizAttemptDto {
 
   @IsArray()
   @ArrayMinSize(1)
+  @ArrayMaxSize(20)
   @ValidateNested({ each: true })
   @Type(() => SubmitQuizAnswerDto)
   answers!: ReadonlyArray<SubmitQuizAnswerDto>;

@@ -49,8 +49,15 @@ export type ContentGameSummary = {
   questionCount: number;
 };
 
+export type DailyQuizQuestion = {
+  themeSlug: string;
+  themeName: string;
+  question: ContentQuestion;
+};
+
 export type DailyQuiz = {
   game: ContentGameName;
+  questions: ReadonlyArray<DailyQuizQuestion>;
   themeSlug: string;
   themeName: string;
   question: ContentQuestion;
