@@ -43,7 +43,7 @@ cp .env.example apps/web/.env.local
 - `WEB_APP_URL`: used by the API CORS setup
 - `API_BASE_URL`: used by the web app to read content and quiz data from the API
 - `API_PORT`: defaults to `3001`
-- `JWT_SECRET`: replace the placeholder before real auth work
+- `JWT_SECRET`: required by the API, at least 32 characters, and must not be a placeholder
 
 4. Create the database.
 
@@ -53,7 +53,7 @@ Use an existing PostgreSQL instance or create a new database named `playsharp`.
 
 ```bash
 npm run prisma:generate --workspace @playsharp/api
-npm run prisma:push --workspace @playsharp/api
+npm run prisma:migrate --workspace @playsharp/api
 npm run seed --workspace @playsharp/api
 ```
 
@@ -88,6 +88,7 @@ npm run dev:api
 - The web app uses the App Router and currently exposes scaffolded routes for the V1 screens.
 - The API currently exposes a health endpoint and module boundaries for future domains.
 - The Prisma schema lives in `apps/api/prisma/schema.prisma`.
+- Database migrations live in `apps/api/prisma/migrations`.
 - The `content` folder is the versioned source of truth for educational content.
 
 ## Typical workflow

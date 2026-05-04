@@ -37,7 +37,7 @@ Update `apps/api/.env` with local values. A working local example is:
 DATABASE_URL="postgresql://playsharp:playsharp123@localhost:5432/playsharp?schema=public"
 WEB_APP_URL="http://localhost:3000"
 API_PORT=3001
-JWT_SECRET="replace-me"
+JWT_SECRET="replace-this-with-at-least-32-random-characters"
 ```
 
 Update `apps/web/.env.local` with:
@@ -70,12 +70,12 @@ docker start playsharp-postgres
 
 ```bash
 npm run prisma:generate --workspace @playsharp/api
-npm run prisma:push --workspace @playsharp/api
+npm run prisma:migrate --workspace @playsharp/api
 npm run seed --workspace @playsharp/api
 ```
 
-The repository currently does not ship a committed Prisma migration, so `prisma db push`
-is the right local setup command before seeding.
+The repository ships committed Prisma migrations. Use `prisma:migrate` locally and
+`prisma:deploy` in deployed environments.
 
 ### 5. Run the project
 

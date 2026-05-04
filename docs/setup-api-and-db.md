@@ -1,6 +1,6 @@
 ## API & DB Setup (local)
 
-Prereqs: Node 18+, npm, PostgreSQL.
+Prereqs: Node 20+, npm, PostgreSQL.
 
 1. Install dependencies
 
@@ -15,6 +15,7 @@ Create `apps/api/.env` with at least:
 ```
 DATABASE_URL=postgresql://user:password@localhost:5432/playsharp
 PORT=3001
+JWT_SECRET=replace-this-with-at-least-32-random-characters
 ```
 
 3. Prepare the database
@@ -22,11 +23,11 @@ PORT=3001
 ```bash
 cd apps/api
 npm run prisma:generate
-npm run prisma:push
+npm run prisma:migrate
 npm run seed
 ```
 
-The repository does not ship committed Prisma migrations, so local schema updates should go through `prisma db push`.
+The repository ships committed Prisma migrations. Use `prisma:migrate` locally and `prisma:deploy` in deployed environments.
 The seed reads JSON content from `content/` and syncs games, themes, lessons, questions, and answer choices into PostgreSQL.
 
 4. Start the API
