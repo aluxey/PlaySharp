@@ -1,5 +1,6 @@
 import type {
   ContentDifficulty,
+  ContentCatalog,
   ContentGame,
   ContentGameName,
   ContentGameSummary,
@@ -14,6 +15,9 @@ export type ApiSuccessResponse<T> = {
 };
 
 export type ApiErrorCode =
+  | 'ADMIN_INVALID_CONTENT'
+  | 'ADMIN_RECORD_NOT_FOUND'
+  | 'ADMIN_THEME_NOT_FOUND'
   | 'AUTH_EMAIL_TAKEN'
   | 'AUTH_FORBIDDEN'
   | 'AUTH_INVALID_CREDENTIALS'
@@ -260,22 +264,76 @@ export type AdminThemeRecord = {
 };
 
 export type AdminLessonRecord = {
+  id: string;
   game: ContentGameName;
   themeSlug: string;
   lessonSlug: string;
   title: string;
+  content: string;
   level: ContentDifficulty;
+  archivedAt: string | null;
+};
+
+export type AdminQuestionChoiceRecord = {
+  id: string;
+  label: string;
+  isCorrect: boolean;
+  explanation: string | null;
 };
 
 export type AdminQuestionRecord = {
+  id: string;
   game: ContentGameName;
   themeSlug: string;
   questionSlug: string;
   title: string;
+  scenario: string | null;
   difficulty: ContentDifficulty;
+  explanation: string;
   isPremium: boolean;
   choiceCount: number;
+  choices: ReadonlyArray<AdminQuestionChoiceRecord>;
+  archivedAt: string | null;
 };
+
+export type AdminLessonMutationRequest = {
+  game: ContentGameName;
+  themeSlug: string;
+  lessonSlug: string;
+  title: string;
+  content: string;
+  level: ContentDifficulty;
+};
+
+export type AdminLessonMutationResponse = ApiSuccessResponse<{
+  lesson: AdminLessonRecord;
+}>;
+
+export type AdminQuestionChoiceMutationRequest = {
+  label: string;
+  isCorrect: boolean;
+  explanation?: string | null;
+};
+
+export type AdminQuestionMutationRequest = {
+  game: ContentGameName;
+  themeSlug: string;
+  questionSlug: string;
+  title: string;
+  scenario?: string | null;
+  difficulty: ContentDifficulty;
+  explanation: string;
+  isPremium: boolean;
+  choices: ReadonlyArray<AdminQuestionChoiceMutationRequest>;
+};
+
+export type AdminQuestionMutationResponse = ApiSuccessResponse<{
+  question: AdminQuestionRecord;
+}>;
+
+export type AdminContentExportResponse = ApiSuccessResponse<{
+  catalog: ContentCatalog;
+}>;
 
 export type AdminOverview = {
   sources: ReadonlyArray<AdminContentSource>;

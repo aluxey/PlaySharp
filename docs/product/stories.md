@@ -4,6 +4,8 @@ This backlog keeps the hardening and product follow-up work split into shippable
 
 ## Story 1: Admin Content Editing
 
+Status: implemented.
+
 As an admin, I want to create and update lessons and questions from the admin workspace so content
 does not require direct JSON edits.
 

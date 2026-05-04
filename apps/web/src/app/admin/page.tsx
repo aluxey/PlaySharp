@@ -10,6 +10,7 @@ import {
   getCurrentAuthUser,
 } from '../../lib/api';
 import { buildLoginRoute, routes } from '../../lib/routes';
+import { AdminEditor } from './admin-editor';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,31 +63,6 @@ export default async function AdminPage() {
     );
   }
 
-  const sectionCards = [
-    {
-      title: 'Theme management',
-      text: 'The theme inventory is now sourced from the API contract rather than local placeholder cards.',
-      count: themes.data.length,
-      points: themes.data.slice(0, 3).map((theme) => `${theme.game} · ${theme.themeName}`),
-    },
-    {
-      title: 'Lesson workflow',
-      text: 'Lessons come straight from versioned content JSON, which keeps admin and seed data aligned.',
-      count: lessons.data.length,
-      points: lessons.data.slice(0, 3).map((lesson) => `${lesson.game} · ${lesson.title}`),
-    },
-    {
-      title: 'Question workflow',
-      text: 'Question inventory reflects the live content contract, including premium flags and choice counts.',
-      count: questions.data.length,
-      points: questions.data
-        .slice(0, 3)
-        .map(
-          (question) => `${question.game} · ${question.title} (${question.choiceCount} choices)`,
-        ),
-    },
-  ];
-
   return (
     <div className="min-h-screen max-w-6xl mx-auto px-4 py-12 space-y-8">
       <section className="space-y-4">
@@ -95,8 +71,8 @@ export default async function AdminPage() {
         </p>
         <h1 className="text-4xl font-bold text-foreground">Admin</h1>
         <p className="text-foreground-secondary">
-          The admin surface now reflects the live content inventory exposed by the API. The
-          versioned JSON files remain the source of truth.
+          Manage lesson and question records stored in PostgreSQL. Archived records stay visible in
+          the selectors for review, but active totals exclude them.
         </p>
         <div className="flex gap-3 flex-wrap">
           <Link
@@ -111,6 +87,12 @@ export default async function AdminPage() {
           >
             Open lessons
           </Link>
+          <Link
+            className="px-4 py-2 rounded-xl border border-border text-foreground"
+            href="/api/admin/export"
+          >
+            Export content
+          </Link>
         </div>
       </section>
 
@@ -121,37 +103,7 @@ export default async function AdminPage() {
         <DataCard label="Questions" value={overview.data.totals.questions} />
       </section>
 
-      <section className="grid md:grid-cols-3 gap-6">
-        {sectionCards.map((card) => (
-          <article
-            key={card.title}
-            className="bg-surface-elevated border border-border rounded-2xl p-6 space-y-4 shadow-sm"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm uppercase tracking-[0.16em] text-foreground-secondary">
-                Section
-              </p>
-              <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
-                {card.count}
-              </span>
-            </div>
-            <h2 className="text-xl font-semibold text-foreground">{card.title}</h2>
-            <p className="text-foreground-secondary text-sm leading-relaxed">{card.text}</p>
-            <div className="space-y-2">
-              {card.points.length === 0 ? (
-                <p className="text-sm text-foreground-secondary">No records available.</p>
-              ) : (
-                card.points.map((point) => (
-                  <div key={point} className="flex items-center gap-2 text-sm text-foreground">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
-                    {point}
-                  </div>
-                ))
-              )}
-            </div>
-          </article>
-        ))}
-      </section>
+      <AdminEditor themes={themes.data} lessons={lessons.data} questions={questions.data} />
 
       <section className="bg-surface-elevated border border-border rounded-3xl p-6 md:p-8 space-y-4">
         <div>
