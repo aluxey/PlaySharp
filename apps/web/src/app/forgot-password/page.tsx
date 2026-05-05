@@ -18,7 +18,7 @@ export default async function ForgotPasswordPage({ searchParams }: ForgotPasswor
   const authState = await getAuthState();
 
   if (authState.isAuthenticated) {
-    redirect(resolvePostAuthRedirect(nextPath, routes.home));
+    redirect(resolvePostAuthRedirect(nextPath, routes.profile));
   }
 
   return <ForgotPasswordForm nextPath={nextPath} />;

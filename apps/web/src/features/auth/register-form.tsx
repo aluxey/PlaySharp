@@ -39,7 +39,7 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
     password: false,
     terms: false,
   });
-  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.home);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.profile);
   const normalizedFirstName = firstName.trim();
   const normalizedLastName = lastName.trim();
   const name = `${normalizedFirstName} ${normalizedLastName}`.trim();
@@ -147,7 +147,7 @@ export function RegisterForm({ nextPath }: RegisterFormProps) {
     setAuthenticatedUser(result.data.user);
     showToast({
       title: 'Account created',
-      description: `Your profile is ready, ${result.data.user.email}. Redirecting you into PlaySharp now.`,
+      description: `Your profile is ready, ${result.data.user.email}. Redirecting you to your stats now.`,
       tone: 'success',
     });
     window.location.assign(postAuthRedirect);

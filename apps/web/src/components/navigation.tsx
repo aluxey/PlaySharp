@@ -128,7 +128,11 @@ export function MobileNav({ user }: MobileNavProps) {
   const pathname = usePathname();
   const navItems =
     user.role === 'admin'
-      ? [...appNavItems.slice(0, 4), { label: 'Admin', href: routes.admin }]
+      ? [
+          ...appNavItems.slice(0, 3),
+          { label: 'Profile', href: routes.profile },
+          { label: 'Admin', href: routes.admin },
+        ]
       : appNavItems;
 
   return (
@@ -164,7 +168,11 @@ export function MobileNav({ user }: MobileNavProps) {
   );
 }
 
-export function PublicHeader() {
+type PublicHeaderProps = {
+  user?: AuthUser | null;
+};
+
+export function PublicHeader({ user = null }: PublicHeaderProps) {
   const pathname = usePathname();
 
   return (
@@ -201,20 +209,32 @@ export function PublicHeader() {
           })}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
-          <Link
-            className="px-4 py-2 rounded-xl border border-border text-foreground"
-            href={routes.login}
-          >
-            Log in
-          </Link>
-          <Link
-            className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold"
-            href={routes.register}
-          >
-            Register
-          </Link>
-        </div>
+        {user ? (
+          <div className="hidden md:flex items-center gap-2">
+            <Link
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold"
+              href={routes.profile}
+            >
+              <User className="w-4 h-4" />
+              Profile
+            </Link>
+          </div>
+        ) : (
+          <div className="hidden md:flex items-center gap-2">
+            <Link
+              className="px-4 py-2 rounded-xl border border-border text-foreground"
+              href={routes.login}
+            >
+              Log in
+            </Link>
+            <Link
+              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold"
+              href={routes.register}
+            >
+              Register
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

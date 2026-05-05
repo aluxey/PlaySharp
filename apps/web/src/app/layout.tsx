@@ -5,6 +5,8 @@ import { AppShell, AuthProvider, ToastProvider } from '../components';
 import { getAuthState } from '../lib/auth-state';
 import './globals.css';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: {
     default: 'PlaySharp',

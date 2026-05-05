@@ -38,10 +38,15 @@ export function AppShell({ children }: AppShellProps) {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <AnimatedBackground />
-      <Sidebar user={user} />
-      <main className="flex-1 pb-20 lg:pb-0 relative z-10">{children}</main>
+      <div className="lg:hidden">
+        <PublicHeader user={user} />
+      </div>
+      <div className="flex min-h-[calc(100vh-4rem)] lg:min-h-screen">
+        <Sidebar user={user} />
+        <main className="flex-1 pb-20 lg:pb-0 relative z-10">{children}</main>
+      </div>
       <MobileNav user={user} />
     </div>
   );

@@ -34,7 +34,7 @@ export function LoginForm({ nextPath }: LoginFormProps) {
     email: false,
     password: false,
   });
-  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.home);
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.profile);
   const emailError = validateEmailAddress(email);
   const passwordError = validateLoginPassword(password);
   const visibleEmailError = (touchedFields.email || hasSubmitted) && emailError ? emailError : null;
