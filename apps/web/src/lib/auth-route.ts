@@ -39,8 +39,25 @@ function normalizeError(path: string, statusCode: number, payload: unknown): Api
   };
 }
 
+function shouldUseSecureCookie(request: Request) {
+  const url = new URL(request.url);
+
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.hostname === '[::1]') {
+    return false;
+  }
+
+  const forwardedProto = request.headers.get('x-forwarded-proto');
+
+  if (forwardedProto) {
+    return forwardedProto.split(',')[0]?.trim() === 'https';
+  }
+
+  return url.protocol === 'https:';
+}
+
 export async function handleAuthSessionRequest(request: Request, action: 'login' | 'register') {
   const path = `/auth/${action}`;
+  const secureCookie = shouldUseSecureCookie(request);
 
   try {
     const body = (await request.json()) as AuthLoginRequest | AuthRegisterRequest;
@@ -71,7 +88,7 @@ export async function handleAuthSessionRequest(request: Request, action: 'login'
       httpOnly: true,
       path: '/',
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      secure: secureCookie,
       expires: new Date(payload.data.session.expiresAt),
     });
 
@@ -83,7 +100,9 @@ export async function handleAuthSessionRequest(request: Request, action: 'login'
   }
 }
 
-export async function handleLogoutRequest() {
+export async function handleLogoutRequest(request: Request) {
+  const secureCookie = shouldUseSecureCookie(request);
+
   const response = NextResponse.json({
     data: {
       ok: true,
@@ -94,7 +113,7 @@ export async function handleLogoutRequest() {
     httpOnly: true,
     path: '/',
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: secureCookie,
     maxAge: 0,
   });
 
