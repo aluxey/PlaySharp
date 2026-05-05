@@ -33,6 +33,14 @@
 - `content`
 - `level`
 - `created_at`
+- `archived_at`
+
+### lesson_completions
+
+- `id`
+- `user_id` (FK)
+- `lesson_id` (FK)
+- `completed_at`
 
 ### questions
 
@@ -45,6 +53,7 @@
 - `explanation`
 - `is_premium`
 - `created_at`
+- `archived_at`
 
 ### answer_choices
 
@@ -54,6 +63,16 @@
 - `label`
 - `is_correct`
 - `explanation`
+
+### content_syncs
+
+- `source`
+- `version`
+- `game_count`
+- `theme_count`
+- `lesson_count`
+- `question_count`
+- `synced_at`
 
 ### quiz_attempts
 

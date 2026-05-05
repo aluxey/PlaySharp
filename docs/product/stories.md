@@ -57,6 +57,8 @@ Acceptance criteria:
 
 ## Story 5: Database-Backed Content Source
 
+Status: implemented.
+
 As a maintainer, I want the API content reads and quiz submission validation to use the same source
 of truth so JSON and database drift cannot break quiz submissions.
 

@@ -8,7 +8,10 @@ import {
   type ContentGameName,
 } from '@playsharp/shared';
 
-import { loadContentCatalog } from '../src/modules/content/content.loader';
+import {
+  buildContentCatalogManifest,
+  loadContentCatalog,
+} from '../src/modules/content/content.loader';
 
 try {
   loadEnvFile('.env');
@@ -20,7 +23,10 @@ try {
 
 const prisma = new PrismaClient();
 
-type Tx = Pick<PrismaClient, 'questionChoice' | 'question' | 'lesson' | 'theme' | 'game'>;
+type Tx = Pick<
+  PrismaClient,
+  'questionChoice' | 'question' | 'lesson' | 'theme' | 'game' | 'contentSync'
+>;
 
 const PRISMA_GAME_NAMES = {
   poker: 'POKER',
@@ -224,12 +230,26 @@ async function syncGameContent(tx: Tx, gameContent: ContentGame) {
 
 async function main() {
   const catalog = await loadContentCatalog();
+  const manifest = buildContentCatalogManifest(catalog);
 
   await prisma.$transaction(async (tx: Tx) => {
     for (const gameContent of catalog) {
       await syncGameContent(tx, gameContent);
     }
+
+    await tx.contentSync.upsert({
+      where: { source: 'content-json' },
+      update: manifest,
+      create: {
+        source: 'content-json',
+        ...manifest,
+      },
+    });
   });
+
+  console.log(
+    `Seeded content version ${manifest.version}: ${manifest.gameCount} games, ${manifest.themeCount} themes, ${manifest.lessonCount} lessons, ${manifest.questionCount} questions.`,
+  );
 }
 
 main()

@@ -128,6 +128,7 @@ export class QuizService {
       where: {
         OR: input.answers.map((answer) => ({
           slug: answer.questionSlug,
+          archivedAt: null,
           theme: {
             slug: answer.themeSlug,
             game: {

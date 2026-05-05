@@ -95,6 +95,11 @@ type QuestionRecord = {
   }>;
 };
 
+type ContentSyncRecord = {
+  version: string;
+  syncedAt: Date;
+};
+
 function toPrismaGameName(game: ContentGameName) {
   return PRISMA_GAME_NAMES[game];
 }
@@ -143,26 +148,37 @@ export class AdminService {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async getOverview(): Promise<AdminOverview> {
-    const games = await this.prisma.game.findMany({
-      orderBy: { name: 'asc' },
-      include: {
-        themes: {
-          include: {
-            lessons: {
-              where: { archivedAt: null },
-            },
-            questions: {
-              where: { archivedAt: null },
+    const [games, contentSync] = await Promise.all([
+      this.prisma.game.findMany({
+        orderBy: { name: 'asc' },
+        include: {
+          themes: {
+            include: {
+              lessons: {
+                where: { archivedAt: null },
+              },
+              questions: {
+                where: { archivedAt: null },
+              },
             },
           },
         },
-      },
-    });
+      }),
+      this.prisma.contentSync.findUnique({
+        where: { source: 'content-json' },
+        select: {
+          version: true,
+          syncedAt: true,
+        },
+      }) as Promise<ContentSyncRecord | null>,
+    ]);
     const sources = games.map((game) => ({
       game: toSharedGameName(game.name as PrismaGameName),
       name: toSharedGameName(game.name as PrismaGameName) === 'blackjack' ? 'Blackjack' : 'Poker',
-      path: 'postgresql://content',
-      updatedAt: new Date(0).toISOString(),
+      path: contentSync
+        ? `postgresql://content?version=${contentSync.version}`
+        : 'postgresql://content',
+      updatedAt: (contentSync?.syncedAt ?? new Date(0)).toISOString(),
       themeCount: game.themes.length,
       lessonCount: game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),
       questionCount: game.themes.reduce((sum, theme) => sum + theme.questions.length, 0),

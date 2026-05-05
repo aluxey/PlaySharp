@@ -1,4 +1,5 @@
 import { readFile, stat } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 
 import {
@@ -258,6 +259,28 @@ export async function listContentSources() {
       };
     }),
   );
+}
+
+export function buildContentCatalogManifest(catalog: ContentCatalog) {
+  const gameCount = catalog.length;
+  const themeCount = catalog.reduce((total, game) => total + game.themes.length, 0);
+  const lessonCount = catalog.reduce(
+    (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),
+    0,
+  );
+  const questionCount = catalog.reduce(
+    (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.questions.length, 0),
+    0,
+  );
+  const version = createHash('sha256').update(JSON.stringify(catalog)).digest('hex');
+
+  return {
+    version,
+    gameCount,
+    themeCount,
+    lessonCount,
+    questionCount,
+  };
 }
 
 export function summarizeGameContent(gameContent: ContentGame) {
