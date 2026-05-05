@@ -20,6 +20,9 @@ import type {
   ProgressOverview,
   ProgressOverviewResponse,
   DailyQuiz,
+  LessonCompletionRequest,
+  LessonCompletionResponse,
+  LessonCompletionStatus,
   QuizDailyResponse,
 } from '@playsharp/shared';
 
@@ -226,6 +229,20 @@ export async function getProgressOverview(): Promise<ApiResource<ProgressOvervie
 export async function getProfileOverview(): Promise<ApiResource<ProfileOverview>> {
   const response = await apiGet<ProfileOverviewResponse>('/users/me/profile');
   return selectData(response, (payload) => payload.data.profile);
+}
+
+export async function getLessonCompletionStatus(
+  input: LessonCompletionRequest,
+): Promise<ApiResource<LessonCompletionStatus>> {
+  const params = new URLSearchParams({
+    game: input.game,
+    themeSlug: input.themeSlug,
+    lessonSlug: input.lessonSlug,
+  });
+  const response = await apiGet<LessonCompletionResponse>(
+    `/users/me/lesson-completion?${params.toString()}`,
+  );
+  return selectData(response, (payload) => payload.data.completion);
 }
 
 export async function getAdminOverview() {

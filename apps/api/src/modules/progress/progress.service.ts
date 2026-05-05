@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import type {
-  ContentCatalog,
   ContentGameName,
   ProgressOverview,
   ProgressThemeInsight,
@@ -9,7 +8,6 @@ import type {
   RecurringMistake,
 } from '@playsharp/shared';
 
-import { ContentService } from '../content/content.service';
 import { PrismaService } from '../prisma/prisma.service';
 
 type AttemptAnswerRecord = {
@@ -88,10 +86,7 @@ function calculateAccuracy(correctCount: number, totalCount: number) {
 
 @Injectable()
 export class ProgressService {
-  constructor(
-    @Inject(ContentService) private readonly contentService: ContentService,
-    @Inject(PrismaService) private readonly prisma: PrismaService,
-  ) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async getOverview(userId: string): Promise<ProgressOverview> {
     const today = fromDateKey(toDateKey(new Date()));
@@ -171,15 +166,34 @@ export class ProgressService {
         questionsAnswered: true,
       },
     }) as Promise<ReadonlyArray<DailyUsageRecord>>;
-    const [catalog, questionAttempts, totalAnswers, correctAnswers, dailyUsage] = await Promise.all(
-      [
-        this.contentService.getCatalog(),
-        questionAttemptsPromise,
-        totalAnswersPromise,
-        correctAnswersPromise,
-        dailyUsagePromise,
-      ],
-    );
+    const totalLessonsPromise = this.prisma.lesson.count({
+      where: {
+        archivedAt: null,
+      },
+    });
+    const lessonsCompletedPromise = this.prisma.lessonCompletion.count({
+      where: {
+        userId,
+        lesson: {
+          archivedAt: null,
+        },
+      },
+    });
+    const [
+      questionAttempts,
+      totalAnswers,
+      correctAnswers,
+      dailyUsage,
+      totalLessons,
+      lessonsCompleted,
+    ] = await Promise.all([
+      questionAttemptsPromise,
+      totalAnswersPromise,
+      correctAnswersPromise,
+      dailyUsagePromise,
+      totalLessonsPromise,
+      lessonsCompletedPromise,
+    ]);
     const answers = questionAttempts.flatMap((questionAttempt) => {
       if (questionAttempt.quizAttempt.finishedAt === null) {
         return [];
@@ -197,17 +211,11 @@ export class ProgressService {
         },
       ];
     });
-    const totalLessons = catalog.reduce(
-      (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),
-      0,
-    );
     const overallAccuracy = calculateAccuracy(correctAnswers, totalAnswers);
     const weeklyAccuracy = this.buildWeeklyTrend(answers, overallAccuracy);
     const themeInsights = this.buildThemeInsights(answers);
     const weakestTheme =
       [...themeInsights].sort((left, right) => left.accuracy - right.accuracy)[0] ?? null;
-    const masteredThemes = themeInsights.filter((theme) => theme.accuracy >= 70);
-    const lessonsCompleted = this.buildLessonsCompleted(masteredThemes, catalog, totalLessons);
 
     return {
       summary: {
@@ -231,28 +239,6 @@ export class ProgressService {
               href: '/lessons',
             },
     };
-  }
-
-  private buildLessonsCompleted(
-    masteredThemes: ReadonlyArray<ProgressThemeInsight>,
-    catalog: ContentCatalog,
-    totalLessons: number,
-  ) {
-    if (masteredThemes.length === 0) {
-      return 0;
-    }
-
-    const themeLessonCounts = new Map(
-      catalog.flatMap((game) =>
-        game.themes.map((theme) => [`${game.game}:${theme.slug}`, theme.lessons.length] as const),
-      ),
-    );
-    const estimatedCompleted = masteredThemes.reduce(
-      (sum, theme) => sum + (themeLessonCounts.get(`${theme.game}:${theme.themeSlug}`) ?? 0),
-      0,
-    );
-
-    return Math.min(totalLessons, estimatedCompleted);
   }
 
   private buildCurrentStreak(

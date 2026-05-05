@@ -31,6 +31,8 @@ Acceptance criteria:
 
 ## Story 3: Real Lesson Completion Tracking
 
+Status: implemented.
+
 As a learner, I want completed lessons to be tracked explicitly so profile and progress metrics are
 based on real reading activity, not inferred theme mastery.
 

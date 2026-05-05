@@ -47,6 +47,7 @@ model User {
   quizAttempts QuizAttempt[]
   dailyUsage   DailyUsage[]
   stats        UserStat[]
+  lessonCompletions LessonCompletion[]
   subscription Subscription?
 
   @@map("users")
@@ -88,10 +89,24 @@ model Lesson {
   createdAt DateTime  @default(now()) @map("created_at")
   archivedAt DateTime? @map("archived_at")
   theme     Theme     @relation(fields: [themeId], references: [id], onDelete: Cascade)
+  completions LessonCompletion[]
 
   @@index([themeId])
   @@unique([themeId, slug])
   @@map("lessons")
+}
+
+model LessonCompletion {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  lessonId    String   @map("lesson_id") @db.Uuid
+  completedAt DateTime @default(now()) @map("completed_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([lessonId])
+  @@map("lesson_completions")
 }
 
 model Question {

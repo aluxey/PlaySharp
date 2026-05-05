@@ -1,16 +1,16 @@
 import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 
 import type {
-  ContentGame,
   ContentGameName,
+  LessonCompletionStatus,
   ProfileOverview,
   ProfileQuizScore,
   ProfileStat,
 } from '@playsharp/shared';
 
 import { createApiError } from '../../common/api-error';
-import { ContentService } from '../content/content.service';
 import { PrismaService } from '../prisma/prisma.service';
+import type { LessonCompletionDto } from './users.dto';
 
 function formatFullDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
@@ -69,38 +69,29 @@ type RecentAttemptRecord = {
   }>;
 };
 
-type ThemeAttemptRecord = {
-  isCorrect: boolean;
-  question: {
-    theme: {
-      slug: string;
-      game: {
-        name: string;
-      };
-    };
-  };
-};
-
 type DailyUsageRecord = {
   date: Date;
   questionsAnswered: number;
 };
 
+type LessonCompletionRecord = {
+  completedAt: Date;
+};
+
 @Injectable()
 export class UsersService {
-  constructor(
-    @Inject(ContentService) private readonly contentService: ContentService,
-    @Inject(PrismaService) private readonly prisma: PrismaService,
-  ) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async getProfileOverview(userId: string): Promise<ProfileOverview> {
-    const [catalog, user] = await Promise.all([
-      this.contentService.getCatalog(),
+    const [user, totalLessons] = await Promise.all([
       this.prisma.user.findUnique({
         where: { id: userId },
         include: {
           subscription: true,
         },
+      }),
+      this.prisma.lesson.count({
+        where: { archivedAt: null },
       }),
     ]);
 
@@ -110,16 +101,12 @@ export class UsersService {
       );
     }
 
-    const totalLessons = catalog.reduce(
-      (total, game) => total + game.themes.reduce((sum, theme) => sum + theme.lessons.length, 0),
-      0,
-    );
     const [
       quizzesCompleted,
       totalQuestionAttempts,
       correctQuestionAttempts,
       recentAttempts,
-      themeAttempts,
+      lessonsCompleted,
       dailyUsage,
     ] = await Promise.all([
       this.prisma.quizAttempt.count({
@@ -185,33 +172,14 @@ export class UsersService {
           },
         },
       }) as Promise<ReadonlyArray<RecentAttemptRecord>>,
-      this.prisma.questionAttempt.findMany({
+      this.prisma.lessonCompletion.count({
         where: {
-          quizAttempt: {
-            userId,
-            finishedAt: {
-              not: null,
-            },
+          userId,
+          lesson: {
+            archivedAt: null,
           },
         },
-        select: {
-          isCorrect: true,
-          question: {
-            select: {
-              theme: {
-                select: {
-                  slug: true,
-                  game: {
-                    select: {
-                      name: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      }) as Promise<ReadonlyArray<ThemeAttemptRecord>>,
+      }),
       this.prisma.dailyUsage.findMany({
         where: { userId },
         orderBy: { date: 'desc' },
@@ -223,7 +191,6 @@ export class UsersService {
     ]);
     const overallAccuracy = calculateAccuracy(correctQuestionAttempts, totalQuestionAttempts);
     const currentStreak = this.buildCurrentStreak(dailyUsage);
-    const lessonsCompleted = this.buildLessonsCompleted(themeAttempts, catalog, totalLessons);
     const stats = this.buildStats({
       overallAccuracy,
       quizzesCompleted,
@@ -275,6 +242,63 @@ export class UsersService {
           unlocked: overallAccuracy >= 90 && totalQuestionAttempts >= 50,
         },
       ],
+    };
+  }
+
+  async getLessonCompletionStatus(
+    userId: string,
+    input: LessonCompletionDto,
+  ): Promise<LessonCompletionStatus> {
+    const lesson = await this.requireLesson(input);
+    const completion = (await this.prisma.lessonCompletion.findUnique({
+      where: {
+        userId_lessonId: {
+          userId,
+          lessonId: lesson.id,
+        },
+      },
+      select: {
+        completedAt: true,
+      },
+    })) as LessonCompletionRecord | null;
+
+    return {
+      game: input.game,
+      themeSlug: input.themeSlug,
+      lessonSlug: input.lessonSlug,
+      completed: completion !== null,
+      completedAt: completion?.completedAt.toISOString() ?? null,
+    };
+  }
+
+  async completeLesson(
+    userId: string,
+    input: LessonCompletionDto,
+  ): Promise<LessonCompletionStatus> {
+    const lesson = await this.requireLesson(input);
+    const completion = (await this.prisma.lessonCompletion.upsert({
+      where: {
+        userId_lessonId: {
+          userId,
+          lessonId: lesson.id,
+        },
+      },
+      update: {},
+      create: {
+        userId,
+        lessonId: lesson.id,
+      },
+      select: {
+        completedAt: true,
+      },
+    })) as LessonCompletionRecord;
+
+    return {
+      game: input.game,
+      themeSlug: input.themeSlug,
+      lessonSlug: input.lessonSlug,
+      completed: true,
+      completedAt: completion.completedAt.toISOString(),
     };
   }
 
@@ -330,37 +354,6 @@ export class UsersService {
     });
   }
 
-  private buildLessonsCompleted(
-    attempts: ReadonlyArray<ThemeAttemptRecord>,
-    catalog: ReadonlyArray<ContentGame>,
-    totalLessons: number,
-  ) {
-    const groupedThemes = new Map<string, { total: number; correct: number }>();
-
-    for (const attempt of attempts) {
-      const key = `${toSharedGameName(attempt.question.theme.game.name)}:${attempt.question.theme.slug}`;
-      const stats = groupedThemes.get(key) ?? { total: 0, correct: 0 };
-
-      stats.total += 1;
-      stats.correct += attempt.isCorrect ? 1 : 0;
-      groupedThemes.set(key, stats);
-    }
-
-    const completed = catalog.reduce((total, game) => {
-      return (
-        total +
-        game.themes.reduce((sum, theme) => {
-          const stats = groupedThemes.get(`${game.game}:${theme.slug}`);
-          const mastered = stats ? calculateAccuracy(stats.correct, stats.total) >= 70 : false;
-
-          return sum + (mastered ? theme.lessons.length : 0);
-        }, 0)
-      );
-    }, 0);
-
-    return Math.min(totalLessons, completed);
-  }
-
   private buildCurrentStreak(dailyUsage: ReadonlyArray<DailyUsageRecord>) {
     const activeDays = dailyUsage.filter((entry) => entry.questionsAnswered > 0);
 
@@ -401,5 +394,35 @@ export class UsersService {
     }
 
     return streak === 0 ? 1 : streak + 1;
+  }
+
+  private async requireLesson(input: LessonCompletionDto) {
+    const lesson = await this.prisma.lesson.findFirst({
+      where: {
+        slug: input.lessonSlug,
+        archivedAt: null,
+        theme: {
+          slug: input.themeSlug,
+          game: {
+            name: input.game === 'blackjack' ? 'BLACKJACK' : 'POKER',
+          },
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    if (!lesson) {
+      throw new NotFoundException(
+        createApiError(
+          HttpStatus.NOT_FOUND,
+          'LESSON_COMPLETION_NOT_FOUND',
+          `Lesson ${input.game}/${input.themeSlug}/${input.lessonSlug} was not found.`,
+        ),
+      );
+    }
+
+    return lesson;
   }
 }

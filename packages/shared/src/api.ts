@@ -25,6 +25,7 @@ export type ApiErrorCode =
   | 'AUTH_USER_NOT_FOUND'
   | 'CONTENT_UNKNOWN_GAME'
   | 'CONTENT_GAME_NOT_FOUND'
+  | 'LESSON_COMPLETION_NOT_FOUND'
   | 'CONTENT_THEME_NOT_FOUND'
   | 'QUIZ_ATTEMPT_EMPTY'
   | 'QUIZ_CHOICE_NOT_FOUND'
@@ -193,6 +194,21 @@ export type ProgressOverview = {
 
 export type ProgressOverviewResponse = ApiSuccessResponse<{
   overview: ProgressOverview;
+}>;
+
+export type LessonCompletionRequest = {
+  game: ContentGameName;
+  themeSlug: string;
+  lessonSlug: string;
+};
+
+export type LessonCompletionStatus = LessonCompletionRequest & {
+  completed: boolean;
+  completedAt: string | null;
+};
+
+export type LessonCompletionResponse = ApiSuccessResponse<{
+  completion: LessonCompletionStatus;
 }>;
 
 export type ProfilePlan = 'free' | 'premium';

@@ -1,8 +1,13 @@
 import Link from 'next/link';
 
 import { StatePanel } from '../../../../../components';
-import { getLessonByRoute } from '../../../../../lib/api';
-import { lessonThemeRoute, routes } from '../../../../../lib/routes';
+import {
+  getCurrentAuthUser,
+  getLessonByRoute,
+  getLessonCompletionStatus,
+} from '../../../../../lib/api';
+import { lessonDetailRoute, lessonThemeRoute, routes } from '../../../../../lib/routes';
+import { LessonCompletionButton } from './lesson-completion-button';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +32,10 @@ export default async function LessonDetailPage({
     );
   }
 
-  const lesson = await getLessonByRoute(game, themeSlug, slug);
+  const [lesson, currentUser] = await Promise.all([
+    getLessonByRoute(game, themeSlug, slug),
+    getCurrentAuthUser(),
+  ]);
 
   if (lesson.error) {
     return (
@@ -58,6 +66,15 @@ export default async function LessonDetailPage({
     );
   }
 
+  const completion = currentUser.data
+    ? await getLessonCompletionStatus({
+        game,
+        themeSlug,
+        lessonSlug: slug,
+      })
+    : { data: null };
+  const currentPath = lessonDetailRoute(game, themeSlug, slug);
+
   return (
     <main className="page page--lesson-detail">
       <section className="lesson-detail-grid">
@@ -79,6 +96,16 @@ export default async function LessonDetailPage({
             <Link className="button button--primary" href={routes.quiz}>
               Start quiz
             </Link>
+            <LessonCompletionButton
+              initialCompletion={completion.data}
+              isAuthenticated={currentUser.data !== null}
+              nextPath={currentPath}
+              request={{
+                game,
+                themeSlug,
+                lessonSlug: slug,
+              }}
+            />
             <Link
               className="button button--secondary"
               href={lessonThemeRoute(lesson.data.game, lesson.data.themeSlug)}
