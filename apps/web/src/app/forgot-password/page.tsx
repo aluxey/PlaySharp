@@ -1,16 +1,16 @@
 import { redirect } from 'next/navigation';
 
-import { RegisterForm } from '../../features/auth/register-form';
+import { ForgotPasswordForm } from '../../features/auth/forgot-password-form';
 import { getAuthState } from '../../lib/auth-state';
 import { normalizeAuthRedirectPath, resolvePostAuthRedirect, routes } from '../../lib/routes';
 
-type RegisterPageProps = {
+type ForgotPasswordPageProps = {
   searchParams: Promise<{
     next?: string | ReadonlyArray<string>;
   }>;
 };
 
-export default async function RegisterPage({ searchParams }: RegisterPageProps) {
+export default async function ForgotPasswordPage({ searchParams }: ForgotPasswordPageProps) {
   const resolvedSearchParams = await searchParams;
   const nextPath = normalizeAuthRedirectPath(
     typeof resolvedSearchParams.next === 'string' ? resolvedSearchParams.next : null,
@@ -21,5 +21,5 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
     redirect(resolvePostAuthRedirect(nextPath, routes.home));
   }
 
-  return <RegisterForm nextPath={nextPath} />;
+  return <ForgotPasswordForm nextPath={nextPath} />;
 }

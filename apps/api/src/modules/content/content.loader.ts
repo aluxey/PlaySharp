@@ -226,6 +226,10 @@ async function readGameContent(game: ContentGameName): Promise<ContentGame | nul
       return null;
     }
 
+    if (error instanceof SyntaxError) {
+      throw new Error(`${contentRelativePath(game)}: ${error.message}`);
+    }
+
     throw error;
   }
 }

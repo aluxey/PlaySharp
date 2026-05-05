@@ -1,5 +1,6 @@
 export * from './app-shell';
 export * from './animated-background';
+export * from './auth-provider';
 export * from './logout-button';
 export * from './navigation';
 export * from './page-state';

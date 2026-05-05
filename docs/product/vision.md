@@ -24,7 +24,7 @@ interactive drills, immediate correction, and clear progression tracking.
 - Daily quiz flow
 - Lesson library
 - Progress tracking
-- Integrated content administration
+- Integrated read-only content administration
 
 ## Out of scope for V1
 

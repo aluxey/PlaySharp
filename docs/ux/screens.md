@@ -92,9 +92,11 @@ Future scope:
 
 Core content:
 
-- Theme CRUD
-- Lesson CRUD
-- Question CRUD
-- Difficulty management
-- Quiz preview
+- Read-only inventory totals
+- Theme, lesson, and question listings
+- Manifest/source-of-truth references
+- Coverage and difficulty summaries
+- Quiz/content preview links
 - Global stats
+
+V1 note: content edits stay in versioned JSON and the admin surface remains read-only.

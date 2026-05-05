@@ -97,6 +97,12 @@ Run only the web app:
 npm run dev:web
 ```
 
+To grant admin access to an existing account after it registers:
+
+```bash
+npm run admin:promote --workspace @playsharp/api -- --email you@example.com
+```
+
 Local URLs:
 
 - Web app: `http://localhost:3000`
@@ -118,9 +124,20 @@ docker stop playsharp-postgres
 - `npm run dev:api` - start the API only
 - `npm run dev:web` - start the web app only
 - `npm run build` - build both workspaces
+- `npm run admin:promote --workspace @playsharp/api -- --email you@example.com` - promote an existing user to admin
+- `npm run seed --workspace @playsharp/api` - sync versioned content into PostgreSQL
+- `npm run smoke` - run post-build smoke checks for API health, core web routes, the quiz journey, and admin access control
 - `npm run lint` - run ESLint across the repo
 - `npm run typecheck` - run TypeScript checks across the workspaces
 - `npm run format` - format the repository
+
+Run `npm run build` before `npm run smoke`. The smoke runner starts the built API and web apps,
+so it also needs a reachable PostgreSQL instance through the same `DATABASE_URL` used by the
+API. It validates guest routes, a register -> quiz -> lesson -> progress flow, and admin access rules for guest, user, and promoted admin accounts.
+
+After editing files under `content/`, rerun `npm run seed --workspace @playsharp/api` so the
+database stays aligned with the versioned manifests. CI now also runs `prisma:push` and `seed`
+before smoke checks to catch content drift automatically.
 
 ## Repository layout
 
@@ -135,6 +152,7 @@ docker stop playsharp-postgres
 ## Documentation
 
 - `docs/technical-setup.md`
+- `docs/deployment-staging.md`
 - `docs/product/vision.md`
 - `docs/product/roadmap.md`
 - `docs/ux/frontend-guidelines.md`
@@ -144,6 +162,7 @@ docker stop playsharp-postgres
 
 ## Current status
 
-The repository has a working technical baseline: monorepo tooling, scaffolded apps, shared
-packages, and the first product routes. The next step is to connect auth, data, and the quiz
-engine.
+The repository now has a working V1 learning slice: auth, quiz attempt persistence, lesson and
+progress flows, a protected admin inventory view, content validation, and seeded smoke coverage.
+The next step is to keep hardening the experience and staging workflow rather than filling basic
+scaffolding gaps.

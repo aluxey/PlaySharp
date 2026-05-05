@@ -29,33 +29,37 @@
 - V1 scope, metrics, and roadmap are documented.
 - UX/UI foundation and frontend screens are in place.
 - Content schema and Prisma seed pipeline are established.
-- API contracts exist for content, quiz, progress, profile, and admin.
-- Next major effort: connect interactive states directly to API contracts and persist attempts.
+- API contracts and persisted V1 flows exist for auth, quiz, progress, profile, and admin inventory.
+- Next major effort: keep hardening the protected V1 slice for staging feedback and future admin workflow expansion.
 
 ## Next steps (suggested TODOs)
 
 ### Product and UX
 
-- [ ] Validate the V1 user journey end-to-end (quiz -> feedback -> lesson -> progress).
-- [ ] Confirm which admin features are needed in V1 (read-only vs CRUD) and document it.
-- [ ] Align each screen with `docs/ux/screens.md` content requirements.
+- [x] Validate the V1 user journey end-to-end (quiz -> feedback -> lesson -> progress).
+- [x] Confirm which admin features are needed in V1 (read-only vs CRUD) and document it.
+- [x] Align each screen with `docs/ux/screens.md` content requirements.
 
 ### Content and data
 
-- [ ] Add content validation (schema or lint) to prevent malformed JSON.
-- [ ] Expand content coverage per difficulty distribution and avoid duplicates.
-- [ ] Ensure content updates always run `npm run seed --workspace @playsharp/api`.
+- [x] Add content validation (schema or lint) to prevent malformed JSON.
+- [x] Expand content coverage per difficulty distribution and avoid duplicates.
+- [x] Ensure content updates always run `npm run seed --workspace @playsharp/api`.
 
 ### API
 
 - [x] Implement auth flows (register/login) and protect user-specific endpoints.
 - [x] Add quiz attempt persistence (create attempt, store answers, compute score).
 - [x] Power progress endpoints from attempts instead of content-only placeholders.
-- [ ] Define admin write endpoints if CRUD is required for V1.
+- [x] Protect admin inventory endpoints and page behind admin-only access.
+- [x] Add a documented admin promotion command for local and staging access.
+- [x] Defer admin write endpoints until post-V1 CRUD work.
 
 ### Web
 
 - [x] Wire login/register pages to real auth endpoints.
+- [x] Polish the login/register experience and sync client auth state immediately after auth.
+- [x] Add password visibility toggles, inline auth validation, and a forgot-password placeholder flow.
 - [x] Submit quiz answers to the API and display result state from response.
 - [x] Use lesson/theme routes for deep links and catalog navigation.
 - [x] Replace placeholder stats with API-backed progress data.
@@ -63,8 +67,9 @@
 ### Quality and operations
 
 - [x] Ensure CI runs lint, typecheck, and format checks.
-- [ ] Add smoke tests for API health and web routes.
-- [ ] Document a minimal deployment/staging setup once V1 is stable.
+- [x] Add smoke tests for API health and web routes.
+- [x] Validate admin access control in the smoke flow for guest, user, and admin roles.
+- [x] Document a minimal deployment/staging setup once V1 is stable.
 
 ## Out of scope for V1 (do not start yet)
 

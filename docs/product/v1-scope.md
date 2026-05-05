@@ -13,7 +13,7 @@ understand mistakes quickly, and track improvement over time.
 - Daily quiz flow
 - Lesson browsing
 - Progress overview
-- Integrated admin workspace
+- Read-only admin workspace
 - Versioned content for poker and blackjack
 
 ## Out of scope
@@ -39,4 +39,11 @@ understand mistakes quickly, and track improvement over time.
 - A user can complete a quiz without friction
 - A user can read the explanation immediately after answering
 - A user can browse lessons by game and theme
-- The admin workspace can manage content without changing the codebase
+- The admin workspace exposes live content inventory, source manifests, and coverage totals for internal review
+
+## Admin decision for V1
+
+- V1 keeps the admin workspace read-only.
+- Versioned JSON under `content/` remains the source of truth for content changes.
+- Internal content updates still go through Git review plus `npm run seed --workspace @playsharp/api`.
+- Admin CRUD and write endpoints are deferred until after V1.

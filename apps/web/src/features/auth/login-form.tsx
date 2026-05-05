@@ -2,25 +2,62 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 
 import { loginWithPassword } from '../../lib/auth-client';
-import { useToast } from '../../components';
-import { buildRegisterRoute, resolvePostAuthRedirect, routes } from '../../lib/routes';
+import { useAuth, useToast } from '../../components';
+import {
+  buildForgotPasswordRoute,
+  buildRegisterRoute,
+  resolvePostAuthRedirect,
+  routes,
+} from '../../lib/routes';
+import { AuthLayout } from './auth-layout';
+import { AuthSocialButtons } from './auth-social-buttons';
 import { getLoginErrorToast } from './auth-toast';
+import { validateEmailAddress, validateLoginPassword } from './auth-validation';
 
 type LoginFormProps = {
   nextPath: string | null;
 };
 
 export function LoginForm({ nextPath }: LoginFormProps) {
-  const router = useRouter();
+  const { setAuthenticatedUser } = useAuth();
   const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.dashboard);
+  const [showPassword, setShowPassword] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [touchedFields, setTouchedFields] = useState({
+    email: false,
+    password: false,
+  });
+  const postAuthRedirect = resolvePostAuthRedirect(nextPath, routes.home);
+  const emailError = validateEmailAddress(email);
+  const passwordError = validateLoginPassword(password);
+  const visibleEmailError = (touchedFields.email || hasSubmitted) && emailError ? emailError : null;
+  const visiblePasswordError =
+    (touchedFields.password || hasSubmitted) && passwordError ? passwordError : null;
+
+  function fieldClassName(hasError: boolean, hasTrailingButton = false) {
+    return `auth-input w-full rounded-xl border bg-[#26282f] px-4 py-3 text-base text-white placeholder:text-slate-400 transition-[border-color,box-shadow,background-color] focus:outline-none ${
+      hasError
+        ? 'border-error/70 focus:border-error focus:shadow-[0_0_0_3px_rgba(239,68,68,0.15)]'
+        : 'border-[#464b5f] focus:border-[#5a6fff] focus:shadow-[0_0_0_3px_rgba(90,111,255,0.2)]'
+    } ${hasTrailingButton ? 'pr-12' : ''}`;
+  }
+
+  function handleEmailChange(nextEmail: string) {
+    setEmail(nextEmail);
+    setErrorMessage(null);
+  }
+
+  function handlePasswordChange(nextPassword: string) {
+    setPassword(nextPassword);
+    setErrorMessage(null);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +66,14 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       return;
     }
 
+    setHasSubmitted(true);
+    setTouchedFields({ email: true, password: true });
     setErrorMessage(null);
+
+    if (emailError || passwordError) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     const result = await loginWithPassword({
@@ -49,112 +93,140 @@ export function LoginForm({ nextPath }: LoginFormProps) {
       return;
     }
 
+    if (!result.data) {
+      setErrorMessage('The session could not be created. Please try again.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    setAuthenticatedUser(result.data.user);
     showToast({
       title: 'Signed in',
-      description: 'Welcome back. Your account is ready.',
+      description: `Welcome back ${result.data.user.email}. Your account is ready.`,
       tone: 'success',
     });
-    router.push(postAuthRedirect);
-    router.refresh();
+    window.location.assign(postAuthRedirect);
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background">
-      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 items-center">
-        <div className="space-y-4">
-          <p className="text-sm uppercase tracking-[0.22em] text-foreground-secondary">
-            Authentication
-          </p>
-          <h1 className="text-4xl font-bold text-foreground">Log in</h1>
-          <p className="text-foreground-secondary">
-            Sign in to restore your dashboard, streaks, and saved quiz history.
-          </p>
-          <div className="space-y-3 text-sm text-foreground-secondary">
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-primary" /> Session state is stored in a
-              secure cookie.
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-secondary" /> Your dashboard and profile
-              unlock automatically after sign-in.
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-success" /> Registration remains one click
-              away if you do not have an account yet.
-            </div>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <Link
-              className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold"
-              href={routes.home}
-            >
-              Back home
-            </Link>
-            <Link
-              className="px-4 py-2 rounded-xl border border-border text-foreground"
-              href={buildRegisterRoute(nextPath)}
-            >
-              Create account
-            </Link>
-          </div>
+    <AuthLayout
+      activeTab="login"
+      nextPath={nextPath}
+      formEyebrow="Member access"
+      formTitle="Sign in"
+      formDescription="New here?"
+      helper={
+        <>
+          <Link
+            className="font-medium text-[#6a87ff] transition-colors hover:text-white"
+            href={buildRegisterRoute(nextPath)}
+          >
+            Create an account
+          </Link>
+        </>
+      }
+    >
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <label
+            className="block text-xs font-medium uppercase tracking-[0.14em] text-slate-500"
+            htmlFor="login-email"
+          >
+            Email
+          </label>
+          <input
+            id="login-email"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(event) => handleEmailChange(event.target.value)}
+            onBlur={() =>
+              setTouchedFields((current) => ({
+                ...current,
+                email: true,
+              }))
+            }
+            className={fieldClassName(Boolean(visibleEmailError))}
+            autoComplete="email"
+            aria-invalid={visibleEmailError ? 'true' : 'false'}
+            aria-describedby={visibleEmailError ? 'login-email-error' : undefined}
+            required
+          />
+          {visibleEmailError ? (
+            <p id="login-email-error" className="text-sm text-error">
+              {visibleEmailError}
+            </p>
+          ) : null}
         </div>
 
-        <div className="bg-surface-elevated border border-border rounded-2xl p-8 space-y-6 shadow-lg shadow-primary/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-foreground-secondary">Secure access</p>
-              <h2 className="text-2xl font-semibold text-foreground">Welcome back</h2>
-            </div>
-            <span className="px-3 py-1 rounded-lg border border-border text-xs text-foreground-secondary">
-              Live API
-            </span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-3 text-sm">
+            <label
+              className="font-medium uppercase tracking-[0.14em] text-slate-500"
+              htmlFor="login-password"
+            >
+              Password
+            </label>
+            <Link
+              className="font-medium text-[#6a87ff] transition-colors hover:text-white"
+              href={buildForgotPasswordRoute(nextPath)}
+            >
+              Forgot password?
+            </Link>
           </div>
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <label className="space-y-2 block text-sm font-medium text-foreground">
-              <span>Email</span>
-              <input
-                type="email"
-                placeholder="alex@example.com"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary"
-                autoComplete="email"
-                required
-              />
-            </label>
-            <label className="space-y-2 block text-sm font-medium text-foreground">
-              <span>Password</span>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-foreground placeholder:text-foreground-secondary focus:outline-none focus:border-primary"
-                autoComplete="current-password"
-                required
-              />
-            </label>
-            {errorMessage ? (
-              <div className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
-                {errorMessage}
-              </div>
-            ) : null}
-            <div className="flex items-center justify-between text-sm gap-4">
-              <Link className="text-primary" href={buildRegisterRoute(nextPath)}>
-                Need an account?
-              </Link>
-              <button
-                className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-semibold disabled:opacity-70"
-                type="submit"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign in'}
-              </button>
-            </div>
-          </form>
+          <div className="relative">
+            <input
+              id="login-password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => handlePasswordChange(event.target.value)}
+              onBlur={() =>
+                setTouchedFields((current) => ({
+                  ...current,
+                  password: true,
+                }))
+              }
+              className={fieldClassName(Boolean(visiblePasswordError), true)}
+              autoComplete="current-password"
+              aria-invalid={visiblePasswordError ? 'true' : 'false'}
+              aria-describedby={visiblePasswordError ? 'login-password-error' : undefined}
+              required
+            />
+            <button
+              type="button"
+              className="absolute inset-y-0 right-0 inline-flex items-center justify-center px-4 text-slate-500 transition-colors hover:text-slate-200"
+              onClick={() => setShowPassword((current) => !current)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+
+          {visiblePasswordError ? (
+            <p id="login-password-error" className="text-sm text-error">
+              {visiblePasswordError}
+            </p>
+          ) : null}
         </div>
-      </div>
-    </div>
+
+        {errorMessage ? (
+          <div className="rounded-xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error">
+            {errorMessage}
+          </div>
+        ) : null}
+
+        <button
+          className="inline-flex w-full items-center justify-center rounded-xl border border-[#4a5165] bg-transparent px-5 py-3.5 text-xl font-medium text-white transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-70"
+          type="submit"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? 'Signing in...' : 'Sign in'}
+        </button>
+
+        <AuthSocialButtons contextLabel="login" />
+      </form>
+    </AuthLayout>
   );
 }

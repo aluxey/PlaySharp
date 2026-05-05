@@ -7,7 +7,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { validateApiEnv } from './config/env';
 
-loadEnvFile('.env');
+try {
+  loadEnvFile('.env');
+} catch (error) {
+  if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) {
+    throw error;
+  }
+}
 validateApiEnv();
 
 async function bootstrap() {

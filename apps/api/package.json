@@ -10,6 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "TMPDIR=/tmp JWT_SECRET=playsharp-test-secret-with-more-than-32-characters node --import tsx --test \"src/**/*.test.ts\"",
     "content:check": "TMPDIR=/tmp node --import tsx src/modules/content/content.check.ts",
+    "admin:promote": "tsx prisma/promote-admin.ts",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push --skip-generate",
     "prisma:migrate": "prisma migrate dev",

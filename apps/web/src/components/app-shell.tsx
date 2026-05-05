@@ -3,25 +3,24 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 
-import type { AuthUser } from '@playsharp/shared';
-
 import { routes } from '../lib/routes';
 import { AnimatedBackground } from './animated-background';
+import { useAuth } from './auth-provider';
 import { MobileNav, PublicHeader, PublicMobileNav, Sidebar } from './navigation';
 
 type AppShellProps = {
   children: ReactNode;
-  user: AuthUser | null;
 };
 
-export function AppShell({ children, user }: AppShellProps) {
+export function AppShell({ children }: AppShellProps) {
   const pathname = usePathname();
-  const isAuthPage = pathname === routes.login || pathname === routes.register;
+  const { user } = useAuth();
+  const isAuthPage =
+    pathname === routes.login || pathname === routes.register || pathname === routes.forgotPassword;
 
   if (isAuthPage) {
     return (
       <div className="min-h-screen bg-background">
-        <AnimatedBackground />
         <main className="relative z-10">{children}</main>
       </div>
     );

@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation';
 import { LogOut } from 'lucide-react';
 
 import { routes } from '../lib/routes';
+import { useAuth } from './auth-provider';
 
 export function LogoutButton() {
   const router = useRouter();
+  const { clearAuthenticatedUser } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleLogout() {
@@ -22,7 +24,8 @@ export function LogoutButton() {
         method: 'POST',
       });
     } finally {
-      router.push(routes.login);
+      clearAuthenticatedUser();
+      router.replace(routes.login);
       router.refresh();
       setIsSubmitting(false);
     }

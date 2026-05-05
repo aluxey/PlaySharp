@@ -18,7 +18,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const authState = await getAuthState();
 
   if (authState.isAuthenticated) {
-    redirect(resolvePostAuthRedirect(nextPath, routes.dashboard));
+    redirect(resolvePostAuthRedirect(nextPath, routes.home));
   }
 
   return <LoginForm nextPath={nextPath} />;
