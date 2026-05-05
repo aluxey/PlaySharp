@@ -47,6 +47,9 @@
     },
     "tailwindcss": {
       "postcss": "8.5.14"
+    },
+    "next": {
+      "postcss": "8.5.14"
     }
   },
   "engines": {

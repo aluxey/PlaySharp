@@ -5,6 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Prisma } from '@prisma/client';
 
 import type {
   ContentCatalog,
@@ -100,6 +101,42 @@ type ContentSyncRecord = {
   syncedAt: Date;
 };
 
+type OverviewGameRecord = {
+  name: PrismaGameName;
+  themes: ReadonlyArray<{
+    lessons: ReadonlyArray<unknown>;
+    questions: ReadonlyArray<unknown>;
+  }>;
+};
+
+type ExportCatalogRecord = {
+  name: PrismaGameName;
+  themes: ReadonlyArray<{
+    slug: string;
+    name: string;
+    level: PrismaDifficulty;
+    lessons: ReadonlyArray<{
+      slug: string;
+      title: string;
+      content: string;
+      level: PrismaDifficulty;
+    }>;
+    questions: ReadonlyArray<{
+      slug: string;
+      title: string;
+      scenario: string | null;
+      difficulty: PrismaDifficulty;
+      explanation: string;
+      isPremium: boolean;
+      choices: ReadonlyArray<{
+        label: string;
+        isCorrect: boolean;
+        explanation: string | null;
+      }>;
+    }>;
+  }>;
+};
+
 function toPrismaGameName(game: ContentGameName) {
   return PRISMA_GAME_NAMES[game];
 }
@@ -163,7 +200,7 @@ export class AdminService {
             },
           },
         },
-      }),
+      }) as Promise<ReadonlyArray<OverviewGameRecord>>,
       this.prisma.contentSync.findUnique({
         where: { source: 'content-json' },
         select: {
@@ -317,7 +354,7 @@ export class AdminService {
   }
 
   async exportCatalog(): Promise<ContentCatalog> {
-    const games = await this.prisma.game.findMany({
+    const games = (await this.prisma.game.findMany({
       orderBy: { name: 'asc' },
       include: {
         themes: {
@@ -339,7 +376,7 @@ export class AdminService {
           },
         },
       },
-    });
+    })) as ReadonlyArray<ExportCatalogRecord>;
 
     return games.map((game) => ({
       game: toSharedGameName(game.name as PrismaGameName),
@@ -404,7 +441,7 @@ export class AdminService {
 
     await this.requireQuestion(id);
     const theme = await this.requireTheme(input.game, input.themeSlug);
-    const question = (await this.prisma.$transaction(async (tx) => {
+    const question = (await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       await tx.questionChoice.deleteMany({ where: { questionId: id } });
 
       return tx.question.update({

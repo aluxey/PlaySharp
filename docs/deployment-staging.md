@@ -75,6 +75,18 @@ npm run admin:promote --workspace @playsharp/api -- --email you@example.com
 - Content catalog loads on lessons and quiz pages
 - `npm run seed --workspace @playsharp/api` is rerun after content changes
 
+## Release checklist
+
+- Run `npm ci`, `npm audit --omit=dev`, `npm run lint`, `npm run typecheck`, `npm test`, and
+  `npm run build` before promoting a release.
+- Web builds use stable Next without additional build flags. If a framework build flag is added,
+  document the owner and removal condition in this section before release.
+- Owner: maintainer. The root `overrides.next.postcss` entry pins Next's nested PostCSS package to
+  `8.5.14` until the stable Next release line declares PostCSS `8.5.10` or newer directly.
+- Rollback note: if the stable Next upgrade causes a release-blocking regression, revert the
+  `apps/web/package.json` Next/build-script change plus the related `package-lock.json` update, run
+  `npm ci`, and re-run the release checklist before redeploying the previous package set.
+
 ## Recommended hosting shape
 
 - Put the web app and API on separate staging hostnames
