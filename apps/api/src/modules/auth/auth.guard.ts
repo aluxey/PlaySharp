@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -26,7 +27,7 @@ function extractBearerToken(authorizationHeader: string | string[] | undefined) 
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly authTokenService: AuthTokenService) {}
+  constructor(@Inject(AuthTokenService) private readonly authTokenService: AuthTokenService) {}
 
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<RequestWithAuthenticatedUser>();
