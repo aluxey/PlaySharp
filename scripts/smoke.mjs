@@ -12,6 +12,8 @@ const webPort = Number(process.env.SMOKE_WEB_PORT ?? 3100);
 const apiOrigin = `http://127.0.0.1:${apiPort}`;
 const apiBaseUrl = `${apiOrigin}/api`;
 const webOrigin = `http://127.0.0.1:${webPort}`;
+const smokeJwtSecret =
+  process.env.SMOKE_JWT_SECRET ?? 'playsharp-smoke-secret-with-more-than-32-characters';
 
 await verifyBuildArtifacts();
 await runCommand(
@@ -22,6 +24,7 @@ await runCommand(
 
 const apiServer = startServer('api', ['run', 'start', '--workspace', '@playsharp/api'], {
   API_PORT: String(apiPort),
+  JWT_SECRET: smokeJwtSecret,
   PORT: String(apiPort),
   WEB_APP_URL: webOrigin,
   NODE_ENV: 'production',

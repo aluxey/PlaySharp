@@ -133,7 +133,8 @@ docker stop playsharp-postgres
 
 Run `npm run build` before `npm run smoke`. The smoke runner starts the built API and web apps,
 so it also needs a reachable PostgreSQL instance through the same `DATABASE_URL` used by the
-API. It validates guest routes, a register -> quiz -> lesson -> progress flow, and admin access rules for guest, user, and promoted admin accounts.
+API. It injects a smoke-only JWT secret by default; set `SMOKE_JWT_SECRET` to override it.
+It validates guest routes, a register -> quiz -> lesson -> progress flow, and admin access rules for guest, user, and promoted admin accounts.
 
 After editing files under `content/`, rerun `npm run seed --workspace @playsharp/api` so the
 database stays aligned with the versioned manifests. CI now also runs `prisma:push` and `seed`
