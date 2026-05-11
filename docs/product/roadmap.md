@@ -8,12 +8,12 @@
 - Phase 3 V1 API contracts and persistence are in place
 - Phase 4 main frontend learning loop is in place
 - Phase 5 quality guardrails and smoke coverage are in place
-- The next step is to harden staging workflows and refine post-V1 admin tooling
+- The next step is to harden staging workflows and refine admin/content operations
 
 ## Current focus
 
 - Keep the V1 scope and success metrics visible
-- Keep content, seed data, and smoke coverage aligned
+- Keep content seed data, admin edits, exports, and smoke coverage aligned
 - Harden the staging path and protected admin access
 - Continue visual polish without reopening scope
 - Keep premium and social features out of the first delivery slice
@@ -26,8 +26,7 @@ Goal: define exactly what V1 is, who it serves, and how success is measured.
 
 Deliverables:
 
-- `docs/product/v1-scope.md`
-- `docs/product/metrics.md`
+- `docs/product/README.md`
 - release criteria for the first beta
 
 Exit criteria:
@@ -66,7 +65,7 @@ Deliverables:
 
 Exit criteria:
 
-- content has one clear source of truth
+- content has one clear seed, review, and export workflow
 - the schema supports both learning content and progress tracking
 - identifiers and naming conventions are consistent
 
@@ -132,7 +131,7 @@ Hold until the core product is stable. Add Stripe, entitlement checks, and premi
 
 ### Admin workspace expansion
 
-Grow the content management workflow after the first content pipeline is in place.
+Grow draft/review/publish workflows after the current protected CRUD and export path is reliable.
 
 ### Deployment and operations hardening
 

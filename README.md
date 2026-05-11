@@ -125,7 +125,7 @@ docker stop playsharp-postgres
 - `npm run dev:web` - start the web app only
 - `npm run build` - build both workspaces
 - `npm run admin:promote --workspace @playsharp/api -- --email you@example.com` - promote an existing user to admin
-- `npm run seed --workspace @playsharp/api` - sync versioned content into PostgreSQL
+- `npm run seed --workspace @playsharp/api` - sync versioned content seed manifests into PostgreSQL
 - `npm run smoke` - run post-build smoke checks for API health, core web routes, the quiz journey, and admin access control
 - `npm run lint` - run ESLint across the repo
 - `npm run typecheck` - run TypeScript checks across the workspaces
@@ -137,8 +137,8 @@ API. It injects a smoke-only JWT secret by default; set `SMOKE_JWT_SECRET` to ov
 It validates guest routes, a register -> quiz -> lesson -> progress flow, and admin access rules for guest, user, and promoted admin accounts.
 
 After editing files under `content/`, rerun `npm run seed --workspace @playsharp/api` so the
-database stays aligned with the versioned manifests. CI now also runs `prisma:push` and `seed`
-before smoke checks to catch content drift automatically.
+database stays aligned with the versioned seed manifests. CI now also runs `prisma:push` and
+`seed` before smoke checks to catch content drift automatically.
 
 ## Repository layout
 
@@ -147,23 +147,25 @@ before smoke checks to catch content drift automatically.
 - `packages/shared`: shared types and constants
 - `packages/ui`: reusable UI helpers and components
 - `packages/config`: shared configuration presets
-- `content`: versioned educational content
+- `content`: versioned educational content seed manifests
 - `docs`: product, UX, and data documentation
 
 ## Documentation
 
-- `docs/technical-setup.md`
-- `docs/deployment-staging.md`
-- `docs/product/vision.md`
-- `docs/product/roadmap.md`
-- `docs/ux/frontend-guidelines.md`
-- `docs/ux/screens.md`
-- `docs/data/database.md`
-- `docs/data/api-contract.md`
+- `docs/README.md` - documentation map
+- `docs/technical-setup.md` - development workflow and environment notes
+- `docs/deployment-staging.md` - minimal staging and release checklist
+- `docs/product/README.md` - product vision, V1 scope, and metrics
+- `docs/product/roadmap.md` - delivery phases and current focus
+- `docs/product/stories.md` - active unfinished product stories
+- `docs/ux/frontend-guidelines.md` - UI tokens and interaction rules
+- `docs/ux/screens.md` - target screen architecture
+- `docs/data/database.md` - Prisma data model overview
+- `docs/data/api-contract.md` - API envelope, route, and error contracts
 
 ## Current status
 
 The repository now has a working V1 learning slice: auth, quiz attempt persistence, lesson and
-progress flows, a protected admin inventory view, content validation, and seeded smoke coverage.
-The next step is to keep hardening the experience and staging workflow rather than filling basic
-scaffolding gaps.
+progress flows, a protected admin content workspace, content validation, and seeded smoke
+coverage. The next step is to keep hardening the experience and staging workflow rather than
+filling basic scaffolding gaps.

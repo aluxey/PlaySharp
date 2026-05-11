@@ -1,6 +1,7 @@
 # API Contract
 
-Shared request and response types live in `packages/shared/src/api.ts`. The web app should treat those types as the source of truth for route payloads.
+Shared request and response types live in `packages/shared/src/api.ts`. The web app should treat
+those types as the source of truth for route payloads.
 
 ## Contract rules
 
@@ -16,13 +17,41 @@ Shared request and response types live in `packages/shared/src/api.ts`. The web 
 }
 ```
 
-- The versioned content source of truth is `content/{game}/content.json`.
-- The `progress` route is attempt-driven. The `profile` and `admin` read routes are still content-derived until more user activity is persisted end to end.
+- The versioned content seed/review format is `content/{game}/content.json`.
+- The `progress` and `profile` routes are driven by persisted quiz attempts and lesson
+  completions.
 - Authenticated user routes expect `Authorization: Bearer <token>`, using the token returned from `POST /auth/register` or `POST /auth/login`.
 
 ## Quick reference
 
-See `docs/data/api-quick-reference.md` for the condensed endpoint table.
+| Route                                                  | Purpose                                | Response type                           |
+| ------------------------------------------------------ | -------------------------------------- | --------------------------------------- |
+| `POST /auth/register`                                  | Create account and return auth session | `AuthSessionResponse`                   |
+| `POST /auth/login`                                     | Authenticate and return auth session   | `AuthSessionResponse`                   |
+| `GET /auth/me`                                         | Fetch current auth user                | `AuthCurrentUserResponse`               |
+| `GET /health`                                          | Service check                          | inline `{ status, service, timestamp }` |
+| `GET /content/games`                                   | List game summaries                    | `ContentGamesResponse`                  |
+| `GET /content/games/:game`                             | Fetch one game manifest                | `ContentGameResponse`                   |
+| `GET /content/games/:game/themes`                      | List themes for a game                 | `ContentThemesResponse`                 |
+| `GET /content/games/:game/themes/:themeSlug/lessons`   | List lessons for a theme               | `ContentThemeLessonsResponse`           |
+| `GET /content/games/:game/themes/:themeSlug/questions` | List questions for a theme             | `ContentThemeQuestionsResponse`         |
+| `GET /quiz/daily?game=poker`                           | Fetch the daily quiz                   | `QuizDailyResponse`                     |
+| `POST /quiz/attempts`                                  | Persist submitted quiz answers         | `QuizAttemptSubmitResponse`             |
+| `GET /stats/me`                                        | Fetch progress overview                | `ProgressOverviewResponse`              |
+| `GET /users/me/profile`                                | Fetch profile overview                 | `ProfileOverviewResponse`               |
+| `GET /users/me/lesson-completion`                      | Fetch one lesson completion status     | `LessonCompletionResponse`              |
+| `POST /users/me/lesson-completions`                    | Mark one lesson complete               | `LessonCompletionResponse`              |
+| `GET /admin/overview`                                  | Fetch content inventory totals         | `AdminOverviewResponse`                 |
+| `GET /admin/themes`                                    | List admin theme records               | `AdminThemesResponse`                   |
+| `GET /admin/lessons`                                   | List admin lesson records              | `AdminLessonsResponse`                  |
+| `POST /admin/lessons`                                  | Create lesson                          | `AdminLessonMutationResponse`           |
+| `PATCH /admin/lessons/:id`                             | Update lesson                          | `AdminLessonMutationResponse`           |
+| `DELETE /admin/lessons/:id`                            | Archive lesson                         | `AdminLessonMutationResponse`           |
+| `GET /admin/questions`                                 | List admin question records            | `AdminQuestionsResponse`                |
+| `POST /admin/questions`                                | Create question                        | `AdminQuestionMutationResponse`         |
+| `PATCH /admin/questions/:id`                           | Update question                        | `AdminQuestionMutationResponse`         |
+| `DELETE /admin/questions/:id`                          | Archive question                       | `AdminQuestionMutationResponse`         |
+| `GET /admin/export`                                    | Export content catalog                 | `AdminContentExportResponse`            |
 
 ## Implemented routes
 
@@ -34,6 +63,9 @@ See `docs/data/api-quick-reference.md` for the condensed endpoint table.
 - `POST /auth/login`
   - request body: `{ email, password }`
   - response type: `AuthSessionResponse`
+- `GET /auth/me`
+  - response type: `AuthCurrentUserResponse`
+  - auth required: yes
 
 Example:
 
@@ -168,6 +200,13 @@ Fields include:
 - `GET /users/me/profile`
   - response type: `ProfileOverviewResponse`
   - auth required: yes
+- `GET /users/me/lesson-completion?game=poker&themeSlug=preflop-position&lessonSlug=button-play`
+  - response type: `LessonCompletionResponse`
+  - auth required: yes
+- `POST /users/me/lesson-completions`
+  - request body: `LessonCompletionRequest`
+  - response type: `LessonCompletionResponse`
+  - auth required: yes
 
 Fields include:
 
@@ -190,18 +229,71 @@ Fields include:
   - response type: `AdminLessonsResponse`
   - auth required: yes
   - admin role required: yes
+- `POST /admin/lessons`
+  - request body: `AdminLessonMutationRequest`
+  - response type: `AdminLessonMutationResponse`
+  - auth required: yes
+  - admin role required: yes
+- `PATCH /admin/lessons/:id`
+  - request body: `AdminLessonMutationRequest`
+  - response type: `AdminLessonMutationResponse`
+  - auth required: yes
+  - admin role required: yes
+- `DELETE /admin/lessons/:id`
+  - response type: `AdminLessonMutationResponse`
+  - auth required: yes
+  - admin role required: yes
 - `GET /admin/questions`
   - response type: `AdminQuestionsResponse`
   - auth required: yes
   - admin role required: yes
+- `POST /admin/questions`
+  - request body: `AdminQuestionMutationRequest`
+  - response type: `AdminQuestionMutationResponse`
+  - auth required: yes
+  - admin role required: yes
+- `PATCH /admin/questions/:id`
+  - request body: `AdminQuestionMutationRequest`
+  - response type: `AdminQuestionMutationResponse`
+  - auth required: yes
+  - admin role required: yes
+- `DELETE /admin/questions/:id`
+  - response type: `AdminQuestionMutationResponse`
+  - auth required: yes
+  - admin role required: yes
+- `GET /admin/export`
+  - response type: `AdminContentExportResponse`
+  - auth required: yes
+  - admin role required: yes
 
-Admin responses are read-only inventory views over the versioned content manifests.
-V1 keeps content writes in the repository and seed workflow instead of exposing admin CRUD routes.
+Admin mutations write to PostgreSQL. The versioned content manifests remain the durable review
+format; use `GET /admin/export` when admin edits need to be brought back into content JSON.
 
 ## Planned but not implemented here
 
 - billing and premium routes
 
-## Deferred after V1
+## Stable error codes
 
-- protected admin write routes
+- `ADMIN_INVALID_CONTENT`
+- `ADMIN_RECORD_NOT_FOUND`
+- `ADMIN_THEME_NOT_FOUND`
+- `AUTH_EMAIL_TAKEN`
+- `AUTH_FORBIDDEN`
+- `AUTH_INVALID_CREDENTIALS`
+- `AUTH_UNAUTHORIZED`
+- `AUTH_USER_NOT_FOUND`
+- `CONTENT_UNKNOWN_GAME`
+- `CONTENT_GAME_NOT_FOUND`
+- `CONTENT_DRIFT_DETECTED`
+- `CONTENT_SOURCE_UNAVAILABLE`
+- `CONTENT_THEME_NOT_FOUND`
+- `LESSON_COMPLETION_NOT_FOUND`
+- `QUIZ_ATTEMPT_EMPTY`
+- `QUIZ_CHOICE_NOT_FOUND`
+- `QUIZ_GAME_NOT_FOUND`
+- `QUIZ_INVALID_ATTEMPT`
+- `QUIZ_UNKNOWN_GAME`
+- `QUIZ_DAILY_NOT_FOUND`
+- `QUIZ_QUESTION_NOT_FOUND`
+- `UPSTREAM_UNAVAILABLE`

@@ -9,7 +9,6 @@ Core content:
 - Hero section
 - Demo quiz block
 - Benefits
-- Free vs premium comparison
 - Sign-up CTA
 
 ## Dashboard
@@ -76,27 +75,20 @@ Core content:
 Core content:
 
 - User information
-- Subscription status
+- Plan/status summary
 - Activity history
-- Upgrade CTA
-
-## Payment page
-
-Future scope:
-
-- Premium plan
-- Stripe checkout
-- Confirmation state
 
 ## Admin area
 
 Core content:
 
-- Read-only inventory totals
+- Inventory totals
 - Theme, lesson, and question listings
 - Manifest/source-of-truth references
 - Coverage and difficulty summaries
 - Quiz/content preview links
+- Lesson and question create/update/archive flows
+- Content export
 - Global stats
 
-V1 note: content edits stay in versioned JSON and the admin surface remains read-only.
+Deferred scope: Stripe checkout, social ranking surfaces, and advanced analytics dashboards.

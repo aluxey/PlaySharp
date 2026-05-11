@@ -5,16 +5,17 @@
 ### users
 
 - `id` (uuid)
+- `name`
 - `email`
 - `password_hash`
-- `role` (`user` / `admin`)
-- `plan` (`free` / `premium`)
+- `role` (`USER` / `ADMIN`)
+- `plan` (`FREE` / `PREMIUM`)
 - `created_at`
 
 ### games
 
 - `id`
-- `name` (`poker` / `blackjack`)
+- `name` (`POKER` / `BLACKJACK`)
 
 ### themes
 
@@ -22,7 +23,7 @@
 - `slug`
 - `game_id` (FK)
 - `name`
-- `level` (`beginner` / `intermediate` / `advanced`)
+- `level` (`BEGINNER` / `INTERMEDIATE` / `ADVANCED`)
 
 ### lessons
 
@@ -116,7 +117,7 @@
 - `id`
 - `user_id` (FK)
 - `stripe_customer_id`
-- `status`
+- `status` (`ACTIVE` / `TRIALING` / `PAST_DUE` / `CANCELED` / `INCOMPLETE`)
 - `current_period_end`
 
 ## Notes

@@ -113,7 +113,7 @@ Acceptance criteria:
 
 - Events exist for signup, quiz start, quiz completion, explanation view, lesson view, lesson
   completion, and admin export.
-- Events follow the metric names in `docs/product/metrics.md`.
+- Events follow the metric names in `docs/product/README.md`.
 - Analytics capture game, theme, user plan, auth state, and anonymous/session identifiers where
   appropriate.
 - The app can disable analytics in local development and tests.

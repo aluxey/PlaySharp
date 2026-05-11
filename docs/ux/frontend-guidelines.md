@@ -17,7 +17,7 @@ It must stay readable on mobile and desktop, with subtle motion and controlled a
 - Success: `#22C55E`
 - Error: `#EF4444`
 - Warning: `#F59E0B`
-- Premium: `#E6C15A`
+- Highlight: `#E6C15A`
 
 ## Typography
 
@@ -47,7 +47,7 @@ Required states: normal, hover, pressed, disabled, loading.
 
 ### Cards
 
-- Use for stats, lessons, recommendations, results, and premium blocks
+- Use for stats, lessons, recommendations, results, and focused admin/editing blocks
 - Keep corners soft, shadows light, and padding generous
 
 ### Inputs
@@ -59,7 +59,7 @@ Required states: normal, hover, pressed, disabled, loading.
 
 ### Progress bars
 
-- Use for quiz progress, theme progress, overall progress, and premium goals
+- Use for quiz progress, theme progress, overall progress, and learning goals
 - Keep animations subtle and readable
 
 ## Navigation
