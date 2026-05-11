@@ -209,3 +209,20 @@ Acceptance criteria:
 - Error responses expose stable codes without leaking stack traces.
 - Admin or support diagnostics can inspect content sync version and API readiness state.
 - Logging behavior is documented for local, staging, and production environments.
+
+## Story 14: Structured Lesson Content Model
+
+Priority: P1.
+
+As a learner, I want each lesson to contain clear sections, examples, and practice cues so study
+feels substantial instead of reading a short placeholder paragraph.
+
+Acceptance criteria:
+
+- Lesson content supports structured sections such as summary, core idea, examples, mistakes to
+  avoid, and practice prompts.
+- The lesson detail page renders structured content without duplicating generic filler copy.
+- Content JSON, validation, seed, and admin export flows preserve the richer lesson structure.
+- Existing lessons are migrated from single-paragraph content into the new structure.
+- Smoke or integration coverage verifies that a structured lesson renders and can still be marked
+  complete.
